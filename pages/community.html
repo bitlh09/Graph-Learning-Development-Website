@@ -46,20 +46,47 @@
             <!-- 学习讨论区 -->
             <div id="discussions" class="community-section">
                 <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📝 学习讨论区</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">📝 学习讨论区</h2>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                            发起讨论
+                        </button>
+                    </div>
+                    
+                    <!-- 筛选和排序 -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">全部</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">基础概念</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">算法实现</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">应用案例</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200">论文解读</button>
+                    </div>
+                    
                     <div class="space-y-4">
-                        <div class="border rounded-lg p-4">
+                        <!-- 热门讨论 -->
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
                             <div class="flex items-start space-x-3">
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span class="text-blue-600 font-semibold">A</span>
+                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <span class="text-yellow-600 font-semibold">🔥</span>
                                 </div>
                                 <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">热门</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">基础概念</span>
+                                    </div>
                                     <h3 class="font-medium text-gray-900">GCN中的消息传递机制如何理解？</h3>
-                                    <p class="text-gray-600 text-sm mt-1">刚开始学习GCN，对消息传递的概念还不是很清楚，有大神能详细解释一下吗？</p>
-                                    <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                        <span>作者: 图学习新手</span>
-                                        <span>回复: 12</span>
-                                        <span>时间: 2小时前</span>
+                                    <p class="text-gray-600 text-sm mt-1">刚开始学习GCN，对消息传递的概念还不是很清楚，有大神能详细解释一下吗？特别是邻接矩阵归一化的作用...</p>
+                                    <div class="flex items-center justify-between mt-3">
+                                        <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                            <span>作者: 图学习新手</span>
+                                            <span>👍 23</span>
+                                            <span>💬 12</span>
+                                            <span>👁️ 156</span>
+                                            <span>2小时前</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs text-green-600">✅ 已解决</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -71,15 +98,60 @@
                                     <span class="text-green-600 font-semibold">B</span>
                                 </div>
                                 <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">算法对比</span>
+                                    </div>
                                     <h3 class="font-medium text-gray-900">GAT和GCN的区别是什么？</h3>
-                                    <p class="text-gray-600 text-sm mt-1">想了解GAT相比GCN有哪些优势，在什么场景下选择GAT更合适？</p>
-                                    <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                                        <span>作者: 深度学习爱好者</span>
-                                        <span>回复: 8</span>
-                                        <span>时间: 5小时前</span>
+                                    <p class="text-gray-600 text-sm mt-1">想了解GAT相比GCN有哪些优势，在什么场景下选择GAT更合适？有没有实际的性能对比数据？</p>
+                                    <div class="flex items-center justify-between mt-3">
+                                        <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                            <span>作者: 深度学习爱好者</span>
+                                            <span>👍 15</span>
+                                            <span>💬 8</span>
+                                            <span>👁️ 89</span>
+                                            <span>5小时前</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-xs text-blue-600 hover:underline">参与讨论</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <span class="text-purple-600 font-semibold">C</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded">代码实现</span>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">PyTorch</span>
+                                    </div>
+                                    <h3 class="font-medium text-gray-900">GraphSAGE邻居采样的高效实现方法</h3>
+                                    <p class="text-gray-600 text-sm mt-1">在大规模图上训练GraphSAGE时，邻居采样的效率是瓶颈，有什么优化技巧吗？</p>
+                                    <div class="flex items-center justify-between mt-3">
+                                        <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                            <span>作者: 算法工程师</span>
+                                            <span>👍 7</span>
+                                            <span>💬 3</span>
+                                            <span>👁️ 42</span>
+                                            <span>1天前</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button class="text-xs text-blue-600 hover:underline">参与讨论</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 更多讨论按钮 -->
+                        <div class="text-center pt-4">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                加载更多讨论 ↓
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -133,11 +205,133 @@
             <div id="challenges" class="community-section hidden">
                 <div class="bg-white rounded-lg shadow p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">🏆 每周挑战</h2>
-                    <div class="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-purple-50">
-                        <h3 class="font-medium text-gray-900">本周挑战：图神经网络在分子性质预测中的应用</h3>
-                        <p class="text-gray-600 text-sm mt-2">使用图神经网络预测分子的毒性，数据集已提供，欢迎大家参与！</p>
-                        <div class="flex items-center space-x-4 mt-3">
-                            <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">参与挑战</button>
+                    
+                    <!-- 当前挑战 -->
+                    <div class="border rounded-lg p-6 bg-gradient-to-r from-blue-50 to-purple-50 mb-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium">🔥 进行中</span>
+                                <h3 class="font-semibold text-gray-900 mt-2">第12期：图神经网络在分子性质预测中的应用</h3>
+                            </div>
+                            <div class="text-right text-sm text-gray-600">
+                                <div>剩余时间</div>
+                                <div class="font-mono text-lg text-red-600">3天 14:32:15</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-700 mb-4">
+                            使用图神经网络预测分子的毒性等级。数据集包含10,000个分子的SMILES表示和毒性标签。
+                            要求实现GCN、GAT或GraphSAGE模型，并在测试集上达到85%以上的准确率。
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-medium text-blue-900 mb-1">数据集</h4>
+                                <p class="text-sm text-gray-600">ToxCast数据集</p>
+                                <p class="text-xs text-blue-600">已清洗，即用可用</p>
+                            </div>
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-medium text-green-900 mb-1">评价指标</h4>
+                                <p class="text-sm text-gray-600">准确率 + AUC</p>
+                                <p class="text-xs text-green-600">基线模型：82.3%</p>
+                            </div>
+                            <div class="bg-white p-3 rounded border">
+                                <h4 class="font-medium text-purple-900 mb-1">奖励</h4>
+                                <p class="text-sm text-gray-600">学习积分 + 证书</p>
+                                <p class="text-xs text-purple-600">前3名有奖品</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                                    参与挑战
+                                </button>
+                                <button class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                    查看详情
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <span>👥 42人参与</span>
+                                <span>📊 最高分：87.2%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 排行榜 -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">🏅 实时排行榜</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded p-3">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-yellow-600 font-bold">🥇</span>
+                                    <span class="font-medium">GraphMaster_AI</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-mono text-lg text-green-600">87.2%</div>
+                                    <div class="text-xs text-gray-500">2小时前提交</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-3">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-gray-400 font-bold">🥈</span>
+                                    <span class="font-medium">DeepLearner</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-mono text-lg">86.8%</div>
+                                    <div class="text-xs text-gray-500">5小时前提交</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between bg-orange-50 border border-orange-200 rounded p-3">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-orange-600 font-bold">🥉</span>
+                                    <span class="font-medium">NeuralNet_Pro</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-mono text-lg">86.1%</div>
+                                    <div class="text-xs text-gray-500">1天前提交</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm">
+                                查看完整排行榜
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 往期挑战 -->
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-3">📚 往期挑战</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">已结束</span>
+                                    <span class="text-xs text-gray-500">第11期</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900 mb-2">社交网络影响力预测</h4>
+                                <p class="text-sm text-gray-600 mb-3">预测Twitter用户的影响力等级</p>
+                                <div class="flex justify-between items-center text-xs text-gray-500">
+                                    <span>参与者：67人</span>
+                                    <span>冠军：92.5%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">已结束</span>
+                                    <span class="text-xs text-gray-500">第10期</span>
+                                </div>
+                                <h4 class="font-medium text-gray-900 mb-2">知识图谱链接预测</h4>
+                                <p class="text-sm text-gray-600 mb-3">预测实体间的缺失关系</p>
+                                <div class="flex justify-between items-center text-xs text-gray-500">
+                                    <span>参与者：89人</span>
+                                    <span>冠军：89.7%</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
