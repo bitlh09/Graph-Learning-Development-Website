@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图学习算法实践与教程</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .code-editor {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #374151;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .graph-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .graph-node:hover {
+            stroke-width: 3px;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #10b981 var(--progress, 0%), #e5e7eb var(--progress, 0%));
+        }
+        .animation-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="#" onclick="showSection('home')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="#" onclick="showSection('tutorials')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="#" onclick="showSection('playground')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="#" onclick="showSection('community')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="#" onclick="showSection('resources')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- 首页 -->
+        <div id="home-section" class="section active">
+            <!-- 英雄区域 -->
+            <div class="gradient-bg">
+                <div class="max-w-7xl mx-auto py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
+                            图学习算法
+                            <span class="block text-blue-200">从入门到实践</span>
+                        </h1>
+                        <p class="mt-6 max-w-2xl mx-auto text-xl text-blue-100">
+                            从生活场景到抽象概念，从算法原理到代码实现，让图神经网络不再遥不可及
+                        </p>
+                        <div class="mt-10 flex justify-center space-x-4">
+                            <button onclick="showSection('tutorials')" class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-50 transition-colors">
+                                开始学习
+                            </button>
+                            <button onclick="showSection('playground')" class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition-colors">
+                                在线实践
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特色功能 -->
+            <div class="py-16 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-extrabold text-gray-900">为什么选择我们？</h2>
+                        <p class="mt-4 text-lg text-gray-600">渐进式学习路径，让复杂的图学习变得简单易懂</p>
+                    </div>
+                    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">场景化学习</h3>
+                            <p class="text-gray-600">从社交网络、外卖系统等生活场景入手，用动画演示建立直觉理解</p>
+                        </div>
+                        <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">在线编程</h3>
+                            <p class="text-gray-600">提供即时反馈的编程环境，支持代码运行和实时可视化</p>
+                        </div>
+                        <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">可视化学习</h3>
+                            <p class="text-gray-600">图结构变化、注意力权重、训练过程全程可视化展示</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学习路径 -->
+            <div class="py-16 bg-gray-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-extrabold text-gray-900">学习路径</h2>
+                        <p class="mt-4 text-lg text-gray-600">从已知到未知的渐进式学习体验</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-blue-200"></div>
+                        <div class="space-y-8">
+                            <div class="relative flex items-center">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">1</span>
+                                </div>
+                                <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">入门篇：建立图的直觉</h3>
+                                    <p class="text-gray-600">从社交网络、外卖系统等熟悉场景理解图的概念</p>
+                                </div>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">2</span>
+                                </div>
+                                <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">基础篇：从神经网络到图神经网络</h3>
+                                    <p class="text-gray-600">复习CNN/RNN，理解图神经网络的设计动机</p>
+                                </div>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">3</span>
+                                </div>
+                                <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">进阶篇：算法原理与实现</h3>
+                                    <p class="text-gray-600">深入GCN、GAT等核心算法，配合可视化理解</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 教程页面 -->
+        <div id="tutorials-section" class="section">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- 侧边栏 -->
+                    <div class="lg:w-1/4">
+                        <div class="bg-white rounded-lg shadow p-6 sticky top-24">
+                            <h3 class="text-lg font-semibold mb-4">课程目录</h3>
+                            <div class="space-y-2">
+                                <div class="tutorial-category">
+                                    <h4 class="font-medium text-gray-900 mb-2">入门篇</h4>
+                                    <ul class="space-y-1 ml-4">
+                                        <li><a href="#" onclick="showTutorial('intro-graphs')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">什么是图？</a></li>
+                                        <li><a href="#" onclick="showTutorial('social-network')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">社交网络案例</a></li>
+                                        <li><a href="#" onclick="showTutorial('graph-basics')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图的基本概念</a></li>
+                                    </ul>
+                                </div>
+                                <div class="tutorial-category mt-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">基础篇</h4>
+                                    <ul class="space-y-1 ml-4">
+                                        <li><a href="#" onclick="showTutorial('nn-review')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">神经网络回顾</a></li>
+                                        <li><a href="#" onclick="showTutorial('why-gnn')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">为什么需要GNN？</a></li>
+                                        <li><a href="#" onclick="showTutorial('message-passing')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">消息传递机制</a></li>
+                                    </ul>
+                                </div>
+                                <div class="tutorial-category mt-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">进阶篇</h4>
+                                    <ul class="space-y-1 ml-4">
+                                        <li><a href="#" onclick="showTutorial('gcn')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图卷积网络(GCN)</a></li>
+                                        <li><a href="#" onclick="showTutorial('gat')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图注意力网络(GAT)</a></li>
+                                        <li><a href="#" onclick="showTutorial('graphsage')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">GraphSAGE</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- 学习进度 -->
+                            <div class="mt-6">
+                                <h4 class="font-medium text-gray-900 mb-2">学习进度</h4>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="progress-bar h-2 rounded-full" style="--progress: 35%"></div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">已完成 35%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 主要内容 -->
+                    <div class="lg:w-3/4">
+                        <div id="tutorial-content" class="bg-white rounded-lg shadow p-8">
+                            <div id="intro-graphs" class="tutorial-content active">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-6">什么是图？</h1>
+                                <div class="prose max-w-none">
+                                    <p class="text-lg text-gray-700 mb-6">
+                                        想象一下你的朋友圈：每个人是一个"点"，朋友关系是连接这些点的"线"。这就是图的基本概念！
+                                    </p>
+                                    
+                                    <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-blue-900 mb-3">生活中的图无处不在</h3>
+                                        <ul class="space-y-2 text-blue-800">
+                                            <li>• <strong>社交网络</strong>：微信好友、微博关注关系</li>
+                                            <li>• <strong>交通系统</strong>：地铁站点与线路连接</li>
+                                            <li>• <strong>互联网</strong>：网页之间的链接关系</li>
+                                            <li>• <strong>分子结构</strong>：原子间的化学键连接</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- 交互式图示例 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">交互式图示例</h3>
+                                        <div class="border rounded-lg p-4 bg-gray-50">
+                                            <div id="graph-demo" class="w-full h-64"></div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-2">点击节点查看详细信息，拖拽可以移动节点</p>
+                                    </div>
+
+                                    <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-yellow-900 mb-3">
+                                            <span class="tooltip">术语小贴士
+                                                <span class="tooltiptext">鼠标悬停查看专业术语的通俗解释</span>
+                                            </span>
+                                        </h3>
+                                        <div class="space-y-2 text-yellow-800">
+                                            <p>• <span class="tooltip font-semibold">节点(Node/Vertex)<span class="tooltiptext">就像人、物品、地点等具体的对象</span></span>：图中的每个点，代表一个实体</p>
+                                            <p>• <span class="tooltip font-semibold">边(Edge)<span class="tooltiptext">就像朋友关系、道路连接等关系纽带</span></span>：连接两个节点的线，代表关系</p>
+                                            <p>• <span class="tooltip font-semibold">特征(Feature)<span class="tooltiptext">就像人的年龄、职业等属性信息</span></span>：每个节点或边附带的属性信息</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 视频教程 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">视频教程</h3>
+                                        <div class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg flex items-center justify-center">
+                                            <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                                <svg class="w-6 h-6 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M8 5v10l7-5-7-5z"/>
+                                                </svg>
+                                                播放视频教程 (5分钟)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 小练习 -->
+                                    <div class="bg-green-50 p-6 rounded-lg">
+                                        <h3 class="text-xl font-semibold text-green-900 mb-3">动手试一试</h3>
+                                        <p class="text-green-800 mb-4">
+                                            思考一下：你所在的班级可以用图来表示吗？节点是什么？边又代表什么关系？
+                                        </p>
+                                        <textarea class="w-full p-3 border rounded-lg" rows="3" placeholder="在这里写下你的想法..."></textarea>
+                                        <button class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GCN教程内容 -->
+                            <div id="gcn" class="tutorial-content">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-6">图卷积网络 (GCN)</h1>
+                                <div class="prose max-w-none">
+                                    <p class="text-lg text-gray-700 mb-6">
+                                        GCN的核心思想很简单：每个节点通过收集邻居的信息来更新自己的特征，就像你在朋友圈里了解朋友的动态一样！
+                                    </p>
+
+                                    <!-- 算法步骤可视化 -->
+                                    <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-blue-900 mb-4">GCN三步走</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">找邻居</h4>
+                                                    <p class="text-blue-800">确定每个节点的邻居节点</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">聚合信息</h4>
+                                                    <p class="text-blue-800">将邻居特征和自己的特征加权平均</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">神经网络处理</h4>
+                                                    <p class="text-blue-800">用全连接层处理聚合后的特征</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 代码模板 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">最小可行代码</h3>
+                                        <div class="code-editor">
+                                            <textarea id="gcn-code" class="w-full h-64 p-4 font-mono text-sm">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SimpleGCN(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super(SimpleGCN, self).__init__()
+        # 第一层GCN
+        self.gc1 = nn.Linear(input_dim, hidden_dim)
+        # 第二层GCN  
+        self.gc2 = nn.Linear(hidden_dim, output_dim)
+        
+    def forward(self, x, adj):
+        # 步骤1: 找邻居 (邻接矩阵adj已经告诉我们邻居关系)
+        # 步骤2: 聚合信息 (矩阵乘法实现加权平均)
+        x = torch.mm(adj, x)  # 聚合邻居信息
+        x = self.gc1(x)       # 步骤3: 神经网络处理
+        x = F.relu(x)         # 激活函数
+        
+        # 第二层重复相同步骤
+        x = torch.mm(adj, x)
+        x = self.gc2(x)
+        
+        return F.log_softmax(x, dim=1)
+
+# 使用示例
+model = SimpleGCN(input_dim=10, hidden_dim=32, output_dim=3)
+print("GCN模型创建成功！")
+                            </textarea>
+                                        </div>
+                                        <div class="mt-3 flex space-x-2">
+                                            <button onclick="runGCNCode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                运行代码
+                                            </button>
+                                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                查看可视化
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 运行结果展示 -->
+                                    <div id="gcn-output" class="mb-6 hidden">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">运行结果</h3>
+                                        <div class="bg-gray-100 p-4 rounded-lg">
+                                            <pre class="text-sm text-gray-800">GCN模型创建成功！
+模型参数量: 342
+第一层权重维度: torch.Size([32, 10])
+第二层权重维度: torch.Size([3, 32])</pre>
+                                        </div>
+                                        <div id="gcn-visualization" class="mt-4 p-4 border rounded-lg">
+                                            <h4 class="font-

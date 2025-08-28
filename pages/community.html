@@ -1,0 +1,167 @@
+<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">学习社区</h1>
+        <p class="mt-2 text-lg text-gray-600">与其他学习者交流经验，分享你的图学习项目</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- 社区导航 -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow p-6 sticky top-24">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">社区板块</h3>
+                <nav class="space-y-2">
+                    <a href="#" data-action="show-community" data-target="discussions" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                        📝 学习讨论区
+                    </a>
+                    <a href="#" data-action="show-community" data-target="projects" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                        🚀 项目展示区
+                    </a>
+                    <a href="#" data-action="show-community" data-target="pitfalls" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                        ⚠️ 算法吐槽区
+                    </a>
+                    <a href="#" data-action="show-community" data-target="challenges" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                        🏆 每周挑战
+                    </a>
+                    <a href="#" data-action="show-community" data-target="resources" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                        📚 资源分享
+                    </a>
+                </nav>
+
+                <!-- 热门标签 -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h4 class="text-sm font-medium text-gray-900 mb-3">热门标签</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">GCN</span>
+                        <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">GAT</span>
+                        <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">节点分类</span>
+                        <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">图嵌入</span>
+                        <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">PyTorch</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要内容区 -->
+        <div class="lg:col-span-2">
+            <!-- 学习讨论区 -->
+            <div id="discussions" class="community-section">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📝 学习讨论区</h2>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 font-semibold">A</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-gray-900">GCN中的消息传递机制如何理解？</h3>
+                                    <p class="text-gray-600 text-sm mt-1">刚开始学习GCN，对消息传递的概念还不是很清楚，有大神能详细解释一下吗？</p>
+                                    <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                        <span>作者: 图学习新手</span>
+                                        <span>回复: 12</span>
+                                        <span>时间: 2小时前</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 font-semibold">B</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-gray-900">GAT和GCN的区别是什么？</h3>
+                                    <p class="text-gray-600 text-sm mt-1">想了解GAT相比GCN有哪些优势，在什么场景下选择GAT更合适？</p>
+                                    <div class="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                        <span>作者: 深度学习爱好者</span>
+                                        <span>回复: 8</span>
+                                        <span>时间: 5小时前</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目展示区 -->
+            <div id="projects" class="community-section hidden">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">🚀 项目展示区</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-900">基于GCN的推荐系统</h3>
+                            <p class="text-gray-600 text-sm mt-1">使用GCN构建用户-物品图，实现个性化推荐</p>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">GCN</span>
+                                <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">推荐系统</span>
+                            </div>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-900">图注意力网络可视化工具</h3>
+                            <p class="text-gray-600 text-sm mt-1">开发了一个GAT注意力权重的可视化工具</p>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">GAT</span>
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">可视化</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 算法吐槽区 -->
+            <div id="pitfalls" class="community-section hidden">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">⚠️ 算法吐槽区</h2>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4 bg-red-50">
+                            <h3 class="font-medium text-red-900">GCN训练时梯度消失问题</h3>
+                            <p class="text-red-700 text-sm mt-1">在使用GCN时遇到了梯度消失的问题，有同学遇到过类似情况吗？</p>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4 bg-yellow-50">
+                            <h3 class="font-medium text-yellow-900">GraphSAGE邻居采样效率问题</h3>
+                            <p class="text-yellow-700 text-sm mt-1">在大规模图上，GraphSAGE的邻居采样效率比较低，有什么优化方法？</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每周挑战 -->
+            <div id="challenges" class="community-section hidden">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">🏆 每周挑战</h2>
+                    <div class="border rounded-lg p-4 bg-gradient-to-r from-blue-50 to-purple-50">
+                        <h3 class="font-medium text-gray-900">本周挑战：图神经网络在分子性质预测中的应用</h3>
+                        <p class="text-gray-600 text-sm mt-2">使用图神经网络预测分子的毒性，数据集已提供，欢迎大家参与！</p>
+                        <div class="flex items-center space-x-4 mt-3">
+                            <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">参与挑战</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 资源分享 -->
+            <div id="resources" class="community-section hidden">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">📚 资源分享</h2>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-900">图神经网络论文合集</h3>
+                            <p class="text-gray-600 text-sm mt-1">整理了近年来重要的GNN论文，包含详细的中文解读</p>
+
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-900">PyTorch Geometric 实战教程</h3>
+                            <p class="text-gray-600 text-sm mt-1">从零开始学习PyTorch Geometric，包含多个实战项目</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

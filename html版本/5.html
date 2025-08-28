@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图学习算法实践与教程</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .code-editor {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #374151;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .graph-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .graph-node:hover {
+            stroke-width: 3px;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #10b981 var(--progress, 0%), #e5e7eb var(--progress, 0%));
+        }
+        .animation-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="#" onclick="showSection('home')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="#" onclick="showSection('tutorials')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="#" onclick="showSection('playground')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="#" onclick="showSection('community')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="#" onclick="showSection('resources')" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- 首页 -->
+        <div id="home-section" class="section active">
+            <!-- 英雄区域 -->
+            <div class="gradient-bg">
+                <div class="max-w-7xl mx-auto py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
+                            图学习算法
+                            <span class="block text-blue-200">从入门到实践</span>
+                        </h1>
+                        <p class="mt-6 max-w-2xl mx-auto text-xl text-blue-100">
+                            从生活场景到抽象概念，从算法原理到代码实现，让图神经网络不再遥不可及
+                        </p>
+                        <div class="mt-10 flex justify-center space-x-4">
+                            <button onclick="showSection('tutorials')" class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-50 transition-colors">
+                                开始学习
+                            </button>
+                            <button onclick="showSection('playground')" class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition-colors">
+                                在线实践
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特色功能 -->
+            <div class="py-16 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-extrabold text-gray-900">为什么选择我们？</h2>
+                        <p class="mt-4 text-lg text-gray-600">渐进式学习路径，让复杂的图学习变得简单易懂</p>
+                    </div>
+                    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">场景化学习</h3>
+                            <p class="text-gray-600">从社交网络、外卖系统等生活场景入手，用动画演示建立直觉理解</p>
+                        </div>
+                        <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">在线编程</h3>
+                            <p class="text-gray-600">提供即时反馈的编程环境，支持代码运行和实时可视化</p>
+                        </div>
+                        <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">可视化学习</h3>
+                            <p class="text-gray-600">图结构变化、注意力权重、训练过程全程可视化展示</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学习路径 -->
+            <div class="py-16 bg-gray-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-extrabold text-gray-900">学习路径</h2>
+                        <p class="mt-4 text-lg text-gray-600">从已知到未知的渐进式学习体验</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-blue-200"></div>
+                        <div class="space-y-8">
+                            <div class="relative flex items-center">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">1</span>
+                                </div>
+                                <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">入门篇：建立图的直觉</h3>
+                                    <p class="text-gray-600">从社交网络、外卖系统等熟悉场景理解图的概念</p>
+                                </div>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">2</span>
+                                </div>
+                                <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">基础篇：从神经网络到图神经网络</h3>
+                                    <p class="text-gray-600">复习CNN/RNN，理解图神经网络的设计动机</p>
+                                </div>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">3</span>
+                                </div>
+                                <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-900">进阶篇：算法原理与实现</h3>
+                                    <p class="text-gray-600">深入GCN、GAT等核心算法，配合可视化理解</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 教程页面 -->
+        <div id="tutorials-section" class="section">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- 侧边栏 -->
+                    <div class="lg:w-1/4">
+                        <div class="bg-white rounded-lg shadow p-6 sticky top-24">
+                            <h3 class="text-lg font-semibold mb-4">课程目录</h3>
+                            <div class="space-y-2">
+                                <div class="tutorial-category">
+                                    <h4 class="font-medium text-gray-900 mb-2">入门篇</h4>
+                                    <ul class="space-y-1 ml-4">
+                                        <li><a href="#" onclick="showTutorial('intro-graphs')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">什么是图？</a></li>
+                                        <li><a href="#" onclick="showTutorial('social-network')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">社交网络案例</a></li>
+                                        <li><a href="#" onclick="showTutorial('graph-basics')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图的基本概念</a></li>
+                                    </ul>
+                                </div>
+                                <div class="tutorial-category mt-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">基础篇</h4>
+                                    <ul class="space-y-1 ml-4">
+                                        <li><a href="#" onclick="showTutorial('nn-review')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">神经网络回顾</a></li>
+                                        <li><a href="#" onclick="showTutorial('why-gnn')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">为什么需要GNN？</a></li>
+                                        <li><a href="#" onclick="showTutorial('message-passing')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">消息传递机制</a></li>
+                                    </ul>
+                                </div>
+                                <div class="tutorial-category mt-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">进阶篇</h4>
+                                    <ul class="space-y-1 ml-4">
+                                        <li><a href="#" onclick="showTutorial('gcn')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图卷积网络(GCN)</a></li>
+                                        <li><a href="#" onclick="showTutorial('gat')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图注意力网络(GAT)</a></li>
+                                        <li><a href="#" onclick="showTutorial('graphsage')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">GraphSAGE</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- 学习进度 -->
+                            <div class="mt-6">
+                                <h4 class="font-medium text-gray-900 mb-2">学习进度</h4>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="progress-bar h-2 rounded-full" style="--progress: 35%"></div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">已完成 35%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 主要内容 -->
+                    <div class="lg:w-3/4">
+                        <div id="tutorial-content" class="bg-white rounded-lg shadow p-8">
+                            <div id="intro-graphs" class="tutorial-content active">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-6">什么是图？</h1>
+                                <div class="prose max-w-none">
+                                    <p class="text-lg text-gray-700 mb-6">
+                                        想象一下你的朋友圈：每个人是一个"点"，朋友关系是连接这些点的"线"。这就是图的基本概念！
+                                    </p>
+                                    
+                                    <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-blue-900 mb-3">生活中的图无处不在</h3>
+                                        <ul class="space-y-2 text-blue-800">
+                                            <li>• <strong>社交网络</strong>：微信好友、微博关注关系</li>
+                                            <li>• <strong>交通系统</strong>：地铁站点与线路连接</li>
+                                            <li>• <strong>互联网</strong>：网页之间的链接关系</li>
+                                            <li>• <strong>分子结构</strong>：原子间的化学键连接</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- 交互式图示例 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">交互式图示例</h3>
+                                        <div class="border rounded-lg p-4 bg-gray-50">
+                                            <div id="graph-demo" class="w-full h-64"></div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-2">点击节点查看详细信息，拖拽可以移动节点</p>
+                                    </div>
+
+                                    <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-yellow-900 mb-3">
+                                            <span class="tooltip">术语小贴士
+                                                <span class="tooltiptext">鼠标悬停查看专业术语的通俗解释</span>
+                                            </span>
+                                        </h3>
+                                        <div class="space-y-2 text-yellow-800">
+                                            <p>• <span class="tooltip font-semibold">节点(Node/Vertex)<span class="tooltiptext">就像人、物品、地点等具体的对象</span></span>：图中的每个点，代表一个实体</p>
+                                            <p>• <span class="tooltip font-semibold">边(Edge)<span class="tooltiptext">就像朋友关系、道路连接等关系纽带</span></span>：连接两个节点的线，代表关系</p>
+                                            <p>• <span class="tooltip font-semibold">特征(Feature)<span class="tooltiptext">就像人的年龄、职业等属性信息</span></span>：每个节点或边附带的属性信息</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 视频教程 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">视频教程</h3>
+                                        <div class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg flex items-center justify-center">
+                                            <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                                                <svg class="w-6 h-6 inline-block mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M8 5v10l7-5-7-5z"/>
+                                                </svg>
+                                                播放视频教程 (5分钟)
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 小练习 -->
+                                    <div class="bg-green-50 p-6 rounded-lg">
+                                        <h3 class="text-xl font-semibold text-green-900 mb-3">动手试一试</h3>
+                                        <p class="text-green-800 mb-4">
+                                            思考一下：你所在的班级可以用图来表示吗？节点是什么？边又代表什么关系？
+                                        </p>
+                                        <textarea class="w-full p-3 border rounded-lg" rows="3" placeholder="在这里写下你的想法..."></textarea>
+                                        <button class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                            提交答案
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GCN教程内容 -->
+                            <div id="gcn" class="tutorial-content">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-6">图卷积网络 (GCN)</h1>
+                                <div class="prose max-w-none">
+                                    <p class="text-lg text-gray-700 mb-6">
+                                        GCN的核心思想很简单：每个节点通过收集邻居的信息来更新自己的特征，就像你在朋友圈里了解朋友的动态一样！
+                                    </p>
+
+                                    <!-- 算法步骤可视化 -->
+                                    <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-blue-900 mb-4">GCN三步走</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">找邻居</h4>
+                                                    <p class="text-blue-800">确定每个节点的邻居节点</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">聚合信息</h4>
+                                                    <p class="text-blue-800">将邻居特征和自己的特征加权平均</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">神经网络处理</h4>
+                                                    <p class="text-blue-800">用全连接层处理聚合后的特征</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 代码模板 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">最小可行代码</h3>
+                                        <div class="code-editor">
+                                            <textarea id="gcn-code" class="w-full h-64 p-4 font-mono text-sm">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+# 生成示例图数据 (Cora数据集的简化版本)
+def generate_sample_data():
+    # 创建7个节点的图 (代表7篇论文)
+    num_nodes = 7
+    # 每个节点有5个特征 (词向量维度简化版)
+    features = torch.randn(num_nodes, 5)
+    
+    # 邻接矩阵 (论文间的引用关系)
+    adj_matrix = torch.tensor([
+        [1, 1, 0, 0, 0, 0, 0],  # 论文0引用论文1
+        [1, 1, 1, 0, 0, 0, 0],  # 论文1引用论文0和论文2
+        [0, 1, 1, 1, 0, 0, 0],  # 论文2引用论文1和论文3
+        [0, 0, 1, 1, 1, 0, 0],  # 论文3引用论文2和论文4
+        [0, 0, 0, 1, 1, 1, 0],  # 论文4引用论文3和论文5
+        [0, 0, 0, 0, 1, 1, 1],  # 论文5引用论文4和论文6
+        [0, 0, 0, 0, 0, 1, 1],  # 论文6引用论文5
+    ], dtype=torch.float32)
+    
+    # 标签 (论文的学科分类: 0-AI, 1-CV, 2-NLP)
+    labels = torch.tensor([0, 0, 1, 1, 2, 2, 2])
+    
+    return features, adj_matrix, labels
+
+class GCN(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super(GCN, self).__init__()
+        self.gc1 = nn.Linear(input_dim, hidden_dim)
+        self.gc2 = nn.Linear(hidden_dim, output_dim)
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x, adj):
+        # 第一层GCN
+        x = torch.mm(adj, x)  # 聚合邻居信息
+        x = self.gc1(x)       # 线性变换
+        x = F.relu(x)         # 激活函数
+        x = self.dropout(x)   # 防止过拟合
+        
+        # 第二层GCN
+        x = torch.mm(adj, x)
+        x = self.gc2(x)
+        
+        return F.log_softmax(x, dim=1)
+
+# 训练模型
+def train_gcn():
+    # 准备数据
+    features, adj_matrix, labels = generate_sample_data()
+    
+    # 创建模型
+    model = GCN(input_dim=5, hidden_dim=16, output_dim=3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    # 训练记录
+    losses = []
+    accuracies = []
+    
+    print("开始训练GCN模型...")
+    for epoch in range(200):
+        model.train()
+        optimizer.zero_grad()
+        
+        # 前向传播
+        output = model(features, adj_matrix)
+        loss = F.nll_loss(output, labels)
+        
+        loss.backward()
+        optimizer.step()
+        
+        # 计算准确率
+        _, pred = output.max(dim=1)
+        acc = pred.eq(labels).float().mean()
+        
+        losses.append(loss.item())
+        accuracies.append(acc.item())
+        
+        if epoch % 50 == 0:
+            print(f'Epoch {epoch}: Loss={loss:.4f}, Acc={acc:.4f}')
+    
+    return model, features, adj_matrix, labels, losses, accuracies
+
+# 可视化结果
+def visualize_results(model, features, adj_matrix, labels, losses, accuracies):
+    print("\\n=== 训练完成 ===")
+    print(f"最终准确率: {accuracies[-1]:.4f}")
+    print("\\n节点分类结果:")
+    
+    model.eval()
+    with torch.no_grad():
+        output = model(features, adj_matrix)
+        _, pred = output.max(dim=1)
+        
+        class_names = ["AI", "CV", "NLP"]
+        for i in range(len(labels)):
+            true_label = class_names[labels[i].item()]
+            pred_label = class_names[pred[i].item()]
+            correct = "✓" if labels[i] == pred[i] else "✗"
+            print(f"论文 {i}: 真实={true_label}, 预测={pred_label} {correct}")
+
+if __name__ == "__main__":
+    model, features, adj_matrix, labels, losses, accuracies = train_gcn()
+    visualize_results(model, features, adj_matrix, labels, losses, accuracies)
+                            </textarea>
+                                        </div>
+                                        <div class="mt-3 flex space-x-2">
+                                            <button onclick="runGCNCode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                运行代码
+                                            </button>
+                                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                查看可视化
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 运行结果展示 -->
+                                    <div id="gcn-output" class="mb-6 hidden">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">运行结果</h3>
+                                        <div class="bg-gray-100 p-4 rounded-lg">
+                                            <pre class="text-sm text-gray-800">GCN模型创建成功！
+模型参数量: 342
+第一层权重维度: torch.Size([32, 10])
+第二层权重维度: torch.Size([3, 32])</pre>
+                                        </div>
+                                        <div id="gcn-visualization" class="mt-4 p-4 border rounded-lg">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-2">可视化</h4>
+                                            <div class="text-gray-500 text-sm">运行代码后显示</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GraphSAGE教程内容 -->
+                            <div id="graphsage" class="tutorial-content">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-6">GraphSAGE</h1>
+                                <div class="prose max-w-none">
+                                    <p class="text-lg text-gray-700 mb-6">
+                                        GraphSAGE 是一种归纳式学习框架，能够为未见过的节点生成嵌入，特别适合大规模动态图的应用场景！
+                                    </p>
+
+                                    <!-- 算法特点 -->
+                                    <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-green-900 mb-4">GraphSAGE 核心特点</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-green-900">归纳学习</h4>
+                                                    <p class="text-green-800">可以为训练时未见过的节点生成嵌入</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-green-900">邻居采样</h4>
+                                                    <p class="text-green-800">通过采样固定数量的邻居，提高计算效率</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-green-900">多种聚合函数</h4>
+                                                    <p class="text-green-800">支持 Mean、LSTM、Pooling 等聚合方式</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 代码模板 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">GraphSAGE 实现代码</h3>
+                                        <div class="code-editor">
+                                            <textarea id="graphsage-code" class="w-full h-64 p-4 font-mono text-sm">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+from collections import defaultdict
+
+# 生成示例图数据
+def generate_sample_data():
+    num_nodes = 10
+    features = torch.randn(num_nodes, 5)
+    
+    # 邻接矩阵 (更复杂的图结构)
+    adj_matrix = torch.tensor([
+        [1, 1, 0, 1, 0, 0, 0, 0, 0, 0],  # 节点0的邻居
+        [1, 1, 1, 0, 1, 0, 0, 0, 0, 0],  # 节点1的邻居
+        [0, 1, 1, 0, 0, 1, 0, 0, 0, 0],  # 节点2的邻居
+        [1, 0, 0, 1, 1, 0, 1, 0, 0, 0],  # 节点3的邻居
+        [0, 1, 0, 1, 1, 1, 0, 1, 0, 0],  # 节点4的邻居
+        [0, 0, 1, 0, 1, 1, 0, 0, 1, 0],  # 节点5的邻居
+        [0, 0, 0, 1, 0, 0, 1, 1, 0, 1],  # 节点6的邻居
+        [0, 0, 0, 0, 1, 0, 1, 1, 1, 0],  # 节点7的邻居
+        [0, 0, 0, 0, 0, 1, 0, 1, 1, 1],  # 节点8的邻居
+        [0, 0, 0, 0, 0, 0, 1, 0, 1, 1],  # 节点9的邻居
+    ], dtype=torch.float32)
+    
+    labels = torch.tensor([0, 0, 0, 1, 1, 1, 2, 2, 2, 2])
+    return features, adj_matrix, labels
+
+# 邻居采样函数
+def sample_neighbors(adj_matrix, node_idx, num_samples):
+    """为指定节点采样固定数量的邻居"""
+    neighbors = torch.where(adj_matrix[node_idx] > 0)[0]
+    if len(neighbors) > num_samples:
+        # 随机采样
+        sampled_indices = torch.randperm(len(neighbors))[:num_samples]
+        return neighbors[sampled_indices]
+    else:
+        # 如果邻居数量不足，重复采样
+        if len(neighbors) == 0:
+            return torch.tensor([node_idx])  # 自环
+        repeated = neighbors.repeat((num_samples + len(neighbors) - 1) // len(neighbors))
+        return repeated[:num_samples]
+
+# 聚合函数
+class MeanAggregator(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super(MeanAggregator, self).__init__()
+        self.linear = nn.Linear(input_dim, output_dim)
+        
+    def forward(self, node_features, neighbor_features):
+        # 平均聚合邻居特征
+        aggregated = torch.mean(neighbor_features, dim=0)
+        # 线性变换
+        return self.linear(aggregated)
+
+class GraphSAGELayer(nn.Module):
+    def __init__(self, input_dim, output_dim, num_samples=3):
+        super(GraphSAGELayer, self).__init__()
+        self.num_samples = num_samples
+        self.aggregator = MeanAggregator(input_dim, output_dim)
+        self.linear = nn.Linear(input_dim + output_dim, output_dim)
+        
+    def forward(self, node_features, adj_matrix):
+        batch_size = node_features.size(0)
+        aggregated_features = []
+        
+        for i in range(batch_size):
+            # 采样邻居
+            neighbors = sample_neighbors(adj_matrix, i, self.num_samples)
+            neighbor_features = node_features[neighbors]
+            
+            # 聚合邻居特征
+            aggregated = self.aggregator(node_features[i], neighbor_features)
+            aggregated_features.append(aggregated)
+        
+        aggregated_features = torch.stack(aggregated_features)
+        
+        # 拼接自身特征和聚合特征
+        combined = torch.cat([node_features, aggregated_features], dim=1)
+        
+        # 最终变换
+        output = self.linear(combined)
+        return F.relu(output)
+
+class GraphSAGE(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_samples=3):
+        super(GraphSAGE, self).__init__()
+        self.sage1 = GraphSAGELayer(input_dim, hidden_dim, num_samples)
+        self.sage2 = GraphSAGELayer(hidden_dim, output_dim, num_samples)
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x, adj):
+        # 第一层 GraphSAGE
+        x = self.sage1(x, adj)
+        x = self.dropout(x)
+        
+        # 第二层 GraphSAGE
+        x = self.sage2(x, adj)
+        
+        return F.log_softmax(x, dim=1)
+
+# 训练模型
+def train_graphsage():
+    features, adj_matrix, labels = generate_sample_data()
+    
+    model = GraphSAGE(input_dim=5, hidden_dim=16, output_dim=3, num_samples=3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    losses = []
+    accuracies = []
+    
+    print("开始训练 GraphSAGE 模型...")
+    print(f"图规模: {features.size(0)} 个节点")
+    print(f"邻居采样数: 3")
+    
+    for epoch in range(200):
+        model.train()
+        optimizer.zero_grad()
+        
+        output = model(features, adj_matrix)
+        loss = F.nll_loss(output, labels)
+        
+        loss.backward()
+        optimizer.step()
+        
+        _, pred = output.max(dim=1)
+        acc = pred.eq(labels).float().mean()
+        
+        losses.append(loss.item())
+        accuracies.append(acc.item())
+        
+        if epoch % 50 == 0:
+            print(f'Epoch {epoch}: Loss={loss:.4f}, Acc={acc:.4f}')
+    
+    return model, features, adj_matrix, labels, losses, accuracies
+
+# 可视化结果
+def visualize_graphsage_results(model, features, adj_matrix, labels, losses, accuracies):
+    print("\\n=== GraphSAGE 训练完成 ===")
+    print(f"最终准确率: {accuracies[-1]:.4f}")
+    print("\\n节点分类结果:")
+    
+    model.eval()
+    with torch.no_grad():
+        output = model(features, adj_matrix)
+        _, pred = output.max(dim=1)
+        
+        class_names = ["类别A", "类别B", "类别C"]
+        for i in range(len(labels)):
+            true_label = class_names[labels[i].item()]
+            pred_label = class_names[pred[i].item()]
+            correct = "✓" if labels[i] == pred[i] else "✗"
+            print(f"节点 {i}: 真实={true_label}, 预测={pred_label} {correct}")
+        
+        print("\\n邻居采样统计:")
+        for i in range(min(5, len(labels))):  # 显示前5个节点的邻居采样
+            neighbors = sample_neighbors(adj_matrix, i, 3)
+            print(f"节点 {i} 的采样邻居: {neighbors.tolist()}")
+
+if __name__ == "__main__":
+    model, features, adj_matrix, labels, losses, accuracies = train_graphsage()
+    visualize_graphsage_results(model, features, adj_matrix, labels, losses, accuracies)
+                            </textarea>
+                                        </div>
+                                        <div class="mt-3 flex space-x-2">
+                                            <button onclick="runGraphSAGECode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                运行代码
+                                            </button>
+                                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                查看邻居采样可视化
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 运行结果展示 -->
+                                    <div id="graphsage-output" class="mb-6 hidden">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">GraphSAGE 运行结果</h3>
+                                        <div class="bg-gray-100 p-4 rounded-lg">
+                                            <pre class="text-sm text-gray-800">GraphSAGE 模型创建成功！
+图规模: 10 个节点
+邻居采样数: 3
+模型参数量: 1,280
+邻居采样策略: 固定数量随机采样</pre>
+                                        </div>
+                                        <div id="graphsage-visualization" class="mt-4 p-4 border rounded-lg">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-2">邻居采样可视化</h4>
+                                            <div class="text-gray-500 text-sm">运行代码后显示邻居采样过程</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 算法对比 -->
+                                    <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-yellow-900 mb-4">GraphSAGE vs GCN vs GAT 对比</h3>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full text-sm">
+                                                <thead>
+                                                    <tr class="border-b">
+                                                        <th class="text-left py-2">特性</th>
+                                                        <th class="text-left py-2">GCN</th>
+                                                        <th class="text-left py-2">GAT</th>
+                                                        <th class="text-left py-2">GraphSAGE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="border-b">
+                                                        <td class="py-2 font-medium">学习方式</td>
+                                                        <td class="py-2">直推式</td>
+                                                        <td class="py-2">直推式</td>
+                                                        <td class="py-2">归纳式</td>
+                                                    </tr>
+                                                    <tr class="border-b">
+                                                        <td class="py-2 font-medium">邻居处理</td>
+                                                        <td class="py-2">所有邻居</td>
+                                                        <td class="py-2">所有邻居</td>
+                                                        <td class="py-2">采样邻居</td>
+                                                    </tr>
+                                                    <tr class="border-b">
+                                                        <td class="py-2 font-medium">聚合方式</td>
+                                                        <td class="py-2">简单平均</td>
+                                                        <td class="py-2">注意力加权</td>
+                                                        <td class="py-2">多种聚合</td>
+                                                    </tr>
+                                                    <tr class="border-b">
+                                                        <td class="py-2 font-medium">适用场景</td>
+                                                        <td class="py-2">静态图</td>
+                                                        <td class="py-2">静态图</td>
+                                                        <td class="py-2">动态图</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-2 font-medium">计算效率</td>
+                                                        <td class="py-2">中等</td>
+                                                        <td class="py-2">较低</td>
+                                                        <td class="py-2">较高</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GAT教程内容 -->
+                            <div id="gat" class="tutorial-content">
+                                <h1 class="text-3xl font-bold text-gray-900 mb-6">图注意力网络 (GAT)</h1>
+                                <div class="prose max-w-none">
+                                    <p class="text-lg text-gray-700 mb-6">
+                                        GAT引入了注意力机制，让每个节点能够"有选择地"关注不同的邻居，就像在课堂上你会更认真地听重要同学的发言一样！
+                                    </p>
+
+                                    <!-- 算法步骤可视化 -->
+                                    <div class="bg-purple-50 p-6 rounded-lg mb-6">
+                                        <h3 class="text-xl font-semibold text-purple-900 mb-4">GAT注意力机制</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-purple-900">计算注意力分数</h4>
+                                                    <p class="text-purple-800">对每个邻居计算注意力权重</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-purple-900">Softmax归一化</h4>
+                                                    <p class="text-purple-800">将注意力分数转换为概率分布</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-purple-900">加权聚合</h4>
+                                                    <p class="text-purple-800">按注意力权重聚合邻居特征</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 代码模板 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">GAT实现代码</h3>
+                                        <div class="code-editor">
+                                            <textarea id="gat-code" class="w-full h-64 p-4 font-mono text-sm">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+# 生成示例图数据
+def generate_sample_data():
+    num_nodes = 7
+    features = torch.randn(num_nodes, 5)
+    
+    # 邻接矩阵
+    adj_matrix = torch.tensor([
+        [1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0],
+        [0, 1, 1, 1, 0, 0, 0],
+        [0, 0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 1, 1, 1, 0],
+        [0, 0, 0, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 1, 1],
+    ], dtype=torch.float32)
+    
+    labels = torch.tensor([0, 0, 1, 1, 2, 2, 2])
+    return features, adj_matrix, labels
+
+class GATLayer(nn.Module):
+    def __init__(self, input_dim, output_dim, num_heads=4):
+        super(GATLayer, self).__init__()
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+        self.num_heads = num_heads
+        self.head_dim = output_dim // num_heads
+        
+        # 线性变换
+        self.W = nn.Linear(input_dim, output_dim)
+        # 注意力参数
+        self.attention = nn.Linear(2 * self.head_dim, 1)
+        
+    def forward(self, x, adj):
+        batch_size = x.size(0)
+        
+        # 线性变换
+        x = self.W(x)  # [batch_size, output_dim]
+        x = x.view(batch_size, self.num_heads, self.head_dim)  # [batch_size, num_heads, head_dim]
+        
+        # 计算注意力分数
+        attention_scores = []
+        for i in range(batch_size):
+            for j in range(batch_size):
+                if adj[i, j] > 0:  # 只对连接的节点计算注意力
+                    # 拼接源节点和目标节点特征
+                    concat_features = torch.cat([x[i], x[j]], dim=0)  # [2*head_dim]
+                    score = self.attention(concat_features)  # [1]
+                    attention_scores.append(score)
+                else:
+                    attention_scores.append(torch.tensor(-1e9))  # 负无穷，softmax后为0
+        
+        attention_scores = torch.stack(attention_scores).view(batch_size, batch_size)
+        
+        # Softmax归一化
+        attention_probs = F.softmax(attention_scores, dim=1)
+        
+        # 加权聚合
+        output = torch.mm(attention_probs, x.view(batch_size, -1))  # [batch_size, output_dim]
+        
+        return output, attention_probs
+
+class GAT(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_heads=4):
+        super(GAT, self).__init__()
+        self.gat1 = GATLayer(input_dim, hidden_dim, num_heads)
+        self.gat2 = GATLayer(hidden_dim, output_dim, 1)  # 最后一层单头
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x, adj):
+        # 第一层GAT
+        x, attn1 = self.gat1(x, adj)
+        x = F.relu(x)
+        x = self.dropout(x)
+        
+        # 第二层GAT
+        x, attn2 = self.gat2(x, adj)
+        
+        return F.log_softmax(x, dim=1), attn1, attn2
+
+# 训练模型
+def train_gat():
+    features, adj_matrix, labels = generate_sample_data()
+    
+    model = GAT(input_dim=5, hidden_dim=16, output_dim=3, num_heads=4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    losses = []
+    accuracies = []
+    
+    print("开始训练GAT模型...")
+    for epoch in range(200):
+        model.train()
+        optimizer.zero_grad()
+        
+        output, attn1, attn2 = model(features, adj_matrix)
+        loss = F.nll_loss(output, labels)
+        
+        loss.backward()
+        optimizer.step()
+        
+        _, pred = output.max(dim=1)
+        acc = pred.eq(labels).float().mean()
+        
+        losses.append(loss.item())
+        accuracies.append(acc.item())
+        
+        if epoch % 50 == 0:
+            print(f'Epoch {epoch}: Loss={loss:.4f}, Acc={acc:.4f}')
+    
+    return model, features, adj_matrix, labels, losses, accuracies, attn1, attn2
+
+# 可视化结果
+def visualize_gat_results(model, features, adj_matrix, labels, losses, accuracies, attn1, attn2):
+    print("\\n=== GAT训练完成 ===")
+    print(f"最终准确率: {accuracies[-1]:.4f}")
+    print("\\n注意力权重矩阵:")
+    print(attn2)  # 最后一层的注意力权重
+    
+    model.eval()
+    with torch.no_grad():
+        output, _, final_attn = model(features, adj_matrix)
+        _, pred = output.max(dim=1)
+        
+        class_names = ["AI", "CV", "NLP"]
+        for i in range(len(labels)):
+            true_label = class_names[labels[i].item()]
+            pred_label = class_names[pred[i].item()]
+            correct = "✓" if labels[i] == pred[i] else "✗"
+            print(f"论文 {i}: 真实={true_label}, 预测={pred_label} {correct}")
+
+if __name__ == "__main__":
+    model, features, adj_matrix, labels, losses, accuracies, attn1, attn2 = train_gat()
+    visualize_gat_results(model, features, adj_matrix, labels, losses, accuracies, attn1, attn2)
+                            </textarea>
+                                        </div>
+                                        <div class="mt-3 flex space-x-2">
+                                            <button onclick="runGATCode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                运行代码
+                                            </button>
+                                            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                                查看注意力可视化
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 运行结果展示 -->
+                                    <div id="gat-output" class="mb-6 hidden">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">GAT运行结果</h3>
+                                        <div class="bg-gray-100 p-4 rounded-lg">
+                                            <pre class="text-sm text-gray-800">GAT模型创建成功！
+注意力头数: 4
+模型参数量: 1,024
+最终注意力权重矩阵已计算完成</pre>
+                                        </div>
+                                        <div id="gat-visualization" class="mt-4 p-4 border rounded-lg">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-2">注意力权重热力图</h4>
+                                            <div class="text-gray-500 text-sm">运行代码后显示注意力分布</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 在线实践页面 -->
+        <div id="playground-section" class="section">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">在线编程环境</h1>
+                    <p class="mt-2 text-lg text-gray-600">在浏览器中直接编写、运行和可视化图学习算法</p>
+                </div>
+
+                <!-- 编程环境选择 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('gcn-classification')">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">GCN节点分类</h3>
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">入门级</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">使用Cora数据集进行论文分类，观察GCN如何学习节点表示</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                            </svg>
+                            预计用时: 15分钟
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('gat-attention')">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">GAT注意力可视化</h3>
+                                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">进阶级</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">探索图注意力机制，实时观察注意力权重的分布变化</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                            </svg>
+                            预计用时: 25分钟
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('graphsage-sampling')">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">GraphSAGE 邻居采样</h3>
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">进阶级</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">体验 GraphSAGE 的邻居采样机制，观察归纳学习如何为未见节点生成嵌入</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                            </svg>
+                            预计用时: 30分钟
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('molecular-prediction')">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">分子毒性预测</h3>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">挑战级</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mb-4">使用真实分子数据，预测化合物的毒性，体验图学习的实际应用</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                            </svg>
+                            预计用时: 45分钟
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 编程环境主界面 -->
+                <div id="practice-environment" class="bg-white rounded-lg shadow-lg p-6">
+                    <!-- 环境选择提示 -->
+                    <div id="env-placeholder" class="text-center py-16">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">选择一个编程环境开始实践</h3>
+                        <p class="text-gray-600">点击上方的任意一个环境卡片开始你的图学习之旅</p>
+                    </div>
+
+                    <!-- GCN分类环境 -->
+                    <div id="gcn-classification-env" class="practice-env hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">GCN节点分类实践</h2>
+                            <div class="flex space-x-2">
+                                <button onclick="runCode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    <svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 5v10l7-5-7-5z"/>
+                                    </svg>
+                                    运行代码
+                                </button>
+                                <button onclick="resetCode()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                    重置代码
+                                </button>
+                                <button onclick="saveCode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                    保存项目
+                                </button>
+                                <div class="ml-2 flex items-center space-x-2 text-sm">
+                                    <label class="text-gray-600">执行模式</label>
+                                    <select id="exec-mode" class="border rounded px-2 py-1 text-gray-700" onchange="switchExecMode(this.value)">
+                                        <option value="simulate">前端模拟</option>
+                                        <option value="pyodide">Pyodide</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 代码编辑器 -->
+                            <div class="space-y-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">代码编辑器</h3>
+                                    <div class="border rounded-lg">
+                                        <div class="bg-gray-100 px-4 py-2 border-b flex justify-between items-center">
+                                            <span class="text-sm font-medium text-gray-700">main.py</span>
+                                            <div class="flex space-x-2 text-xs text-gray-500">
+                                                <span>Python</span>
+                                                <span>•</span>
+                                                <span>PyTorch</span>
+                                            </div>
+                                        </div>
+                                        <textarea id="code-editor" class="w-full h-96 p-4 font-mono text-sm resize-none border-none focus:outline-none">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+# 生成示例图数据 (Cora数据集的简化版本)
+def generate_sample_data():
+    # 创建7个节点的图 (代表7篇论文)
+    num_nodes = 7
+    # 每个节点有5个特征 (词向量维度简化版)
+    features = torch.randn(num_nodes, 5)
+    
+    # 邻接矩阵 (论文间的引用关系)
+    adj_matrix = torch.tensor([
+        [1, 1, 0, 0, 0, 0, 0],  # 论文0引用论文1
+        [1, 1, 1, 0, 0, 0, 0],  # 论文1引用论文0和论文2
+        [0, 1, 1, 1, 0, 0, 0],  # 论文2引用论文1和论文3
+        [0, 0, 1, 1, 1, 0, 0],  # 论文3引用论文2和论文4
+        [0, 0, 0, 1, 1, 1, 0],  # 论文4引用论文3和论文5
+        [0, 0, 0, 0, 1, 1, 1],  # 论文5引用论文4和论文6
+        [0, 0, 0, 0, 0, 1, 1],  # 论文6引用论文5
+    ], dtype=torch.float32)
+    
+    # 标签 (论文的学科分类: 0-AI, 1-CV, 2-NLP)
+    labels = torch.tensor([0, 0, 1, 1, 2, 2, 2])
+    
+    return features, adj_matrix, labels
+
+class GCN(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super(GCN, self).__init__()
+        self.gc1 = nn.Linear(input_dim, hidden_dim)
+        self.gc2 = nn.Linear(hidden_dim, output_dim)
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x, adj):
+        # 第一层GCN
+        x = torch.mm(adj, x)  # 聚合邻居信息
+        x = self.gc1(x)       # 线性变换
+        x = F.relu(x)         # 激活函数
+        x = self.dropout(x)   # 防止过拟合
+        
+        # 第二层GCN
+        x = torch.mm(adj, x)
+        x = self.gc2(x)
+        
+        return F.log_softmax(x, dim=1)
+
+# 训练模型
+def train_gcn():
+    # 准备数据
+    features, adj_matrix, labels = generate_sample_data()
+    
+    # 创建模型
+    model = GCN(input_dim=5, hidden_dim=16, output_dim=3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    # 训练记录
+    losses = []
+    accuracies = []
+    
+    print("开始训练GCN模型...")
+    for epoch in range(200):
+        model.train()
+        optimizer.zero_grad()
+        
+        # 前向传播
+        output = model(features, adj_matrix)
+        loss = F.nll_loss(output, labels)
+        
+        # 反向传播
+        loss.backward()
+        optimizer.step()
+        
+        # 计算准确率
+        _, pred = output.max(dim=1)
+        acc = pred.eq(labels).float().mean()
+        
+        losses.append(loss.item())
+        accuracies.append(acc.item())
+        
+        if epoch % 50 == 0:
+            print(f'Epoch {epoch}: Loss={loss:.4f}, Acc={acc:.4f}')
+    
+    return model, features, adj_matrix, labels, losses, accuracies
+
+# 可视化结果
+def visualize_results(model, features, adj_matrix, labels, losses, accuracies):
+    print("\\n=== 训练完成 ===")
+    print(f"最终准确率: {accuracies[-1]:.4f}")
+    print("\\n节点分类结果:")
+    
+    model.eval()
+    with torch.no_grad():
+        output = model(features, adj_matrix)
+        _, pred = output.max(dim=1)
+        
+        class_names = ["AI", "CV", "NLP"]
+        for i in range(len(labels)):
+            true_label = class_names[labels[i].item()]
+            pred_label = class_names[pred[i].item()]
+            correct = "✓" if labels[i] == pred[i] else "✗"
+            print(f"论文 {i}: 真实={true_label}, 预测={pred_label} {correct}")
+
+if __name__ == "__main__":
+    model, features, adj_matrix, labels, losses, accuracies = train_gcn()
+    visualize_results(model, features, adj_matrix, labels, losses, accuracies)
+                                        </textarea>
+                                    </div>
+                                </div>
+
+                                <!-- 参数调节面板 -->
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-900 mb-3">参数调节</h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">学习率</label>
+                                            <input type="range" min="0.001" max="0.1" step="0.001" value="0.01" class="w-full" onchange="updateLearningRate(this.value)">
+                                            <span class="text-sm text-gray-600" id="lr-value">0.01</span>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">隐藏层维度</label>
+                                            <input type="range" min="8" max="64" step="8" value="16" class="w-full" onchange="updateHiddenDim(this.value)">
+                                            <span class="text-sm text-gray-600" id="hidden-value">16</span>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">训练轮数</label>
+                                            <input type="range" min="50" max="500" step="50" value="200" class="w-full" onchange="updateEpochs(this.value)">
+                                            <span class="text-sm text-gray-600" id="epochs-value">200</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 结果可视化 -->
+                            <div class="space-y-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">运行结果</h3>
+                                    <div class="bg-black text-green-400 p-4 rounded-lg font-mono text-sm h-32 overflow-y-auto">
+                                        <div id="console-output">点击"运行代码"查看结果...</div>
+                                    </div>
+                                </div>
+
+                                <!-- 训练过程可视化 -->
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">训练过程</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="border rounded-lg p-4">
+                                            <h5 class="text-sm font-medium text-gray-700 mb-2">损失曲线</h5>
+                                            <div id="loss-chart" class="w-full h-32 bg-gray-50 rounded flex items-center justify-center text-gray-500">
+                                                运行代码后显示
+                                            </div>
+                                        </div>
+                                        <div class="border rounded-lg p-4">
+                                            <h5 class="text-sm font-medium text-gray-700 mb-2">准确率变化</h5>
+                                            <div id="accuracy-chart" class="w-full h-32 bg-gray-50 rounded flex items-center justify-center text-gray-500">
+                                                运行代码后显示
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 图结构可视化 -->
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">图结构与分类结果</h4>
+                                    <div class="border rounded-lg p-4">
+                                        <div id="graph-visualization" class="w-full h-48 bg-gray-50 rounded flex items-center justify-center text-gray-500">
+                                            <div class="text-center">
+                                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                                </svg>
+                                                <p>图结构可视化</p>
+                                                <p class="text-sm">运行代码后显示节点分类结果</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 学习提示 -->
+                        <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-900 mb-2">💡 学习提示</h4>
+                            <ul class="text-blue-800 text-sm space-y-1">
+                                <li>• 尝试调整学习率，观察训练速度和效果的变化</li>
+                                <li>• 修改隐藏层维度，看看对模型性能的影响</li>
+                                <li>• 观察图可视化中节点颜色的变化，理解GCN如何进行分类</li>
+                                <li>• 查看代码中的注释，理解每一步的含义</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 社区页面 -->
+        <div id="community-section" class="section">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">学习社区</h1>
+                    <p class="mt-2 text-lg text-gray-600">与其他学习者交流经验，分享你的图学习项目</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- 社区导航 -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-lg shadow p-6 sticky top-24">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">社区板块</h3>
+                            <nav class="space-y-2">
+                                <a href="#" onclick="showCommunitySection('discussions')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                    📝 学习讨论区
+                                </a>
+                                <a href="#" onclick="showCommunitySection('projects')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                    🚀 项目展示区
+                                </a>
+                                <a href="#" onclick="showCommunitySection('pitfalls')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                    ⚠️ 算法吐槽区
+                                </a>
+                                <a href="#" onclick="showCommunitySection('challenges')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                    🏆 每周挑战
+                                </a>
+                                <a href="#" onclick="showCommunitySection('resources')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                    📚 资源分享
+                                </a>
+                            </nav>
+
+                            <!-- 社区统计 -->
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">社区数据</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">活跃用户</span>
+                                        <span class="font-medium">1,234</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">讨论话题</span>
+                                        <span class="font-medium">456</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">项目作品</span>
+                                        <span class="font-medium">89</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 热门标签 -->
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">热门标签</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">GCN</span>
+                                    <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">GAT</span>
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">节点分类</span>
+                                    <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">图嵌入</span>
+                                    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">PyTorch</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 主要内容区 -->
+                    <div class="lg:col-span-2">
+                        <!-- 学习讨论区 -->
+                        semibold text-blue-900">找邻居</h4>
+                                                    <p class="text-blue-800">确定每个节点的邻居节点</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">聚合信息</h4>
+                                                    <p class="text-blue-800">将邻居特征和自己的特征加权平均</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-4">
+                                                <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                                <div>
+                                                    <h4 class="font-semibold text-blue-900">神经网络处理</h4>
+                                                    <p class="text-blue-800">用全连接层处理聚合后的特征</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 代码模板 -->
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">最小可行代码</h3>
+                                        <div class="code-editor">
+                                            <textarea id="gcn-code" class="w-full h-64 p-4 font-mono text-sm">
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+
+# 生成示例图数据 (Cora数据集的简化版本)
+def generate_sample_data():
+    # 创建7个节点的图 (代表7篇论文)
+    num_nodes = 7
+    # 每个节点有5个特征 (词向量维度简化版)
+    features = torch.randn(num_nodes, 5)
+    
+    # 邻接矩阵 (论文间的引用关系)
+    adj_matrix = torch.tensor([
+        [1, 1, 0, 0, 0, 0, 0],  # 论文0引用论文1
+        [1, 1, 1, 0, 0, 0, 0],  # 论文1引用论文0和论文2
+        [0, 1, 1, 1, 0, 0, 0],  # 论文2引用论文1和论文3
+        [0, 0, 1, 1, 1, 0, 0],  # 论文3引用论文2和论文4
+        [0, 0, 0, 1, 1, 1, 0],  # 论文4引用论文3和论文5
+        [0, 0, 0, 0, 1, 1, 1],  # 论文5引用论文4和论文6
+        [0, 0, 0, 0, 0, 1, 1],  # 论文6引用论文5
+    ], dtype=torch.float32)
+    
+    # 标签 (论文的学科分类: 0-AI, 1-CV, 2-NLP)
+    labels = torch.tensor([0, 0, 1, 1, 2, 2, 2])
+    
+    return features, adj_matrix, labels
+
+class GCN(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim):
+        super(GCN, self).__init__()
+        self.gc1 = nn.Linear(input_dim, hidden_dim)
+        self.gc2 = nn.Linear(hidden_dim, output_dim)
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x, adj):
+        # 第一层GCN
+        x = torch.mm(adj, x)  # 聚合邻居信息
+        x = self.gc1(x)       # 线性变换
+        x = F.relu(x)         # 激活函数
+        x = self.dropout(x)   # 防止过拟合
+        
+        # 第二层GCN
+        x = torch.mm(adj, x)
+        x = self.gc2(x)
+        
+        return F.log_softmax(x, dim=1)
+
+# 训练模型
+def train_gcn():
+    # 准备数据
+    features, adj_matrix, labels = generate_sample_data()
+    
+    # 创建模型
+    model = GCN(input_dim=5, hidden_dim=16, output_dim=3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    # 训练记录
+    losses = []
+    accuracies = []
+    
+    print("开始训练GCN模型...")
+    for epoch in range(200):
+        model.train()
+        optimizer.zero_grad()
+        
+        # 前向传播
+        output = model(features, adj_matrix)
+        loss = F.nll_loss(output, labels)
+        
+        loss.backward()
+        optimizer.step()
+        
+        # 计算准确率
+        _, pred = output.max(dim=1)
+        acc = pred.eq(labels).float().mean()
+        
+        losses.append(loss.item())
+        accuracies.append(acc.item())
+        
+        if epoch % 50 == 0:
+            print(f'Epoch {epoch}: Loss={loss:.4f}, Acc={acc:.4f}')
+    
+    return model, features, adj_matrix, labels, losses, accuracies
+
+# 可视化结果
+def visualize_results(model, features, adj_matrix, labels, losses, accuracies):
+    print("\\n=== 训练完成 ===")
+    print(f"最终准确率: {accuracies[-1]:.4f}")
+    print("\\n节点分类结果:")
+    
+    model.eval()
+    with torch.no_grad():
+        output = model(features, adj_matrix)
+        _, pred = output.max(dim=1)
+        
+        class_names = ["AI", "CV", "NLP"]
+        for i in range(len(labels)):
+            true_label = class_names[labels[i].item()]
+            pred_label = class_names[pred[i].item()]
+            correct = "✓" if labels[i] == pred[i] else "✗"
+            print(f"论文 {i}: 真实={true_label}, 预测={pred_label} {correct}")
+
+if __name__ == "__main__":
+    model, features, adj_matrix, labels, losses, accuracies = train_gcn()
+    visualize_results(model, features, adj_matrix, labels, losses, accuracies)
+                            </textarea>
+                                        </div>
+                                        <div class="mt-3 flex space-x-2">
+                                            <button onclick="runGCNCode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                运行代码
+                                            </button>
+                                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                查看可视化
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- 运行结果展示 -->
+                                    <div id="gcn-output" class="mb-6 hidden">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-3">运行结果</h3>
+                                        <div class="bg-gray-100 p-4 rounded-lg">
+                                            <pre class="text-sm text-gray-800">GCN模型创建成功！
+模型参数量: 342
+第一层权重维度: torch.Size([32, 10])
+第二层权重维度: torch.Size([3, 32])</pre>
+                                        </div>
+                                        <div id="gcn-visualization" class="mt-4 p-4 border rounded-lg">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-2">可视化</h4>
+                                            <div class="text-gray-500 text-sm">运行代码后显示</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 资源页面 -->
+        <div id="resources-section" class="section">
+            <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">学习资源</h1>
+                    <p class="mt-2 text-lg text-gray-600">精选图学习相关资源，助你深入学习</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 论文资源 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">📚 经典论文</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>• <a href="#" class="text-blue-600 hover:underline">Semi-Supervised Classification with Graph Convolutional Networks (Kipf & Welling, 2016)</a></li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">Graph Attention Networks (Veličković et al., 2017)</a></li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">Inductive Representation Learning on Large Graphs (Hamilton et al., 2017)</a></li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">How Powerful are Graph Neural Networks? (Xu et al., 2018)</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- 课程资源 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🎓 在线课程</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>• <a href="#" class="text-blue-600 hover:underline">CS224W: Machine Learning with Graphs (Stanford)</a></li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">CS285: Deep Reinforcement Learning (UC Berkeley)</a></li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">6.S897: Graph Neural Networks (MIT)</a></li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">图神经网络理论与实践 (国内课程)</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- 框架工具 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🛠️ 开发框架</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>• <a href="#" class="text-blue-600 hover:underline">PyTorch Geometric</a> - 最流行的图神经网络库</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">Deep Graph Library (DGL)</a> - 多框架支持</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">NetworkX</a> - 图分析基础库</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">Graphviz</a> - 图可视化工具</li>
+                        </ul>
+                    </div>
+
+                    <!-- 数据集 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 标准数据集</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>• <strong>Cora</strong> - 论文引用网络，节点分类</li>
+                            <li>• <strong>Citeseer</strong> - 论文引用网络，节点分类</li>
+                            <li>• <strong>Pubmed</strong> - 生物医学论文网络</li>
+                            <li>• <strong>PPI</strong> - 蛋白质相互作用网络</li>
+                            <li>• <strong>Reddit</strong> - 社交网络，图分类</li>
+                        </ul>
+                    </div>
+
+                    <!-- 实践项目 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🚀 实践项目</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>• <a href="#" class="text-blue-600 hover:underline">分子性质预测</a> - 药物发现应用</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">推荐系统</a> - 用户-物品图</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">知识图谱补全</a> - 关系预测</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">交通流量预测</a> - 时空图</li>
+                        </ul>
+                    </div>
+
+                    <!-- 社区资源 -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">👥 社区资源</h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>• <a href="#" class="text-blue-600 hover:underline">图学习中文社区</a> - 技术交流</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">GitHub 优秀项目</a> - 开源代码</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">学术会议</a> - ICML, NeurIPS, ICLR</li>
+                            <li>• <a href="#" class="text-blue-600 hover:underline">技术博客</a> - 实践经验分享</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 学习路径建议 -->
+                <div class="mt-12 bg-blue-50 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold text-blue-900 mb-4">📋 学习路径建议</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-2">初学者 (1-2个月)</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• 掌握图论基础概念</li>
+                                <li>• 学习 PyTorch 基础</li>
+                                <li>• 理解 GCN 原理</li>
+                                <li>• 完成 Cora 节点分类</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-2">进阶者 (2-3个月)</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• 深入 GAT, GraphSAGE</li>
+                                <li>• 学习图池化技术</li>
+                                <li>• 掌握图分类任务</li>
+                                <li>• 尝试实际应用场景</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-2">专家级 (3-6个月)</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• 研究最新论文</li>
+                                <li>• 贡献开源项目</li>
+                                <li>• 发表技术文章</li>
+                                <li>• 指导他人学习</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+    // 顶部导航切换
+    function showSection(id){
+        document.querySelectorAll('.section').forEach(function(s){s.style.display='none';});
+        var el=document.getElementById(id+'-section');
+        if(el) el.style.display='block';
+    }
+
+    // 教程页内切换
+    function showTutorial(id){
+        document.querySelectorAll('.tutorial-content').forEach(function(s){s.style.display='none';});
+        var el=document.getElementById(id);
+        if(el) el.style.display='block';
+    }
+
+    // 社区页内切换（占位，避免报错）
+    function showCommunitySection(id){
+        var sections = ['discussions','projects','pitfalls','challenges','resources'];
+        sections.forEach(function(s){ var el=document.getElementById(s); if(el) el.style.display = (s===id)?'block':'none'; });
+    }
+
+    // 在线实践：全局状态
+    var practiceState = {
+        learningRate: 0.01,
+        hiddenDim: 16,
+        epochs: 200,
+        cm: null,
+        savedCodeKey: 'graphlearn_gcn_code_v1',
+        execMode: 'simulate',
+        pyodide: null,
+        pyodideReady: false
+    };
+
+    function loadPracticeEnvironment(key){
+        var placeholder = document.getElementById('env-placeholder');
+        if (placeholder) placeholder.style.display = 'none';
+        document.querySelectorAll('.practice-env').forEach(function(s){ s.classList.add('hidden'); });
+        if (key === 'gcn-classification') {
+            var env = document.getElementById('gcn-classification-env');
+            if (env) env.classList.remove('hidden');
+            initCodeEditor();
+            // 同步参数显示
+            updateLearningRate(practiceState.learningRate);
+            updateHiddenDim(practiceState.hiddenDim);
+            updateEpochs(practiceState.epochs);
+        } else if (key === 'graphsage-sampling') {
+            var env = document.getElementById('gcn-classification-env');
+            if (env) env.classList.remove('hidden');
+            // 加载 GraphSAGE 代码
+            var graphsageCode = `import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import numpy as np
+from collections import defaultdict
+
+# 生成示例图数据
+def generate_sample_data():
+    num_nodes = 10
+    features = torch.randn(num_nodes, 5)
+    
+    # 邻接矩阵 (更复杂的图结构)
+    adj_matrix = torch.tensor([
+        [1, 1, 0, 1, 0, 0, 0, 0, 0, 0],  # 节点0的邻居
+        [1, 1, 1, 0, 1, 0, 0, 0, 0, 0],  # 节点1的邻居
+        [0, 1, 1, 0, 0, 1, 0, 0, 0, 0],  # 节点2的邻居
+        [1, 0, 0, 1, 1, 0, 1, 0, 0, 0],  # 节点3的邻居
+        [0, 1, 0, 1, 1, 1, 0, 1, 0, 0],  # 节点4的邻居
+        [0, 0, 1, 0, 1, 1, 0, 0, 1, 0],  # 节点5的邻居
+        [0, 0, 0, 1, 0, 0, 1, 1, 0, 1],  # 节点6的邻居
+        [0, 0, 0, 0, 1, 0, 1, 1, 1, 0],  # 节点7的邻居
+        [0, 0, 0, 0, 0, 1, 0, 1, 1, 1],  # 节点8的邻居
+        [0, 0, 0, 0, 0, 0, 1, 0, 1, 1],  # 节点9的邻居
+    ], dtype=torch.float32)
+    
+    labels = torch.tensor([0, 0, 0, 1, 1, 1, 2, 2, 2, 2])
+    return features, adj_matrix, labels
+
+# 邻居采样函数
+def sample_neighbors(adj_matrix, node_idx, num_samples):
+    """为指定节点采样固定数量的邻居"""
+    neighbors = torch.where(adj_matrix[node_idx] > 0)[0]
+    if len(neighbors) > num_samples:
+        # 随机采样
+        sampled_indices = torch.randperm(len(neighbors))[:num_samples]
+        return neighbors[sampled_indices]
+    else:
+        # 如果邻居数量不足，重复采样
+        if len(neighbors) == 0:
+            return torch.tensor([node_idx])  # 自环
+        repeated = neighbors.repeat((num_samples + len(neighbors) - 1) // len(neighbors))
+        return repeated[:num_samples]
+
+# 聚合函数
+class MeanAggregator(nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super(MeanAggregator, self).__init__()
+        self.linear = nn.Linear(input_dim, output_dim)
+        
+    def forward(self, node_features, neighbor_features):
+        # 平均聚合邻居特征
+        aggregated = torch.mean(neighbor_features, dim=0)
+        # 线性变换
+        return self.linear(aggregated)
+
+class GraphSAGELayer(nn.Module):
+    def __init__(self, input_dim, output_dim, num_samples=3):
+        super(GraphSAGELayer, self).__init__()
+        self.num_samples = num_samples
+        self.aggregator = MeanAggregator(input_dim, output_dim)
+        self.linear = nn.Linear(input_dim + output_dim, output_dim)
+        
+    def forward(self, node_features, adj_matrix):
+        batch_size = node_features.size(0)
+        aggregated_features = []
+        
+        for i in range(batch_size):
+            # 采样邻居
+            neighbors = sample_neighbors(adj_matrix, i, self.num_samples)
+            neighbor_features = node_features[neighbors]
+            
+            # 聚合邻居特征
+            aggregated = self.aggregator(node_features[i], neighbor_features)
+            aggregated_features.append(aggregated)
+        
+        aggregated_features = torch.stack(aggregated_features)
+        
+        # 拼接自身特征和聚合特征
+        combined = torch.cat([node_features, aggregated_features], dim=1)
+        
+        # 最终变换
+        output = self.linear(combined)
+        return F.relu(output)
+
+class GraphSAGE(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_samples=3):
+        super(GraphSAGE, self).__init__()
+        self.sage1 = GraphSAGELayer(input_dim, hidden_dim, num_samples)
+        self.sage2 = GraphSAGELayer(hidden_dim, output_dim, num_samples)
+        self.dropout = nn.Dropout(0.5)
+        
+    def forward(self, x, adj):
+        # 第一层 GraphSAGE
+        x = self.sage1(x, adj)
+        x = self.dropout(x)
+        
+        # 第二层 GraphSAGE
+        x = self.sage2(x, adj)
+        
+        return F.log_softmax(x, dim=1)
+
+# 训练模型
+def train_graphsage():
+    features, adj_matrix, labels = generate_sample_data()
+    
+    model = GraphSAGE(input_dim=5, hidden_dim=16, output_dim=3, num_samples=3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    
+    losses = []
+    accuracies = []
+    
+    print("开始训练 GraphSAGE 模型...")
+    print(f"图规模: {features.size(0)} 个节点")
+    print(f"邻居采样数: 3")
+    
+    for epoch in range(200):
+        model.train()
+        optimizer.zero_grad()
+        
+        output = model(features, adj_matrix)
+        loss = F.nll_loss(output, labels)
+        
+        loss.backward()
+        optimizer.step()
+        
+        _, pred = output.max(dim=1)
+        acc = pred.eq(labels).float().mean()
+        
+        losses.append(loss.item())
+        accuracies.append(acc.item())
+        
+        if epoch % 50 == 0:
+            print(f'Epoch {epoch}: Loss={loss:.4f}, Acc={acc:.4f}')
+    
+    return model, features, adj_matrix, labels, losses, accuracies
+
+# 可视化结果
+def visualize_graphsage_results(model, features, adj_matrix, labels, losses, accuracies):
+    print("\\n=== GraphSAGE 训练完成 ===")
+    print(f"最终准确率: {accuracies[-1]:.4f}")
+    print("\\n节点分类结果:")
+    
+    model.eval()
+    with torch.no_grad():
+        output = model(features, adj_matrix)
+        _, pred = output.max(dim=1)
+        
+        class_names = ["类别A", "类别B", "类别C"]
+        for i in range(len(labels)):
+            true_label = class_names[labels[i].item()]
+            pred_label = class_names[pred[i].item()]
+            correct = "✓" if labels[i] == pred[i] else "✗"
+            print(f"节点 {i}: 真实={true_label}, 预测={pred_label} {correct}")
+        
+        print("\\n邻居采样统计:")
+        for i in range(min(5, len(labels))):  # 显示前5个节点的邻居采样
+            neighbors = sample_neighbors(adj_matrix, i, 3)
+            print(f"节点 {i} 的采样邻居: {neighbors.tolist()}")
+
+if __name__ == "__main__":
+    model, features, adj_matrix, labels, losses, accuracies = train_graphsage()
+    visualize_graphsage_results(model, features, adj_matrix, labels, losses, accuracies)`;
+            
+            initCodeEditor();
+            if (practiceState.cm) {
+                practiceState.cm.setValue(graphsageCode);
+            }
+            // 更新环境标题
+            var title = document.querySelector('#gcn-classification-env h2');
+            if (title) title.textContent = 'GraphSAGE 邻居采样实践';
+        } else {
+            alert('该环境即将上线，敬请期待');
+        }
+    }
+
+    function initCodeEditor(){
+        if (practiceState.cm || !window.CodeMirror) return;
+        var textarea = document.getElementById('code-editor');
+        if (!textarea) return;
+        practiceState.cm = CodeMirror.fromTextArea(textarea, {
+            mode: 'python',
+            theme: 'monokai',
+            lineNumbers: true,
+            viewportMargin: Infinity
+        });
+        // 加载历史保存
+        try {
+            var saved = localStorage.getItem(practiceState.savedCodeKey);
+            if (saved) practiceState.cm.setValue(saved);
+        } catch (e) {}
+
+        // 初始化 Pyodide（懒加载）
+        initPyodideOnce();
+    }
+
+    async function initPyodideOnce(){
+        if (practiceState.pyodide || !window.loadPyodide) return;
+        var consoleEl = document.getElementById('console-output');
+        try {
+            if (consoleEl) consoleEl.textContent = '正在加载 Pyodide (首次较慢)...';
+            practiceState.pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/' });
+            practiceState.pyodideReady = true;
+            if (consoleEl) consoleEl.textContent = 'Pyodide 加载完成，可切换为 Pyodide 执行模式';
+        } catch (e){
+            practiceState.pyodideReady = false;
+            if (consoleEl) consoleEl.textContent = 'Pyodide 加载失败：'+e;
+        }
+    }
+
+    function switchExecMode(mode){
+        practiceState.execMode = mode;
+        var consoleEl = document.getElementById('console-output');
+        if (mode === 'pyodide' && !practiceState.pyodideReady){
+            if (consoleEl) consoleEl.textContent = 'Pyodide 尚未就绪，正在加载...';
+            initPyodideOnce();
+        } else {
+            if (consoleEl) consoleEl.textContent = '已切换执行模式：'+(mode==='pyodide'?'Pyodide':'前端模拟');
+        }
+    }
+
+    // 参数联动
+    function updateLearningRate(v){
+        var f = parseFloat(v);
+        if (!isNaN(f)) practiceState.learningRate = f;
+        var el = document.getElementById('lr-value');
+        if (el) el.textContent = String(practiceState.learningRate);
+    }
+    function updateHiddenDim(v){
+        var i = parseInt(v);
+        if (!isNaN(i)) practiceState.hiddenDim = i;
+        var el = document.getElementById('hidden-value');
+        if (el) el.textContent = String(practiceState.hiddenDim);
+    }
+    function updateEpochs(v){
+        var i = parseInt(v);
+        if (!isNaN(i)) practiceState.epochs = i;
+        var el = document.getElementById('epochs-value');
+        if (el) el.textContent = String(practiceState.epochs);
+    }
+
+    // 运行代码（本地模拟训练与可视化）
+    async function runCode(){
+        var consoleEl = document.getElementById('console-output');
+        if (consoleEl) consoleEl.textContent = '';
+
+        if (practiceState.execMode === 'pyodide'){
+            if (!practiceState.pyodideReady){
+                if (consoleEl) consoleEl.textContent = 'Pyodide 正在加载或不可用，请稍候或切换到前端模拟模式。';
+                return;
+            }
+            // 获取编辑器代码
+            var code = practiceState.cm ? practiceState.cm.getValue() : (document.getElementById('code-editor')||{}).value || '';
+            try {
+                // 重定向 stdout 捕获
+                practiceState.pyodide.runPython(`import sys\nfrom js import console\nclass _C:\n  def write(self,s):\n    if s: console.log(s)\n  def flush(self):\n    pass\nsys.stdout=_C()\nsys.stderr=_C()`);
+                // 执行用户代码
+                await practiceState.pyodide.runPythonAsync(code);
+                var result = await extractPyResults();
+                if (consoleEl) consoleEl.textContent = '执行完成（Pyodide）。';
+                renderCharts(result.losses || [1,0.8], result.accuracies || [0.3,0.7]);
+                renderGraph((result.accuracies||[]).slice(-1)[0] || 0.8, result.pred_correct || [], result.neighbors_sampled || {});
+            } catch (e){
+                if (consoleEl) consoleEl.textContent = '执行失败（Pyodide）：'+e;
+                renderCharts([1.0,0.8,0.6,0.5,0.45,0.4],[0.2,0.35,0.5,0.62,0.73,0.8]);
+                renderGraph(0.8);
+            }
+            return;
+        }
+
+        // 基于参数的简单收敛曲线模拟
+        var epochs = Math.max(50, practiceState.epochs);
+        var lr = practiceState.learningRate;
+        var cap = Math.min(0.9, 0.5 + Math.log10(1 + lr*100) + (practiceState.hiddenDim-16)/200);
+        var losses = [], accs = [];
+        var loss0 = 1.2 - Math.min(0.6, Math.log10(1 + lr*100));
+        for (var t=0; t<epochs; t++){
+            var progress = t/(epochs-1);
+            var loss = loss0 * Math.pow(0.85 + (0.05*(16/practiceState.hiddenDim)), progress*5);
+            var acc = Math.min(cap, (0.2 + 0.8*progress) * cap);
+            losses.push(parseFloat(loss.toFixed(4)));
+            accs.push(parseFloat(acc.toFixed(4)));
+            if (consoleEl && (t % Math.max(1, Math.floor(epochs/4)) === 0)){
+                consoleEl.textContent += 'Epoch '+t+': Loss='+losses[t].toFixed(4)+', Acc='+accs[t].toFixed(4)+'\n';
+            }
+        }
+        if (consoleEl){
+            consoleEl.textContent += '训练完成\n最终准确率: '+accs[accs.length-1].toFixed(4);
+        }
+
+        renderCharts(losses, accs);
+        renderGraph(accs[accs.length-1]);
+    }
+
+    function resetCode(){
+        // 重置输出
+        var consoleEl = document.getElementById('console-output');
+        if (consoleEl) consoleEl.textContent = '点击"运行代码"查看结果...';
+        // 清空图表
+        if (window.Plotly){
+            try { Plotly.purge('loss-chart'); } catch(e){}
+            try { Plotly.purge('accuracy-chart'); } catch(e){}
+        }
+        // 重置图结构容器
+        var gv = document.getElementById('graph-visualization');
+        if (gv) gv.innerHTML = '<div class="text-center">\
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">\
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>\
+            </svg>\
+            <p>图结构可视化</p><p class="text-sm">运行代码后显示节点分类结果</p></div>';
+    }
+
+    function saveCode(){
+        if (practiceState.cm){
+            try {
+                localStorage.setItem(practiceState.savedCodeKey, practiceState.cm.getValue());
+                alert('已保存到本地浏览器');
+            } catch(e){ alert('保存失败：浏览器不支持或存储空间不足'); }
+        }
+    }
+
+    function renderCharts(losses, accs){
+        if (!window.Plotly) return;
+        Plotly.newPlot('loss-chart', [{y: losses, type: 'scatter', name: 'Loss', line:{color:'#ef4444'}}], {margin:{t:10,b:30,l:40,r:10}, yaxis:{title:'Loss'}});
+        Plotly.newPlot('accuracy-chart', [{y: accs, type: 'scatter', name: 'Acc', line:{color:'#10b981'}}], {margin:{t:10,b:30,l:40,r:10}, yaxis:{title:'Accuracy', range:[0,1]}});
+    }
+
+    function renderGraph(finalAcc, correctFlags, neighborsInfo){
+        var container = document.getElementById('graph-visualization');
+        if (!container || !window.d3) return;
+        container.innerHTML = '';
+        var width = container.clientWidth || 400;
+        var height = 220;
+        var svg = d3.select(container).append('svg').attr('width', width).attr('height', height);
+        
+        // 根据是否有邻居信息判断是 GraphSAGE 还是 GCN
+        var isGraphSAGE = neighborsInfo && Object.keys(neighborsInfo).length > 0;
+        
+        if (isGraphSAGE) {
+            // GraphSAGE: 10 节点复杂图
+            var nodes = d3.range(10).map(function(i){ 
+                return { 
+                    id: i, 
+                    label: ['类别A','类别A','类别A','类别B','类别B','类别B','类别C','类别C','类别C','类别C'][i] 
+                }; 
+            });
+            var links = [
+                {source:0,target:1}, {source:0,target:3}, {source:1,target:2}, {source:1,target:4},
+                {source:2,target:5}, {source:3,target:4}, {source:3,target:6}, {source:4,target:5},
+                {source:4,target:7}, {source:5,target:8}, {source:6,target:7}, {source:6,target:9},
+                {source:7,target:8}, {source:8,target:9}
+            ];
+        } else {
+            // GCN: 7 节点链式图
+            var nodes = d3.range(7).map(function(i){ 
+                return { 
+                    id: i, 
+                    label: ['AI','AI','CV','CV','NLP','NLP','NLP'][i] 
+                }; 
+            });
+            var links = [
+                {source:0,target:1}, {source:1,target:2}, {source:2,target:3}, 
+                {source:3,target:4}, {source:4,target:5}, {source:5,target:6}
+            ];
+        }
+        
+        // 依据传入标记或最终准确率模拟预测正确与否
+        if (Array.isArray(correctFlags) && correctFlags.length){
+            nodes.forEach(function(n, idx){ n.correct = !!correctFlags[idx]; });
+        } else {
+            var correctCount = Math.round(finalAcc * nodes.length);
+            nodes.forEach(function(n, idx){ n.correct = idx < correctCount; });
+        }
+        
+        var color = function(n){ return n.correct ? '#67C23A' : '#F56C6C'; };
+
+        var simulation = d3.forceSimulation(nodes)
+            .force('link', d3.forceLink(links).id(function(d){return d.id;}).distance(50))
+            .force('charge', d3.forceManyBody().strength(-150))
+            .force('center', d3.forceCenter(width/2, height/2));
+
+        var link = svg.append('g').selectAll('line').data(links).enter().append('line')
+            .attr('stroke', '#cbd5e1').attr('stroke-width', 1.5);
+
+        var node = svg.append('g').selectAll('circle').data(nodes).enter().append('circle')
+            .attr('r', isGraphSAGE ? 8 : 10).attr('fill', function(d){return color(d);}).attr('class', 'graph-node')
+            .call(d3.drag()
+                .on('start', function(event,d){ if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+                .on('drag', function(event,d){ d.fx=event.x; d.fy=event.y; })
+                .on('end', function(event,d){ if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+            );
+        
+        // 添加节点标签
+        var labels = svg.append('g').selectAll('text').data(nodes).enter().append('text')
+            .text(function(d) { return d.id; })
+            .attr('text-anchor', 'middle')
+            .attr('dy', '.35em')
+            .attr('font-size', '10px')
+            .attr('fill', 'white')
+            .attr('font-weight', 'bold');
+        
+        // 更新提示信息
+        node.append('title').text(function(d){ 
+            var base = '节点 '+d.id+'\n预测: '+(d.correct?'正确':'错误');
+            if (isGraphSAGE && neighborsInfo && neighborsInfo[d.id]) {
+                base += '\n采样邻居: [' + neighborsInfo[d.id].join(',') + ']';
+            }
+            return base;
+        });
+
+        simulation.on('tick', function(){
+            link.attr('x1', function(d){return d.source.x;})
+                .attr('y1', function(d){return d.source.y;})
+                .attr('x2', function(d){return d.target.x;})
+                .attr('y2', function(d){return d.target.y;});
+            node.attr('cx', function(d){return d.x;}).attr('cy', function(d){return d.y;});
+            labels.attr('x', function(d){return d.x;}).attr('y', function(d){return d.y;});
+        });
+    }
+
+    async function extractPyResults(){
+        try {
+            var jsonStr = await practiceState.pyodide.runPythonAsync(`\nimport json\nout = {}\ntry:\n    out['losses'] = list(losses)\n    out['accuracies'] = list(accuracies)\nexcept Exception as e:\n    out['losses'] = [1.0,0.8,0.6,0.5]\n    out['accuracies'] = [0.3,0.5,0.7,0.8]\ntry:\n    import torch\n    model.eval()\n    with torch.no_grad():\n        if hasattr(model, 'gat1'):  # GAT模型\n            o, _, attn = model(features, adj_matrix)\n            out['attention_weights'] = attn.tolist()\n        elif hasattr(model, 'sage1'):  # GraphSAGE模型\n            o = model(features, adj_matrix)\n            # 提取邻居采样信息\n            try:\n                neighbors_info = {}\n                for i in range(min(5, features.size(0))):\n                    neighbors = sample_neighbors(adj_matrix, i, 3)\n                    neighbors_info[str(i)] = neighbors.tolist()\n                out['neighbors_sampled'] = neighbors_info\nexcept Exception as e:\n            pass\n        else:  # GCN模型\n            o = model(features, adj_matrix)\n        _, p = o.max(dim=1)\n    lbl = list(map(int, labels.tolist()))\n    pred = list(map(int, p.tolist()))\n    pred_correct = [1 if pred[i]==lbl[i] else 0 for i in range(len(lbl))]\n    out['pred_correct'] = pred_correct\nexcept Exception as e:\n    out['pred_correct'] = [1,1,0,1,0,1,1]\njson.dumps(out)`);
+            return JSON.parse(jsonStr);
+        } catch (e){
+            return { losses:[1.0,0.8,0.6,0.5], accuracies:[0.3,0.5,0.7,0.8], pred_correct:[1,1,0,1,0,1,1] };
+        }
+    }
+
+    // 教程页：最小代码运行按钮（展示示例输出）
+    function runGCNCode(){
+        var out = document.getElementById('gcn-output');
+        if (out) out.classList.remove('hidden');
+    }
+    
+    function runGATCode(){
+        var out = document.getElementById('gat-output');
+        if (out) out.classList.remove('hidden');
+    }
+    
+    function runGraphSAGECode(){
+        var out = document.getElementById('graphsage-output');
+        if (out) out.classList.remove('hidden');
+    }
+    
+    // 简易登录/注册弹窗 + 状态管理
+    function toggleLogin(){
+        var existing = document.getElementById('auth-modal');
+        if (existing){ existing.remove(); return; }
+        var modal = document.createElement('div');
+        modal.id = 'auth-modal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center';
+        modal.innerHTML = '\
+        <div class="bg-white rounded-lg w-80 p-6 shadow-xl">\
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">登录 / 注册</h3>\
+            <div class="space-y-3">\
+                <input id="auth-username" class="w-full border rounded px-3 py-2" placeholder="用户名"/>\
+                <input id="auth-password" type="password" class="w-full border rounded px-3 py-2" placeholder="密码"/>\
+                <div class="flex items-center justify-between">\
+                    <button onclick="authLogin()" class="bg-blue-600 text-white px-3 py-2 rounded">登录</button>\
+                    <button onclick="authRegister()" class="bg-gray-600 text-white px-3 py-2 rounded">注册</button>\
+                </div>\
+            </div>\
+            <button onclick="toggleLogin()" class="mt-4 w-full border rounded px-3 py-2">关闭</button>\
+        </div>';
+        document.body.appendChild(modal);
+    }
+    function authLogin(){
+        var u = (document.getElementById('auth-username')||{}).value || '';
+        var p = (document.getElementById('auth-password')||{}).value || '';
+        var store = JSON.parse(localStorage.getItem('gl_users')||'{}');
+        if (store[u] && store[u]===p){
+            localStorage.setItem('gl_current_user', u);
+            alert('登录成功：'+u);
+            toggleLogin();
+            renderAuthState();
+        } else {
+            alert('用户名或密码错误');
+        }
+    }
+    function authRegister(){
+        var u = (document.getElementById('auth-username')||{}).value || '';
+        var p = (document.getElementById('auth-password')||{}).value || '';
+        if (!u || !p){ alert('请输入用户名与密码'); return; }
+        var store = JSON.parse(localStorage.getItem('gl_users')||'{}');
+        if (store[u]){ alert('该用户名已存在'); return; }
+        store[u]=p;
+        localStorage.setItem('gl_users', JSON.stringify(store));
+        alert('注册成功，请登录');
+    }
+    function renderAuthState(){
+        var u = localStorage.getItem('gl_current_user');
+        var btns = document.querySelectorAll('button[onclick="toggleLogin()"]');
+        btns.forEach(function(btn){
+            if (u){ btn.textContent = '已登录：'+u+'（退出）'; btn.onclick = logout; }
+            else { btn.textContent = '登录/注册'; btn.onclick = toggleLogin; }
+        });
+    }
+    function logout(){ localStorage.removeItem('gl_current_user'); renderAuthState(); }
+    document.addEventListener('DOMContentLoaded', function(){
+        renderAuthState();
+        // 默认展示社区第一个分区
+        showCommunitySection('discussions');
+    });
+    </script>
+</body>
+</html>

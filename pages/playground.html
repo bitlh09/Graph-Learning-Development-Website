@@ -1,0 +1,214 @@
+<div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">在线编程环境</h1>
+        <p class="mt-2 text-lg text-gray-600">在浏览器中直接编写、运行和可视化图学习算法</p>
+    </div>
+
+    <!-- 编程环境选择 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('gcn-classification')">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">GCN节点分类</h3>
+                    <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">入门级</span>
+                </div>
+            </div>
+            <p class="text-gray-600 mb-4">使用Cora数据集进行论文分类，观察GCN如何学习节点表示</p>
+            <div class="flex items-center text-sm text-gray-500">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                </svg>
+                预计用时: 15分钟
+            </div>
+        </div>
+
+        <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('gat-attention')">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">GAT注意力可视化</h3>
+                    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">进阶级</span>
+                </div>
+            </div>
+            <p class="text-gray-600 mb-4">探索图注意力机制，实时观察注意力权重的分布变化</p>
+            <div class="flex items-center text-sm text-gray-500">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                </svg>
+                预计用时: 25分钟
+            </div>
+        </div>
+
+        <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('graphsage-sampling')">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">GraphSAGE 邻居采样</h3>
+                    <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">进阶级</span>
+                </div>
+            </div>
+            <p class="text-gray-600 mb-4">体验 GraphSAGE 的邻居采样机制，观察归纳学习如何为未见节点生成嵌入</p>
+            <div class="flex items-center text-sm text-gray-500">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/>
+                </svg>
+                预计用时: 30分钟
+            </div>
+        </div>
+    </div>
+
+    <!-- 编程环境主界面 -->
+    <div id="practice-environment" class="bg-white rounded-lg shadow-lg p-6">
+        <!-- 环境选择提示 -->
+        <div id="env-placeholder" class="text-center py-16">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">选择一个编程环境开始实践</h3>
+            <p class="text-gray-600">点击上方的任意一个环境卡片开始你的图学习之旅</p>
+        </div>
+
+        <!-- GCN分类环境 -->
+        <div id="gcn-classification-env" class="practice-env hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">GCN节点分类实践</h2>
+                <div class="flex space-x-2">
+                    <button onclick="runCode()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 5v10l7-5-7-5z"/>
+                        </svg>
+                        运行代码
+                    </button>
+                    <button onclick="resetCode()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        重置代码
+                    </button>
+                    <button onclick="saveCode()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        保存项目
+                    </button>
+                    <div class="ml-2 flex items-center space-x-2 text-sm">
+                        <label class="text-gray-600">执行模式</label>
+                        <select id="exec-mode" class="border rounded px-2 py-1 text-gray-700" onchange="switchExecMode(this.value)">
+                            <option value="simulate">前端模拟</option>
+                            <option value="pyodide">Pyodide</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 代码编辑器 -->
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">代码编辑器</h3>
+                        <div class="border rounded-lg">
+                            <div class="bg-gray-100 px-4 py-2 border-b flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-700">main.py</span>
+                                <div class="flex space-x-2 text-xs text-gray-500">
+                                    <span>Python</span>
+                                    <span>•</span>
+                                    <span>PyTorch</span>
+                                </div>
+                            </div>
+                            <textarea id="code-editor" class="w-full h-96 p-4 font-mono text-sm resize-none border-none focus:outline-none">
+# 代码编辑器
+# 请选择一个环境开始编程
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <!-- 参数调节面板 -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3">参数调节</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">学习率</label>
+                                <input type="range" min="0.001" max="0.1" step="0.001" value="0.01" class="w-full" onchange="updateLearningRate(this.value)">
+                                <span class="text-sm text-gray-600" id="lr-value">0.01</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">隐藏层维度</label>
+                                <input type="range" min="8" max="64" step="8" value="16" class="w-full" onchange="updateHiddenDim(this.value)">
+                                <span class="text-sm text-gray-600" id="hidden-value">16</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">训练轮数</label>
+                                <input type="range" min="50" max="500" step="50" value="200" class="w-full" onchange="updateEpochs(this.value)">
+                                <span class="text-sm text-gray-600" id="epochs-value">200</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 结果可视化 -->
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">运行结果</h3>
+                        <div class="bg-black text-green-400 p-4 rounded-lg font-mono text-sm h-32 overflow-y-auto">
+                            <div id="console-output">点击"运行代码"查看结果...</div>
+                        </div>
+                    </div>
+
+                    <!-- 训练过程可视化 -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">训练过程</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="border rounded-lg p-4">
+                                <h5 class="text-sm font-medium text-gray-700 mb-2">损失曲线</h5>
+                                <div id="loss-chart" class="w-full h-32 bg-gray-50 rounded flex items-center justify-center text-gray-500">
+                                    运行代码后显示
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <h5 class="text-sm font-medium text-gray-700 mb-2">准确率变化</h5>
+                                <div id="accuracy-chart" class="w-full h-32 bg-gray-50 rounded flex items-center justify-center text-gray-500">
+                                    运行代码后显示
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图结构可视化 -->
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">图结构与分类结果</h4>
+                        <div class="border rounded-lg p-4">
+                            <div id="graph-visualization" class="w-full h-48 bg-gray-50 rounded flex items-center justify-center text-gray-500">
+                                <div class="text-center">
+                                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                    </svg>
+                                    <p>图结构可视化</p>
+                                    <p class="text-sm">运行代码后显示节点分类结果</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学习提示 -->
+            <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-semibold text-blue-900 mb-2">💡 学习提示</h4>
+                <ul class="text-blue-800 text-sm space-y-1">
+                    <li>• 尝试调整学习率，观察训练速度和效果的变化</li>
+                    <li>• 修改隐藏层维度，看看对模型性能的影响</li>
+                    <li>• 观察图可视化中节点颜色的变化，理解GCN如何进行分类</li>
+                    <li>• 查看代码中的注释，理解每一步的含义</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

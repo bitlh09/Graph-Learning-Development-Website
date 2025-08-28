@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图学习算法实践与教程</title>
+    
+    <!-- 外部依赖 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="#" data-action="show-section" data-target="home" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="#" data-action="show-section" data-target="tutorials" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="#" data-action="show-section" data-target="playground" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="#" data-action="show-section" data-target="community" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="#" data-action="show-section" data-target="resources" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="#" data-action="show-section" data-target="group" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">关于小组</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="pages/login.html" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">登录/注册</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- 首页 -->
+        <div id="home-section" class="section active">
+            <div id="home-content"></div>
+        </div>
+
+        <!-- 教程页面 -->
+        <div id="tutorials-section" class="section">
+            <div id="tutorials-content"></div>
+        </div>
+
+        <!-- 在线实践页面 -->
+        <div id="playground-section" class="section">
+            <div id="playground-content"></div>
+        </div>
+
+        <!-- 社区页面 -->
+        <div id="community-section" class="section">
+            <div id="community-content"></div>
+        </div>
+
+        <!-- 资源页面 -->
+        <div id="resources-section" class="section">
+            <div id="resources-content"></div>
+        </div>
+        <!-- 小组介绍页面（单页加载容器） -->
+        <div id="group-section" class="section">
+            <div id="group-content"></div>
+        </div>
+    </main>
+
+    <!-- 核心JavaScript -->
+    <script src="js/core.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/playground.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <!-- 页面初始化由各模块在各自的 DOMContentLoaded 中统一执行（见 js/core.js, js/navigation.js, js/playground.js, js/visualization.js, js/auth.js） -->
+</body>
+</html>
