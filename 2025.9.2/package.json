@@ -1,0 +1,12 @@
+{
+  "name": "resources-server",
+  "version": "1.0.0",
+  "description": "Serve downloads from resources/downloads and expose real sizes",
+  "main": "resources_server.js",
+  "scripts": {
+    "start": "node resources_server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

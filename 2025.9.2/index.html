@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图学习算法实践与教程</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="tutorials.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="playground.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="community.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="resources.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="team.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- 英雄区域 -->
+        <div class="gradient-bg">
+            <div class="max-w-7xl mx-auto py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
+                        图学习算法
+                        <span class="block text-blue-200">从入门到实践</span>
+                    </h1>
+                    <p class="mt-6 max-w-2xl mx-auto text-xl text-blue-100">
+                        从生活场景到抽象概念，从算法原理到代码实现，让图神经网络不再遥不可及
+                    </p>
+                    <div class="mt-10 flex justify-center space-x-4">
+                        <a href="tutorials.html" class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-50 transition-colors">
+                            开始学习
+                        </a>
+                        <a href="playground.html" class="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-white hover:text-blue-600 transition-colors">
+                            在线实践
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 特色功能 -->
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-gray-900">为什么选择我们？</h2>
+                    <p class="mt-4 text-lg text-gray-600">渐进式学习路径，让复杂的图学习变得简单易懂</p>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">场景化学习</h3>
+                        <p class="text-gray-600">从社交网络、外卖系统等生活场景入手，用动画演示建立直觉理解</p>
+                    </div>
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">在线编程</h3>
+                        <p class="text-gray-600">提供即时反馈的编程环境，支持代码运行和实时可视化</p>
+                    </div>
+                    <div class="card-hover bg-white p-6 rounded-lg shadow-lg">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">可视化学习</h3>
+                        <p class="text-gray-600">图结构变化、注意力权重、训练过程全程可视化展示</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学习路径 -->
+        <div class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-gray-900">学习路径</h2>
+                    <p class="mt-4 text-lg text-gray-600">从已知到未知的渐进式学习体验</p>
+                </div>
+                <div class="relative">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-blue-200"></div>
+                    <div class="space-y-8">
+                        <div class="relative flex items-center">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-bold">1</span>
+                            </div>
+                            <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">入门篇：建立图的直觉</h3>
+                                <p class="text-gray-600">从社交网络、外卖系统等熟悉场景理解图的概念</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-bold">2</span>
+                            </div>
+                            <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">基础篇：从神经网络到图神经网络</h3>
+                                <p class="text-gray-600">复习CNN/RNN，理解图神经网络的设计动机</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-bold">3</span>
+                            </div>
+                            <div class="ml-4 bg-white p-4 rounded-lg shadow flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">进阶篇：算法原理与实现</h3>
+                                <p class="text-gray-600">深入GCN、GAT等核心算法，配合可视化理解</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 交互式图示例 -->
+        <div class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-gray-900">交互式演示</h2>
+                    <p class="mt-4 text-lg text-gray-600">点击节点探索图的奥秘</p>
+                </div>
+                <div class="border rounded-lg p-4 bg-gray-50">
+                    <div id="graph-demo" class="w-full h-64"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2 text-center">点击节点查看详细信息，拖拽可以移动节点</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 引入必要的外部库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    
+    <!-- 引入本地JavaScript文件 -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/tutorials.js"></script>
+    
+    <script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化认证状态
+        renderAuthState();
+        
+        // 初始化图演示
+        setTimeout(function() {
+            if (document.getElementById('graph-demo')) {
+                createGraphDemo('graph-demo');
+            }
+        }, 1000);
+    });
+    </script>
+</body>
+</html>

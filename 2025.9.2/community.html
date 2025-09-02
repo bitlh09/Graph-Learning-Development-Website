@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区 - 图学习算法实践与教程</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="tutorials.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="playground.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="community.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="resources.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="team.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">学习社区</h1>
+                <p class="mt-2 text-lg text-gray-600">与其他学习者交流经验，分享你的图学习项目</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 社区导航 -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow p-6 sticky top-24">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">社区板块</h3>
+                        <nav class="space-y-2">
+                            <a href="#" onclick="showCommunitySection('discussions')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                📝 学习讨论区
+                            </a>
+                            <a href="#" onclick="showCommunitySection('projects')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                🚀 项目展示区
+                            </a>
+                            <a href="#" onclick="showCommunitySection('pitfalls')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                ⚠️ 算法吐槽区
+                            </a>
+                            <a href="#" onclick="showCommunitySection('challenges')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                🏆 每周挑战
+                            </a>
+                            <a href="#" onclick="showCommunitySection('resources')" class="community-nav-link block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                                📚 资源分享
+                            </a>
+                        </nav>
+
+
+
+                        <!-- 社区统计 -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">社区数据</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">活跃用户</span>
+                                    <span id="active-users" class="font-medium text-blue-600">0</span>
+                                </div>
+
+
+                        <script>
+                        function updateActiveUsers(){
+                            // 从 localStorage 取出用户表
+                            var store = JSON.parse(localStorage.getItem('gl_users') || '{}');
+                            // 统计 key 的数量
+                            var count = Object.keys(store).length;
+                            // 更新到页面
+                            document.getElementById('active-users').textContent = count;
+                        }
+
+                        // 页面加载时自动更新
+                        document.addEventListener('DOMContentLoaded', updateActiveUsers);
+
+                        // 如果注册了新用户，也要刷新统计
+                        function authRegister(){
+                            var u = (document.getElementById('auth-username')||{}).value || '';
+                            var p = (document.getElementById('auth-password')||{}).value || '';
+                            if (!u || !p){ alert('请输入用户名与密码'); return; }
+                            var store = JSON.parse(localStorage.getItem('gl_users')||'{}');
+                            if (store[u]){ alert('该用户名已存在'); return; }
+                            store[u]=p;
+                            localStorage.setItem('gl_users', JSON.stringify(store));
+                            alert('注册成功，请登录');
+                            updateActiveUsers();  // 🔥 新用户注册后刷新活跃用户数
+                        }
+                        </script>
+
+
+
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">讨论话题</span>
+                                    <span class="font-medium text-green-600"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">项目作品</span>
+                                    <span class="font-medium text-purple-600"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 热门标签 -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-sm font-medium text-gray-900 mb-3">热门标签</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">GCN</span>
+                                <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">GAT</span>
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">节点分类</span>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">图嵌入</span>
+                                <span class="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">PyTorch</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主要内容区 -->
+                <div class="lg:col-span-2">
+                    <!-- 学习讨论区 -->
+                    <div id="discussions" class="community-section">
+                        <div class="bg-white rounded-lg shadow p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-900">学习讨论区</h2>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                    发起讨论
+                                </button>
+                            </div>
+                            
+                            <!-- 讨论话题列表 -->
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-900 mb-2">GCN和GraphSAGE的主要区别是什么？</h3>
+                                            <p class="text-gray-600 text-sm mb-2">刚开始学习图神经网络，看了教程后还是不太清楚这两个算法的本质区别...</p>
+                                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                                <span>👤</span>
+                                                <span>💬</span>
+                                                <span>🕒</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-900 mb-2">PyTorch Geometric 安装问题求助</h3>
+                                            <p class="text-gray-600 text-sm mb-2">在Windows系统上安装PyG总是出错，有没有详细的安装教程？</p>
+                                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                                <span>👤</span>
+                                                <span>💬</span>
+                                                <span>🕒</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border-l-4 border-purple-500 bg-purple-50 p-4 rounded-r-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-900 mb-2">注意力机制在GAT中的作用机制深度分析</h3>
+                                            <p class="text-gray-600 text-sm mb-2">分享我对GAT注意力机制的理解，包括数学推导和代码实现...</p>
+                                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                                <span>👤</span>
+                                                <span>💬</span>
+                                                <span>🕒</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 项目展示区 -->
+                    <div id="projects" class="community-section" style="display: none;">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-semibold text-gray-900">项目展示区</h2>
+                                <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    分享项目
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <h3 class="font-semibold text-gray-900 mb-2">基于GNN的推荐系统</h3>
+                                    <p class="text-gray-600 text-sm mb-3">使用GraphSAGE构建的电影推荐系统，在MovieLens数据集上达到了不错的效果</p>
+                                    <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <span>🔗 GitHub</span>
+                                        <span>⭐ 45 stars</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <h3 class="font-semibold text-gray-900 mb-2">分子性质预测工具</h3>
+                                    <p class="text-gray-600 text-sm mb-3">基于GAT的分子毒性预测模型，集成了可视化界面</p>
+                                    <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <span>🔗 在线演示</span>
+                                        <span>⭐ 32 stars</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 其他社区板块 -->
+                    <div id="pitfalls" class="community-section" style="display: none;">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4">算法吐槽区</h2>
+                            <p class="text-gray-600">这里是大家分享踩坑经历和解决方案的地方...</p>
+                        </div>
+                    </div>
+
+                    <div id="challenges" class="community-section" style="display: none;">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4">每周挑战</h2>
+                            <p class="text-gray-600">每周一个新的图学习挑战，提升你的实践能力...</p>
+                        </div>
+                    </div>
+
+                    <div id="resources" class="community-section" style="display: none;">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4">资源分享</h2>
+                            <p class="text-gray-600">社区成员分享的优质学习资源和工具...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 引入必要的外部库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    
+    <!-- 引入本地JavaScript文件 -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/tutorials.js"></script>
+    
+    <script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化认证状态
+        renderAuthState();
+        // 初始化社区区域显示
+        showCommunitySection('discussions');
+    });
+    </script>
+</body>
+</html>

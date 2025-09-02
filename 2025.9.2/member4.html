@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成员四 - 个人介绍</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* 背景渐变 + 科技感像素点 */
+    body {
+      background: linear-gradient(to right, #ffffff, #ffe4e6);
+      min-height: 100vh;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: -1;
+    }
+
+    /* 头像 hover 光晕 */
+    .avatar-hover:hover {
+      box-shadow: 0 0 15px rgba(255, 182, 193, 0.7), 0 0 30px rgba(255, 105, 180, 0.4);
+      transform: scale(1.2);
+    }
+
+    /* 卡片 hover 光晕 */
+    .card-hover:hover {
+      box-shadow: 0 0 25px rgba(255, 192, 203, 0.6), 0 0 50px rgba(255, 182, 193, 0.4);
+      transform: translateY(-5px);
+    }
+
+    /* 气泡式邮箱按钮 */
+    .email-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffb6c1;
+      color: #fff;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      text-decoration: none;
+    }
+    .email-bubble:hover {
+      background: #ff69b4;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 105, 180, 0.5);
+    }
+
+    /* 隐藏文字，只在选中时可见 */
+    .hidden-text {
+      color: transparent;
+      user-select: text;
+    }
+    .hidden-text::selection {
+      color: #ff69b4;
+      background: #fff0;
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- 左侧隐藏小字 -->
+  <div class="hidden-text fixed top-1/2 left-1 transform -translate-y-1/2 z-50">
+    我爱郑舒晗
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
+
+    <!-- 头像和姓名 -->
+    <section class="flex flex-col items-center mb-10">
+      <div class="flex justify-center gap-4">
+        <img src="photo/1022fa9f874db43ce651057989ace328.jpg" alt="高可沁" class="w-32 h-32 rounded-full object-cover avatar-hover transition duration-300">
+        <img src="photo/9a0615cb34500975c7267564dab7d12f.jpg" alt="照片1" class="w-32 h-32 rounded-full object-cover avatar-hover transition duration-300">
+        <img src="photo/e4d8e0ebb9c3cd6b1cbda38ef049a427.jpg" alt="照片2" class="w-32 h-32 rounded-full object-cover avatar-hover transition duration-300">
+      </div>
+      <h1 class="text-3xl font-extrabold text-gray-900 mt-4">高可沁</h1>
+      <p class="mt-1 text-gray-600 text-center">计算机科学与技术专业 · 学习与科研探索中</p>
+      <a href="https://mail.163.com/" target="_blank" class="email-bubble mt-3">g15339201160@163.com</a>
+    </section>
+
+    <!-- 上部：个人简介 -->
+    <section class="bg-white/90 backdrop-blur-md rounded-2xl shadow p-6 md:p-8 mb-8 card-hover transition duration-300">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">个人简介</h2>
+      <p class="text-gray-700 leading-7">
+        大家好，我叫高可沁，目前就读于计算机科学与技术专业。在学习和实践过程中，我积累了扎实的专业基础，具备较强的学习能力和解决问题的能力。我熟悉 C 语言、Python 数据分析、网页开发等，也在一些比赛和科研创新（数学建模、国际基因工程）团队协作和项目实践中锻炼了沟通与组织协调能力。
+      </p>
+      <p class="text-gray-700 leading-7 mt-3">
+        在兴趣方面，我热爱探索新知识，喜欢阅读、运动、科技创新等，这不仅丰富了我的视野，也帮助我保持持续学习的动力。未来，我希望在计算机和数据科学等领域不断深耕，把所学知识与实际需求结合，为社会发展贡献自己的力量。我的目标是通过不断的学习和实践，成为一个既有专业素养，又有社会责任感的人。我的 GitHub 账号为：gaok1-8。
+      </p>
+    </section>
+
+    <!-- 下部：左右两列 -->
+    <section class="grid lg:grid-cols-2 gap-6">
+      <!-- 左：研究兴趣 -->
+      <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow p-6 md:p-8 card-hover transition duration-300">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">研究兴趣</h3>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <span class="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-pink-400 transition cursor-pointer">多模态大数据整合分析</span>
+          <span class="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-pink-400 transition cursor-pointer">云端协同计算平台</span>
+          <span class="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-pink-400 transition cursor-pointer">Transformer 在蛋白质/基因组序列分析中的应用</span>
+          <span class="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-pink-400 transition cursor-pointer">AI 驱动的疾病预测和诊断</span>
+        </div>
+      </div>
+
+      <!-- 右：擅长技术 -->
+      <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow p-6 md:p-8 card-hover transition duration-300">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">擅长技术</h3>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-800">Python</span>
+          <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-800">PyTorch / TensorFlow / Keras（深度学习）</span>
+          <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-800">数据分析</span>
+          <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-800">序列预测、生成模型（VAE, GAN）（alphafold）</span>
+          <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-800">深度神经网络</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

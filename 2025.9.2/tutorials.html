@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教程 - 图学习算法实践与教程</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="tutorials.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="playground.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="community.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="resources.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="team.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 侧边栏 -->
+                <div class="lg:w-1/4">
+                    <div class="bg-white rounded-lg shadow p-6 sticky top-24">
+                        <h3 class="text-lg font-semibold mb-4">课程目录</h3>
+                        <div class="space-y-2">
+                            <div class="tutorial-category">
+                                <h4 class="font-medium text-gray-900 mb-2">入门篇</h4>
+                                <ul class="space-y-1 ml-4">
+                                    <li><a href="#" onclick="showTutorial('intro-graphs')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">什么是图？</a></li>
+                                    <li><a href="#" onclick="showTutorial('social-network')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">社交网络案例</a></li>
+                                    <li><a href="#" onclick="showTutorial('graph-basics')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图的基本概念</a></li>
+                                    <li><a href="#" onclick="showTutorial('graph-types')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图的类型与表示</a></li>
+                                </ul>
+                            </div>
+                            <div class="tutorial-category mt-4">
+                                <h4 class="font-medium text-gray-900 mb-2">基础篇</h4>
+                                <ul class="space-y-1 ml-4">
+                                    <li><a href="#" onclick="showTutorial('nn-review')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">神经网络回顾</a></li>
+                                    <li><a href="#" onclick="showTutorial('why-gnn')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">为什么需要GNN？</a></li>
+                                    <li><a href="#" onclick="showTutorial('message-passing')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">消息传递机制</a></li>
+                                    <li><a href="#" onclick="showTutorial('gnn-framework')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">GNN通用框架</a></li>
+                                </ul>
+                            </div>
+                            <div class="tutorial-category mt-4">
+                                <h4 class="font-medium text-gray-900 mb-2">进阶篇</h4>
+                                <ul class="space-y-1 ml-4">
+                                    <li><a href="#" onclick="showTutorial('gcn')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图卷积网络(GCN)</a></li>
+                                    <li><a href="#" onclick="showTutorial('gat')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">图注意力网络(GAT)</a></li>
+                                    <li><a href="#" onclick="showTutorial('graphsage')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">GraphSAGE</a></li>
+                                    <li><a href="#" onclick="showTutorial('advanced-topics')" class="tutorial-link text-sm text-gray-600 hover:text-blue-600">高级主题</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主要内容 -->
+                <div class="lg:w-3/4">
+                    <div id="tutorial-content" class="bg-white rounded-lg shadow p-8">
+                        <!-- 欢迎页面 -->
+                        <div id="welcome" class="tutorial-content active">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">欢迎来到图学习教程</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    选择左侧的课程开始您的图学习之旅！
+                                </p>
+                                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-blue-900 mb-3">学习建议</h3>
+                                    <ul class="space-y-2 text-blue-800">
+                                        <li>• <strong>循序渐进</strong>：按照入门篇→基础篇→进阶篇的顺序学习</li>
+                                        <li>• <strong>动手实践</strong>：每个教程都配有可运行的代码示例</li>
+                                        <li>• <strong>互动学习</strong>：点击图中的节点，体验交互式可视化</li>
+                                        <li>• <strong>及时练习</strong>：完成每章节的小练习巩固知识</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 各教程内容将通过JavaScript动态加载 -->
+                        <div id="intro-graphs" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">什么是图？</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    想象一下你的朋友圈：每个人是一个"点"，朋友关系是连接这些点的"线"。这就是图的基本概念！
+                                </p>
+                                
+                                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-blue-900 mb-3">生活中的图无处不在</h3>
+                                    <ul class="space-y-2 text-blue-800">
+                                        <li>• <strong>社交网络</strong>：微信好友、微博关注关系</li>
+                                        <li>• <strong>交通系统</strong>：地铁站点与线路连接</li>
+                                        <li>• <strong>互联网</strong>：网页之间的链接关系</li>
+                                        <li>• <strong>分子结构</strong>：原子间的化学键连接</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 交互式图示例 -->
+                                <div class="mb-6">
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-3">交互式图示例</h3>
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <div id="graph-demo-tutorial" class="w-full h-64"></div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-2">点击节点查看详细信息，拖拽可以移动节点</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 更多教程内容会在这里添加... -->
+                        
+                        <!-- 社交网络案例 -->
+                        <div id="social-network" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">社交网络案例</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    让我们从大家都熟悉的社交网络开始，探索图的神奇世界。
+                                </p>
+                                
+                                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-blue-900 mb-3">从微信好友到图结构</h3>
+                                    <ul class="space-y-2 text-blue-800">
+                                        <li>• <strong>节点</strong>：每个人都是一个节点</li>
+                                        <li>• <strong>边</strong>：好友关系是节点之间的连线</li>
+                                        <li>• <strong>特征</strong>：年龄、职业、兴趣等信息</li>
+                                        <li>• <strong>社区</strong>：具有相似特征的人群</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mb-6">
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-3">交互式社交图演示</h3>
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <div id="social-graph-demo" class="w-full h-64"></div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-2">点击节点查看用户信息，拖拽可以移动节点</p>
+                                </div>
+                                
+                                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-green-900 mb-3">思考题</h3>
+                                    <p class="text-green-800 mb-4">在下面的微博关注关系中，你认为这是一个有向图还是无向图？</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="weibo-graph" id="weibo-directed" class="form-checkbox">
+                                            <span class="ml-2 text-green-800">有向图（A关注B，但B不一定关注A）</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="weibo-graph" id="weibo-undirected" class="form-checkbox">
+                                            <span class="ml-2 text-green-800">无向图（相互关注）</span>
+                                        </label>
+                                    </div>
+                                    <button onclick="checkWeiboAnswer()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                        检查答案
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 图的基本概念 -->
+                        <div id="graph-basics" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">图的基本概念</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    现在我们正式学习图理论的基础知识。
+                                </p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div class="bg-white p-6 border rounded-lg">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-3">图的定义</h3>
+                                        <p class="text-gray-700 mb-2">图 G = (V, E) 由以下组成：</p>
+                                        <ul class="space-y-1 text-sm text-gray-600">
+                                            <li>• V: 节点集合 (Vertices)</li>
+                                            <li>• E: 边集合 (Edges)</li>
+                                            <li>• 每条边连接两个节点</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-white p-6 border rounded-lg">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-3">常用术语</h3>
+                                        <ul class="space-y-1 text-sm text-gray-600">
+                                            <li>• <strong>度数</strong>：节点的连接数</li>
+                                            <li>• <strong>邻居</strong>：直接相连的节点</li>
+                                            <li>• <strong>路径</strong>：节点间的连接序列</li>
+                                            <li>• <strong>直径</strong>：最短路径长度</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-yellow-900 mb-3">邻接矩阵表示</h3>
+                                    <p class="text-yellow-800 mb-4">邻接矩阵 A 是表示图结构的数学方法：</p>
+                                    <ul class="space-y-2 text-yellow-800">
+                                        <li>• A[i][j] = 1 表示节点 i 和 j 之间有连接</li>
+                                        <li>• A[i][j] = 0 表示节点 i 和 j 之间无连接</li>
+                                        <li>• 对于无向图，邻接矩阵是对称的</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 神经网络回顾 -->
+                        <div id="nn-review" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">神经网络回顾</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    在学习图神经网络之前，让我们先回顾一下传统神经网络的的基本概念。
+                                </p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                    <div class="bg-blue-50 p-6 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-blue-900 mb-3">全连接层 (FC)</h3>
+                                        <ul class="space-y-2 text-blue-800 text-sm">
+                                            <li>• 每个输入连接所有输出</li>
+                                            <li>• 适用于表格数据</li>
+                                            <li>• 参数量大</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-green-50 p-6 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-green-900 mb-3">卷积层 (CNN)</h3>
+                                        <ul class="space-y-2 text-green-800 text-sm">
+                                            <li>• 局部连接，共享参数</li>
+                                            <li>• 适用于图像数据</li>
+                                            <li>• 具有平移不变性</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-purple-50 p-6 rounded-lg">
+                                        <h3 class="text-lg font-semibold text-purple-900 mb-3">循环层 (RNN)</h3>
+                                        <ul class="space-y-2 text-purple-800 text-sm">
+                                            <li>• 具有记忆能力</li>
+                                            <li>• 适用于序列数据</li>
+                                            <li>• 能处理变长输入</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-red-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-red-900 mb-3">传统神经网络的局限性</h3>
+                                    <ul class="space-y-2 text-red-800">
+                                        <li>• <strong>FC层</strong>：无法利用数据的空间结构</li>
+                                        <li>• <strong>CNN</strong>：只能处理欧几里得空间中的规则数据</li>
+                                        <li>• <strong>RNN</strong>：只能处理序列结构，不适用于复杂网络</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 为什么需要GNN -->
+                        <div id="why-gnn" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">为什么需要图神经网络？</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    现实世界中存在大量的图结构数据，传统神经网络无法直接处理。
+                                </p>
+                                
+                                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-blue-900 mb-3">图数据的特点</h3>
+                                    <ul class="space-y-2 text-blue-800">
+                                        <li>• <strong>非欧几里得空间</strong>：节点没有固定的空间位置</li>
+                                        <li>• <strong>变大小</strong>：不同图的节点数量不同</li>
+                                        <li>• <strong>无固定顺序</strong>：节点没有自然的排列顺序</li>
+                                        <li>• <strong>网络效应</strong>：节点的特性受邻居影响</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-green-900 mb-3">GNN的优势</h3>
+                                    <ul class="space-y-2 text-green-800">
+                                        <li>• <strong>排列不变性</strong>：不依赖节点的输入顺序</li>
+                                        <li>• <strong>局部性</strong>：每个节点只关注直接邻居</li>
+                                        <li>• <strong>共享参数</strong>：所有节点使用相同的参数</li>
+                                        <li>• <strong>归纳能力</strong>：可以处理未见过的图结构</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 消息传递机制 -->
+                        <div id="message-passing" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">消息传递机制</h1>
+                            <div class="prose max-w-none">
+                                <p class="text-lg text-gray-700 mb-6">
+                                    消息传递是图神经网络的核心思想：节点通过与邻居交换信息来更新自己的表示。
+                                </p>
+                                
+                                <div class="bg-purple-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-purple-900 mb-3">消息传递的三个步骤</h3>
+                                    <ol class="space-y-3 text-purple-800">
+                                        <li><strong>1. 消息收集 (Message Aggregation)</strong>
+                                            <br>每个节点收集来自邻居节点的信息</li>
+                                        <li><strong>2. 消息聚合 (Message Combining)</strong>
+                                            <br>将收集到的多个消息整合成一个表示</li>
+                                        <li><strong>3. 状态更新 (State Update)</strong>
+                                            <br>结合自身信息和邻居信息，更新节点表示</li>
+                                    </ol>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-3">消息传递演示</h3>
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <div id="message-passing-demo" class="w-full h-64"></div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-2">点击中心节点查看消息传递过程</p>
+                                </div>
+                                
+                                <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-yellow-900 mb-3">数学表达</h3>
+                                    <div class="text-yellow-800 space-y-2">
+                                        <p><strong>消息函数</strong>： m<sub>ij</sub><sup>(l)</sup> = Message(h<sub>i</sub><sup>(l-1)</sup>, h<sub>j</sub><sup>(l-1)</sup>, e<sub>ij</sub>)</p>
+                                        <p><strong>聚合函数</strong>： a<sub>i</sub><sup>(l)</sup> = Aggregate({m<sub>ji</sub><sup>(l)</sup> : j ∈ N(i)})</p>
+                                        <p><strong>更新函数</strong>： h<sub>i</sub><sup>(l)</sup> = Update(h<sub>i</sub><sup>(l-1)</sup>, a<sub>i</sub><sup>(l)</sup>)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 图的类型与表示 -->
+                        <div id="graph-types" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">图的类型与表示</h1>
+                            <div class="prose max-w-none">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div class="bg-blue-50 p-6 rounded-lg">
+                                        <h3 class="text-xl font-semibold text-blue-900 mb-3">有向图</h3>
+                                        <ul class="space-y-2 text-blue-800">
+                                            <li>• 边有方向，表示非对称关系</li>
+                                            <li>• 例如：微博关注、网页链接</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-green-50 p-6 rounded-lg">
+                                        <h3 class="text-xl font-semibold text-green-900 mb-3">无向图</h3>
+                                        <ul class="space-y-2 text-green-800">
+                                            <li>• 边无方向，表示对称关系</li>
+                                            <li>• 例如：友谊网络、分子结构</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GNN通用框架 -->
+                        <div id="gnn-framework" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">GNN通用框架</h1>
+                            <div class="prose max-w-none">
+                                <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-4">消息传递框架</h3>
+                                    <div class="space-y-4">
+                                        <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+                                            <h4 class="font-semibold text-blue-900">步骤 1: 消息函数</h4>
+                                            <p class="text-gray-700">m_{ij} = Message(h_i, h_j, e_{ij})</p>
+                                        </div>
+                                        <div class="bg-white p-4 rounded border-l-4 border-green-500">
+                                            <h4 class="font-semibold text-green-900">步骤 2: 聚合函数</h4>
+                                            <p class="text-gray-700">m_i = Aggregate({m_{ij} : j ∈ N(i)})</p>
+                                        </div>
+                                        <div class="bg-white p-4 rounded border-l-4 border-purple-500">
+                                            <h4 class="font-semibold text-purple-900">步骤 3: 更新函数</h4>
+                                            <p class="text-gray-700">h_i^{new} = Update(h_i^{old}, m_i)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GCN进阶教程 -->
+                        <div id="gcn" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">图卷积网络 (GCN)</h1>
+                            <div class="prose max-w-none">
+                                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-blue-900 mb-3">核心思想</h3>
+                                    <ul class="space-y-2 text-blue-800">
+                                        <li>• 将卷积操作从欧几里得空间扩展到图空间</li>
+                                        <li>• 通过聚合邻居节点信息更新节点表示</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-50 p-6 rounded-lg">
+                                    <h3 class="text-xl font-semibold text-green-900 mb-3">代码示例</h3>
+                                    <div class="bg-gray-900 text-green-400 p-4 rounded">
+                                        <div id="gcn-output" class="hidden">
+                                            <pre>GCN训练结果:
+Epoch 0: Loss=1.0986, Acc=0.33
+Epoch 50: Loss=0.4123, Acc=0.86
+Epoch 100: Loss=0.1876, Acc=1.00
+训练完成!</pre>
+                                        </div>
+                                        <button onclick="runGCNCode()" class="bg-green-600 text-white px-4 py-2 rounded">
+                                            运行 GCN 代码
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GAT进阶教程 -->
+                        <div id="gat" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">图注意力网络 (GAT)</h1>
+                            <div class="prose max-w-none">
+                                <div class="bg-purple-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-purple-900 mb-3">注意力机制</h3>
+                                    <ul class="space-y-2 text-purple-800">
+                                        <li>• 为每个邻居节点分配不同的注意力权重</li>
+                                        <li>• 注意力权重通过学习得到</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-yellow-50 p-6 rounded-lg">
+                                    <h3 class="text-xl font-semibold text-yellow-900 mb-3">代码示例</h3>
+                                    <div class="bg-gray-900 text-green-400 p-4 rounded">
+                                        <div id="gat-output" class="hidden">
+                                            <pre>GAT训练结果:
+Epoch 0: Loss=1.1234, Acc=0.29
+Epoch 80: Loss=0.2345, Acc=0.93
+Epoch 160: Loss=0.1234, Acc=1.00
+注意力权重已更新</pre>
+                                        </div>
+                                        <button onclick="runGATCode()" class="bg-purple-600 text-white px-4 py-2 rounded">
+                                            运行 GAT 代码
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GraphSAGE进阶教程 -->
+                        <div id="graphsage" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">GraphSAGE</h1>
+                            <div class="prose max-w-none">
+                                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                    <h3 class="text-xl font-semibold text-green-900 mb-3">核心特性</h3>
+                                    <ul class="space-y-2 text-green-800">
+                                        <li>• 归纳学习：可以处理新节点</li>
+                                        <li>• 邻居采样：控制计算复杂度</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-blue-50 p-6 rounded-lg">
+                                    <h3 class="text-xl font-semibold text-blue-900 mb-3">代码示例</h3>
+                                    <div class="bg-gray-900 text-green-400 p-4 rounded">
+                                        <div id="graphsage-output" class="hidden">
+                                            <pre>GraphSAGE训练结果:
+Epoch 0: Loss=1.0567, Acc=0.30
+Epoch 40: Loss=0.4891, Acc=0.80
+Epoch 80: Loss=0.1234, Acc=1.00
+邻居采样完成</pre>
+                                        </div>
+                                        <button onclick="runGraphSAGECode()" class="bg-green-600 text-white px-4 py-2 rounded">
+                                            运行 GraphSAGE 代码
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 高级主题 -->
+                        <div id="advanced-topics" class="tutorial-content">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-6">高级主题</h1>
+                            <div class="prose max-w-none">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-indigo-50 p-6 rounded-lg">
+                                        <h3 class="text-xl font-semibold text-indigo-900 mb-3">图对抗网络</h3>
+                                        <p class="text-indigo-800">使用对抗训练生成图结构</p>
+                                    </div>
+                                    <div class="bg-pink-50 p-6 rounded-lg">
+                                        <h3 class="text-xl font-semibold text-pink-900 mb-3">图神经网络解释性</h3>
+                                        <p class="text-pink-800">理解模型的决策过程</p>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 引入必要的外部库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    
+    <!-- 引入本地JavaScript文件 -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/tutorials.js"></script>
+    
+    <script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化图演示
+        setTimeout(function() {
+            if (document.getElementById('graph-demo-tutorial')) {
+                createGraphDemo('graph-demo-tutorial');
+            }
+        }, 1000);
+    });
+    </script>
+</body>
+</html>
