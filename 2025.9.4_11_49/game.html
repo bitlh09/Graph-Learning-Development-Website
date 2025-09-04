@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>答题闯关 - Quiz</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <style>
+    .progress-bar {
+      height: 1rem;
+      background-color: #e5e7eb;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563EB, #7C3AED);
+      width: 10%; /* 初始关卡 1/10 */
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- 导航栏 -->
+  <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="tutorials.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="playground.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="community.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="resources.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="game.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">答题闯关</a>
+                            <a href="team.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+  <!-- 页面主体 -->
+  <main class="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md">
+    <!-- 标题 -->
+    <h2 class="text-2xl font-bold mb-4 text-center">答题闯关模式</h2>
+
+    <!-- 关卡进度条 -->
+    <div class="mb-6">
+      <p class="mb-2">关卡进度：第 <span id="current-level">1</span> 关 / 共 10 关</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- 答题卡 -->
+    <section id="quiz-card" class="mb-6">
+      <h3 id="question-text" class="text-lg font-semibold mb-4">题目加载中...</h3>
+      <form id="quiz-form" class="space-y-3"></form>
+    </section>
+
+    <!-- 提交按钮 -->
+    <div class="text-center">
+      <button id="submit-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md">
+        提交答案
+      </button>
+    </div>
+
+    <!-- 答案反馈 -->
+    <p id="feedback" class="mt-4 text-center font-semibold"></p>
+  </main>
+
+  <!-- JS 脚本 -->
+  <script>
+    // 题库（10关）
+    const questions = [
+      {
+        question: "以下哪种是最经典的图神经网络模型？",
+        options: ["CNN", "GCN", "RNN", "LSTM"],
+        answer: 1
+      },
+      {
+        question: "GCN 最常用于处理哪类数据？",
+        options: ["图结构数据", "序列数据", "图像数据", "表格数据"],
+        answer: 0
+      },
+      {
+        question: "在图中，节点之间通过什么表示关系？",
+        options: ["边", "权重", "标签", "矩阵"],
+        answer: 0
+      },
+      {
+        question: "以下哪种方法常用于图表示学习？",
+        options: ["Word2Vec", "Node2Vec", "BERT", "SVM"],
+        answer: 1
+      },
+      {
+        question: "图神经网络的输入通常包括？",
+        options: ["节点特征和邻接矩阵", "图像像素", "序列词向量", "表格数值"],
+        answer: 0
+      },
+      {
+        question: "以下哪项不是图卷积的主要操作？",
+        options: ["邻居聚合", "特征变换", "池化降维", "循环展开"],
+        answer: 3
+      },
+      {
+        question: "在社交网络分析中，GNN 可以用来预测什么？",
+        options: ["节点分类", "边的存在性", "社群划分", "以上都可以"],
+        answer: 3
+      },
+      {
+        question: "Graph Attention Network (GAT) 引入了什么机制？",
+        options: ["卷积", "注意力机制", "循环", "强化学习"],
+        answer: 1
+      },
+      {
+        question: "以下哪种任务最适合用 GNN 解决？",
+        options: ["图像识别", "语音识别", "节点分类", "机器翻译"],
+        answer: 2
+      },
+      {
+        question: "完成 10 关后，你会看到什么？",
+        options: ["通关成功提示", "重新开始按钮", "积分榜", "以上都有可能"],
+        answer: 0
+      }
+    ];
+
+    let currentLevel = 0; // 当前关卡编号
+
+    const questionText = document.getElementById("question-text");
+    const quizForm = document.getElementById("quiz-form");
+    const feedback = document.getElementById("feedback");
+    const progressFill = document.getElementById("progress-fill");
+    const currentLevelSpan = document.getElementById("current-level");
+    const submitBtn = document.getElementById("submit-btn");
+
+    // 渲染题目
+    function loadQuestion(level) {
+      const q = questions[level];
+      questionText.textContent = `题目 ${level + 1}：${q.question}`;
+      quizForm.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const label = document.createElement("label");
+        label.className = "flex items-center space-x-2";
+        label.innerHTML = `<input type="radio" name="answer" value="${i}" class="text-blue-600"> <span>${opt}</span>`;
+        quizForm.appendChild(label);
+      });
+      feedback.textContent = "";
+    }
+
+    // 提交答案
+    submitBtn.addEventListener("click", () => {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (!selected) {
+        feedback.textContent = "请选择一个答案！";
+        feedback.className = "mt-4 text-center font-semibold text-red-600";
+        return;
+      }
+
+      const answer = parseInt(selected.value);
+      if (answer === questions[currentLevel].answer) {
+        feedback.textContent = "✅ 正确！进入下一关～";
+        feedback.className = "mt-4 text-center font-semibold text-green-600";
+
+        setTimeout(() => {
+          currentLevel++;
+          if (currentLevel < questions.length) {
+            currentLevelSpan.textContent = currentLevel + 1;
+            progressFill.style.width = ((currentLevel + 1) / questions.length * 100) + "%";
+            loadQuestion(currentLevel);
+          } else {
+            questionText.textContent = "🎉 恭喜你，成功通关！";
+            quizForm.innerHTML = "";
+            submitBtn.style.display = "none";
+          }
+        }, 1000);
+
+      } else {
+        feedback.textContent = "❌ 错误，再试一次！";
+        feedback.className = "mt-4 text-center font-semibold text-red-600";
+      }
+    });
+
+    // 初始化加载第 1 题
+    loadQuestion(currentLevel);
+  </script>
+
+</body>
+</html>

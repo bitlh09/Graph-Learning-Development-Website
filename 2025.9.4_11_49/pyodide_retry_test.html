@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyodide自动重试测试</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Pyodide自动重试测试</h1>
+        
+        <div class="controls">
+            <button onclick="initPyodideWithRetry()" id="initBtn">初始化Pyodide (自动重试)</button>
+            <button onclick="runSimpleTest()" id="testBtn" disabled>运行简单测试</button>
+            <button onclick="runNumpyTest()" id="numpyBtn" disabled>运行Numpy测试</button>
+            <button onclick="clearOutput()">清空输出</button>
+        </div>
+        
+        <div id="status"></div>
+        <div id="output">点击"初始化Pyodide"开始测试...</div>
+    </div>
+
+    <script>
+        let pyodide;
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+        const maxRetries = 3;
+        let retryCount = 0;
+
+        function showStatus(message, type = 'info') {
+            status.textContent = message;
+            status.className = 'status ' + type;
+        }
+
+        function appendOutput(text) {
+            output.textContent += text + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.textContent = '';
+        }
+
+        async function loadPyodideWithFallback() {
+            try {
+                appendOutput('🔄 尝试加载Pyodide...');
+                
+                // 首先尝试主CDN
+                pyodide = await loadPyodide({
+                    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
+                });
+                
+                return pyodide;
+            } catch (error) {
+                appendOutput('⚠️ 主CDN加载失败: ' + error.message);
+                
+                // 尝试备用CDN
+                try {
+                    appendOutput('🔄 尝试备用CDN...');
+                    const pyodideModule = await import('https://unpkg.com/pyodide@0.23.4/pyodide.mjs');
+                    pyodide = await pyodideModule.loadPyodide({
+                        indexURL: "https://unpkg.com/pyodide@0.23.4/"
+                    });
+                    return pyodide;
+                } catch (fallbackError) {
+                    throw new Error('所有CDN都无法加载: ' + fallbackError.message);
+                }
+            }
+        }
+
+        async function initPyodideWithRetry() {
+            const initBtn = document.getElementById('initBtn');
+            initBtn.disabled = true;
+            
+            try {
+                showStatus('正在初始化Pyodide... (尝试 ' + (retryCount + 1) + '/' + (maxRetries + 1) + ')', 'loading');
+                appendOutput('🔄 开始初始化Pyodide... (尝试 ' + (retryCount + 1) + '/' + (maxRetries + 1) + ')');
+                
+                // 检查loadPyodide函数是否存在
+                if (typeof loadPyodide === 'undefined') {
+                    throw new Error('loadPyodide函数未定义，请检查CDN链接');
+                }
+
+                // 加载Pyodide
+                pyodide = await loadPyodideWithFallback();
+                
+                appendOutput('✅ Pyodide加载成功！');
+                
+                // 验证Pyodide是否正确初始化
+                if (!pyodide || typeof pyodide.runPython !== 'function') {
+                    throw new Error('Pyodide初始化不完整');
+                }
+                
+                // 显示版本信息
+                if (pyodide.version) {
+                    appendOutput(`ℹ️ Pyodide版本: ${pyodide.version}`);
+                }
+                
+                // 加载numpy包
+                appendOutput('📦 正在安装numpy包...');
+                await pyodide.loadPackage(['numpy']);
+                appendOutput('✅ numpy安装完成！');
+                
+                showStatus('🎉 Pyodide初始化成功！', 'success');
+                appendOutput('✅ Python环境初始化完成！');
+                
+                // 启用测试按钮
+                document.getElementById('testBtn').disabled = false;
+                document.getElementById('numpyBtn').disabled = false;
+                
+                // 重置重试计数
+                retryCount = 0;
+                
+            } catch (error) {
+                retryCount++;
+                console.error('Pyodide初始化错误:', error);
+                appendOutput('❌ 初始化失败: ' + error.message);
+                
+                if (retryCount <= maxRetries) {
+                    appendOutput(`🔄 ${3000}ms后自动重试... (第${retryCount}次重试)`);
+                    showStatus(`初始化失败，${3000}ms后重试...`, 'error');
+                    
+                    // 等待后重试
+                    setTimeout(() => {
+                        initPyodideWithRetry();
+                    }, 3000);
+                } else {
+                    appendOutput('❌ 所有重试都失败了');
+                    appendOutput('🔍 故障排除建议:');
+                    appendOutput('1. 检查网络连接');
+                    appendOutput('2. 刷新页面重试');
+                    appendOutput('3. 尝试使用不同浏览器');
+                    appendOutput('4. 检查防火墙/代理设置');
+                    showStatus('初始化彻底失败', 'error');
+                    initBtn.disabled = false;
+                    retryCount = 0;
+                }
+            }
+        }
+
+        async function runSimpleTest() {
+            if (!pyodide) {
+                showStatus('请先初始化Pyodide环境', 'error');
+                return;
+            }
+
+            try {
+                document.getElementById('testBtn').disabled = true;
+                showStatus('正在运行简单测试...', 'loading');
+                
+                const result = pyodide.runPython(`
+print("✅ 简单Python测试成功!")
+result = 2 + 3
+print(f"计算结果: 2 + 3 = {result}")
+result
+`);
+                
+                appendOutput('✅ 简单Python代码执行成功！');
+                appendOutput(`返回结果: ${result}`);
+                showStatus('简单测试完成！', 'success');
+                
+            } catch (error) {
+                console.error('Python代码执行错误:', error);
+                showStatus('执行失败: ' + error.message, 'error');
+                appendOutput('❌ 执行失败: ' + error.message);
+            } finally {
+                document.getElementById('testBtn').disabled = false;
+            }
+        }
+
+        async function runNumpyTest() {
+            if (!pyodide) {
+                showStatus('请先初始化Pyodide环境', 'error');
+                return;
+            }
+
+            try {
+                document.getElementById('numpyBtn').disabled = true;
+                showStatus('正在运行Numpy测试...', 'loading');
+                
+                const result = pyodide.runPython(`
+import numpy as np
+arr = np.array([1, 2, 3, 4, 5])
+result = arr * 2
+print("✅ Numpy测试成功!")
+print(f"原始数组: {arr}")
+print(f"计算结果: {result}")
+result.tolist()
+`);
+                
+                appendOutput('✅ Numpy代码执行成功！');
+                appendOutput(`返回结果: ${JSON.stringify(result)}`);
+                showStatus('Numpy测试完成！', 'success');
+                
+            } catch (error) {
+                console.error('Numpy代码执行错误:', error);
+                showStatus('执行失败: ' + error.message, 'error');
+                appendOutput('❌ 执行失败: ' + error.message);
+            } finally {
+                document.getElementById('numpyBtn').disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
