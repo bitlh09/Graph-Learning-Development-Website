@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>成员二 - 个人介绍</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- 动画 & 全局样式（保留原样并加入头像样式） --- */
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
+            background-size: 400% 400%;
+            animation: gradient 18s ease infinite;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        }
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #2563eb 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .role-tag {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 2px;
+            box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .role-tag:hover {
+            transform: scale(1.03);
+            animation: pulse-glow 1s;
+        }
+        .skill-item {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin: 3px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 12px rgba(139, 92, 246, 0.3);
+        }
+        .skill-item:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+        .skill-item.clicked {
+            animation: bounce 0.5s;
+        }
+        .info-card {
+            background: rgba(255, 255, 255, 0.92);
+            color: #1f2937;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .info-card:hover {
+            background: rgba(255, 255, 255, 0.97);
+            transform: translateY(-2px);
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        .slide-in-left {
+            animation: slideInLeft 0.7s ease-out;
+        }
+        .slide-in-right {
+            animation: slideInRight 0.7s ease-out 0.15s both;
+        }
+        .fade-in-up {
+            animation: fadeInUp 0.7s ease-out 0.3s both;
+        }
+        .shake-on-hover:hover {
+            animation: shake 0.4s;
+        }
+        .contact-icon {
+            transition: all 0.3s ease;
+        }
+        .contact-icon:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+
+        /* ====== Avatar（柳昊） 的切换 + 对话气泡样式 ====== */
+        /* 使用与页面中头像尺寸一致的大小 (w-28 = 7rem = 112px) */
+        .avatar-wrapper {
+            position: relative;
+            width: 112px;
+            height: 112px;
+            border-radius: 9999px;
+            overflow: hidden;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .avatar-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 9999px;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            backface-visibility: hidden;
+        }
+        /* 默认显示第一张（默认图在 DOM 中为第一个 img） */
+        .avatar-wrapper img.hover-img {
+            opacity: 0;
+        }
+        /* 悬停时显示第二张 */
+        .avatar-wrapper:hover img.hover-img {
+            opacity: 1;
+        }
+        /* 对话气泡（文字） */
+        .avatar-wrapper::after {
+            content: "拿远点！！！！";
+            position: absolute;
+            top: -52px;
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+            background: rgba(0,0,0,0.88);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+        }
+        /* 小三角 */
+        .avatar-wrapper::before {
+            content: "";
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 7px;
+            border-style: solid;
+            border-color: rgba(0,0,0,0.88) transparent transparent transparent;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+        /* 悬停显示气泡与三角，并微微上移气泡以配合动画 */
+        .avatar-wrapper:hover::after,
+        .avatar-wrapper:hover::before {
+            opacity: 1;
+        }
+        .avatar-wrapper:hover::after {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 让辅助小在线点保持原样（左上角的小绿点） */
+        .avatar-online-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 9999px;
+            background: #34d399; /* green-400 */
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 6px rgba(52,211,153,0.08);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <main class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-5">
+        <!-- 头部导航 -->
+        <header class="mb-4 slide-in-left">
+            <div class="glass-effect rounded-lg p-4 hover-lift">
+                <h1 class="text-3xl font-bold text-gradient mb-2">柳昊</h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="role-tag shake-on-hover">
+                        <i class="fas fa-code mr-1"></i>主程序员
+                    </div>
+                    <div class="role-tag shake-on-hover">
+                        <i class="fas fa-cogs mr-1"></i>技术总监
+                    </div>
+                    <a href="team.html" class="text-white hover:text-yellow-300 transition-colors duration-300 font-semibold">
+                        <i class="fas fa-arrow-left mr-1"></i>返回小组页
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 个人头像卡片 -->
+        <section class="mb-4 slide-in-right">
+            <div class="glass-effect rounded-lg p-4 hover-lift">
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <div class="relative">
+                        <!-- avatar-wrapper 作为可点击元素，保留 id 以兼容已有脚本 -->
+                        <div class="avatar-wrapper floating" id="avatarImg" title="柳昊">
+                            <!-- 默认头像（图片1） -->
+                            <img src="photo/bbb3a4dad98a21611850d2d547dcef24.jpg" alt="柳昊 默认头像" class="default-img">
+                            <!-- 悬停替换头像（图片2） -->
+                            <img src="photo/2a1d752f76726f1834c1608c41cea72d.jpg" alt="柳昊 悬停头像" class="hover-img">
+                        </div>
+
+                        <!-- 在线小点 -->
+                        <div class="avatar-online-dot" aria-hidden="true"></div>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h2 class="text-xl font-bold text-white mb-1">你好，我是柳昊！</h2>
+                        <p class="text-base text-gray-100 mb-2">一名充满激情的技术探索者</p>
+                        <div class="text-sm text-gray-200">
+                            <p><i class="fas fa-map-marker-alt mr-1"></i>技术爱好者 | 持续学习者</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技能标签云 -->
+        <section class="mb-4 fade-in-up">
+            <div class="glass-effect rounded-lg p-4 hover-lift">
+                <h3 class="text-lg font-bold text-white mb-3 text-center">
+                    <i class="fas fa-star mr-2"></i>技能专长
+                </h3>
+                <div class="text-center" id="skillsContainer">
+                    <span class="skill-item" data-skill="数据结构"><i class="fas fa-code mr-1"></i>数据结构</span>
+                    <span class="skill-item" data-skill="图算法"><i class="fas fa-project-diagram mr-1"></i>图算法</span>
+                    <span class="skill-item" data-skill="人工智能"><i class="fas fa-brain mr-1"></i>人工智能</span>
+                    <span class="skill-item" data-skill="编程开发"><i class="fas fa-laptop-code mr-1"></i>编程开发</span>
+                    <span class="skill-item" data-skill="团队协作"><i class="fas fa-users mr-1"></i>团队协作</span>
+                    <span class="skill-item" data-skill="问题分析"><i class="fas fa-lightbulb mr-1"></i>问题分析</span>
+                    <span class="skill-item" data-skill="流程优化"><i class="fas fa-chart-line mr-1"></i>流程优化</span>
+                </div>
+                <div id="skillDescription" class="mt-2 text-center text-white text-sm opacity-0 transition-opacity duration-300"></div>
+            </div>
+        </section>
+
+        <!-- 个人介绍详情 -->
+        <section class="mb-4 fade-in-up">
+            <div class="glass-effect rounded-lg p-4 hover-lift">
+                <h3 class="text-lg font-bold text-white mb-3">
+                    <i class="fas fa-user-circle mr-2"></i>关于我
+                </h3>
+                <div class="info-card p-4 rounded-lg">
+                    <p class="text-sm text-gray-800 leading-relaxed">
+                        我是一名对技术充满好奇和求知欲的学习者，目前正在不断提升自己的计算机编程与算法能力，尤其对数据结构、图算法以及人工智能方向有持续关注。平时喜欢动手实践，将所学知识应用到小项目中，并乐于与他人交流学习经验。
+                        <br><br>
+                        在学习和工作中，我注重认真和高效，努力分析问题并尝试优化流程，同时希望通过团队协作不断吸取不同意见和经验。生活中，我喜欢阅读科技书籍、关注前沿技术，同时保持运动和兴趣爱好，追求持续成长与自我完善。
+                        <br><br>
+                        我希望通过不断学习和积累，逐步提升专业能力，为未来能更好地创造价值和贡献力量做好准备。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 兴趣爱好 -->
+        <section class="mb-4 fade-in-up">
+            <div class="glass-effect rounded-lg p-4 hover-lift">
+                <h3 class="text-lg font-bold text-white mb-3">
+                    <i class="fas fa-gamepad mr-2"></i>兴趣爱好
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div class="text-center group">
+                        <div class="bg-gradient-to-br from-purple-400 to-purple-600 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 cursor-pointer">
+                            <i class="fas fa-book text-lg text-white"></i>
+                        </div>
+                        <p class="text-white font-semibold text-xs">阅读科技书籍</p>
+                    </div>
+                    <div class="text-center group">
+                        <div class="bg-gradient-to-br from-blue-400 to-blue-600 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 cursor-pointer">
+                            <i class="fas fa-dumbbell text-lg text-white"></i>
+                        </div>
+                        <p class="text-white font-semibold text-xs">运动健身</p>
+                    </div>
+                    <div class="text-center group">
+                        <div class="bg-gradient-to-br from-green-400 to-green-600 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 cursor-pointer">
+                            <i class="fas fa-rocket text-lg text-white"></i>
+                        </div>
+                        <p class="text-white font-semibold text-xs">关注前沿技术</p>
+                    </div>
+                    <div class="text-center group">
+                        <div class="bg-gradient-to-br from-red-400 to-red-600 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300 cursor-pointer">
+                            <i class="fas fa-laptop text-lg text-white"></i>
+                        </div>
+                        <p class="text-white font-semibold text-xs">编程实践</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 技能描述数据
+        const skillDescriptions = {
+            '数据结构': '掌握各种数据结构的设计与实现，包括数组、链表、栈、队列、树、图等',
+            '图算法': '熟悉图的遍历、最短路径、最小生成树等经典算法',
+            '人工智能': '了解机器学习、深度学习的基本原理和应用',
+            '编程开发': '具备扎实的编程基础，能够开发高质量的软件产品',
+            '团队协作': '具有良好的沟通能力和团队合作精神',
+            '问题分析': '能够快速定位问题并提出有效的解决方案',
+            '流程优化': '善于分析和优化工作流程，提高效率'
+        };
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 技能标签交互
+            const skillItems = document.querySelectorAll('.skill-item');
+            const skillDescription = document.getElementById('skillDescription');
+            
+            skillItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    const skill = this.getAttribute('data-skill');
+                    if (skillDescriptions[skill]) {
+                        skillDescription.textContent = skillDescriptions[skill];
+                        skillDescription.style.opacity = '1';
+                    }
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    skillDescription.style.opacity = '0';
+                });
+                
+                item.addEventListener('click', function() {
+                    this.classList.add('clicked');
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 500);
+                });
+            });
+
+            // 头像点击效果 (保留：点击头像有 bounce 动画)
+            const avatarWrapper = document.getElementById('avatarImg');
+            if (avatarWrapper) {
+                avatarWrapper.addEventListener('click', function() {
+                    this.style.animation = 'none';
+                    // 强制触发回流以重置动画
+                    void this.offsetWidth;
+                    this.style.animation = 'bounce 0.6s';
+                });
+            }
+
+            // 滚动动画效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -30px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // 观察所有需要动画的元素
+            document.querySelectorAll('.hover-lift').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(15px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+
+            // 卡片倾斜效果
+            document.querySelectorAll('.hover-lift').forEach(card => {
+                card.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+                    
+                    this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+                });
+            });
+
+            // 随机闪烁效果
+            setInterval(() => {
+                const cards = document.querySelectorAll('.glass-effect');
+                const randomCard = cards[Math.floor(Math.random() * cards.length)];
+                randomCard.style.boxShadow = '0 6px 25px rgba(59, 130, 246, 0.3)';
+                setTimeout(() => {
+                    randomCard.style.boxShadow = '0 6px 25px rgba(0, 0, 0, 0.1)';
+                }, 800);
+            }, 4000);
+        });
+    </script>
+</body>
+</html>

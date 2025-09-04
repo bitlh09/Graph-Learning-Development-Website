@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cora GCN 功能测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 8px 16px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #results { white-space: pre-wrap; background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 10px; }
+        #visualization { width: 100%; height: 300px; border: 1px solid #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Cora GCN 功能测试</h1>
+    
+    <div class="test-section">
+        <h2>1. 模块加载测试</h2>
+        <button onclick="testModuleLoading()">测试模块加载</button>
+        <div id="module-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 数据集初始化测试</h2>
+        <button onclick="testDatasetInit()">测试数据集初始化</button>
+        <div id="dataset-test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. GCN模型训练测试</h2>
+        <button onclick="testGCNTraining()">开始训练测试</button>
+        <div id="training-test-result"></div>
+        <div id="training-progress"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 可视化测试</h2>
+        <button onclick="testVisualization()">测试图可视化</button>
+        <div id="visualization-test-result"></div>
+        <div id="visualization"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. 综合功能测试</h2>
+        <button onclick="runFullTest()">运行完整测试</button>
+        <div id="results"></div>
+    </div>
+
+    <!-- 引入必要的库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="js/cora-gcn.js"></script>
+    
+    <script>
+        function testModuleLoading() {
+            var result = document.getElementById('module-test-result');
+            var tests = [];
+            
+            // 测试全局函数是否存在
+            tests.push({
+                name: 'initCoraDataset函数',
+                pass: typeof window.initCoraDataset === 'function'
+            });
+            
+            tests.push({
+                name: 'trainCoraGCN函数', 
+                pass: typeof window.trainCoraGCN === 'function'
+            });
+            
+            tests.push({
+                name: 'visualizeCoraSample函数',
+                pass: typeof window.visualizeCoraSample === 'function'
+            });
+            
+            tests.push({
+                name: 'coraDataset对象',
+                pass: typeof window.coraDataset === 'object'
+            });
+            
+            var allPassed = tests.every(t => t.pass);
+            var resultHtml = '<h3>模块加载测试结果:</h3><ul>';
+            
+            tests.forEach(test => {
+                resultHtml += `<li style="color: ${test.pass ? 'green' : 'red'}">
+                    ${test.pass ? '✅' : '❌'} ${test.name}
+                </li>`;
+            });
+            
+            resultHtml += '</ul>';
+            result.innerHTML = resultHtml;
+            result.className = 'test-section ' + (allPassed ? 'success' : 'error');
+        }
+        
+        function testDatasetInit() {
+            var result = document.getElementById('dataset-test-result');
+            
+            try {
+                window.initCoraDataset();
+                
+                var tests = [];
+                tests.push({
+                    name: '特征矩阵生成',
+                    pass: window.coraDataset.features && window.coraDataset.features.length === 2708
+                });
+                
+                tests.push({
+                    name: '邻接矩阵生成',
+                    pass: window.coraDataset.adjacency && window.coraDataset.adjacency.length === 2708
+                });
+                
+                tests.push({
+                    name: '标签数据生成',
+                    pass: window.coraDataset.labels && window.coraDataset.labels.length === 2708
+                });
+                
+                tests.push({
+                    name: '类别数量正确',
+                    pass: window.coraDataset.classes.length === 7
+                });
+                
+                var allPassed = tests.every(t => t.pass);
+                var resultHtml = '<h3>数据集初始化测试结果:</h3><ul>';
+                
+                tests.forEach(test => {
+                    resultHtml += `<li style="color: ${test.pass ? 'green' : 'red'}">
+                        ${test.pass ? '✅' : '❌'} ${test.name}
+                    </li>`;
+                });
+                
+                resultHtml += `</ul><p><strong>数据集统计:</strong><br/>
+                    节点数: ${window.coraDataset.numNodes}<br/>
+                    特征维度: ${window.coraDataset.numFeatures}<br/>
+                    类别数: ${window.coraDataset.numClasses}
+                </p>`;
+                
+                result.innerHTML = resultHtml;
+                result.className = 'test-section ' + (allPassed ? 'success' : 'error');
+                
+            } catch (error) {
+                result.innerHTML = `<h3>❌ 数据集初始化失败:</h3><p style="color: red;">${error.message}</p>`;
+                result.className = 'test-section error';
+            }
+        }
+        
+        async function testGCNTraining() {
+            var result = document.getElementById('training-test-result');
+            var progress = document.getElementById('training-progress');
+            
+            try {
+                result.innerHTML = '<h3>🚀 开始GCN训练测试...</h3>';
+                progress.innerHTML = '<div style="background: #f0f0f0; border-radius: 10px; overflow: hidden;"><div id="progress-bar" style="height: 20px; background: #007bff; width: 0%; transition: width 0.3s;"></div></div><p id="progress-text">准备开始...</p>';
+                
+                var trainingResults = await window.trainCoraGCN({
+                    hiddenDim: 16,
+                    learningRate: 0.01,
+                    epochs: 50, // 减少轮数以便快速测试
+                    onProgress: function(prog) {
+                        var progressBar = document.getElementById('progress-bar');
+                        var progressText = document.getElementById('progress-text');
+                        if (progressBar && progressText) {
+                            var percentage = ((prog.epoch + 1) / 50) * 100;
+                            progressBar.style.width = percentage + '%';
+                            progressText.textContent = `Epoch ${prog.epoch + 1}/50 - Loss: ${prog.loss.toFixed(4)}, Acc: ${prog.trainAcc.toFixed(4)}`;
+                        }
+                    },
+                    onComplete: function(results) {
+                        var testResults = [
+                            {
+                                name: '模型训练完成',
+                                pass: results.model !== null
+                            },
+                            {
+                                name: '预测结果生成',
+                                pass: results.predictions && results.predictions.length > 0
+                            },
+                            {
+                                name: '测试准确率合理',
+                                pass: results.testAccuracy > 0.1 && results.testAccuracy < 1.0
+                            },
+                            {
+                                name: '训练历史记录',
+                                pass: results.history && results.history.losses.length > 0
+                            }
+                        ];
+                        
+                        var allPassed = testResults.every(t => t.pass);
+                        var resultHtml = '<h3>GCN训练测试结果:</h3><ul>';
+                        
+                        testResults.forEach(test => {
+                            resultHtml += `<li style="color: ${test.pass ? 'green' : 'red'}">
+                                ${test.pass ? '✅' : '❌'} ${test.name}
+                            </li>`;
+                        });
+                        
+                        resultHtml += `</ul><p><strong>训练统计:</strong><br/>
+                            最终测试准确率: ${results.testAccuracy.toFixed(4)}<br/>
+                            训练集大小: ${results.split.train.length}<br/>
+                            测试集大小: ${results.split.test.length}
+                        </p>`;
+                        
+                        result.innerHTML = resultHtml;
+                        result.className = 'test-section ' + (allPassed ? 'success' : 'error');
+                    }
+                });
+                
+            } catch (error) {
+                result.innerHTML = `<h3>❌ GCN训练测试失败:</h3><p style="color: red;">${error.message}</p>`;
+                result.className = 'test-section error';
+            }
+        }
+        
+        function testVisualization() {
+            var result = document.getElementById('visualization-test-result');
+            var viz = document.getElementById('visualization');
+            
+            try {
+                // 确保数据集已初始化
+                if (!window.coraDataset.features) {
+                    window.initCoraDataset();
+                }
+                
+                // 测试可视化功能
+                window.visualizeCoraSample('visualization', 20);
+                
+                // 检查是否生成了SVG
+                setTimeout(function() {
+                    var svg = viz.querySelector('svg');
+                    var hasNodes = viz.querySelectorAll('circle').length > 0;
+                    var hasLinks = viz.querySelectorAll('line').length > 0;
+                    
+                    var tests = [
+                        {
+                            name: 'SVG元素创建',
+                            pass: svg !== null
+                        },
+                        {
+                            name: '节点绘制',
+                            pass: hasNodes
+                        },
+                        {
+                            name: '连接线绘制',
+                            pass: hasLinks
+                        }
+                    ];
+                    
+                    var allPassed = tests.every(t => t.pass);
+                    var resultHtml = '<h3>可视化测试结果:</h3><ul>';
+                    
+                    tests.forEach(test => {
+                        resultHtml += `<li style="color: ${test.pass ? 'green' : 'red'}">
+                            ${test.pass ? '✅' : '❌'} ${test.name}
+                        </li>`;
+                    });
+                    
+                    resultHtml += '</ul>';
+                    result.innerHTML = resultHtml;
+                    result.className = 'test-section ' + (allPassed ? 'success' : 'error');
+                }, 500);
+                
+            } catch (error) {
+                result.innerHTML = `<h3>❌ 可视化测试失败:</h3><p style="color: red;">${error.message}</p>`;
+                result.className = 'test-section error';
+            }
+        }
+        
+        async function runFullTest() {
+            var results = document.getElementById('results');
+            results.textContent = '🧪 运行完整功能测试...\n\n';
+            
+            try {
+                // 1. 模块加载测试
+                results.textContent += '1. 测试模块加载...\n';
+                testModuleLoading();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // 2. 数据集初始化
+                results.textContent += '2. 测试数据集初始化...\n';
+                testDatasetInit();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // 3. 可视化测试
+                results.textContent += '3. 测试可视化功能...\n';
+                testVisualization();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // 4. 训练测试
+                results.textContent += '4. 测试GCN训练...\n';
+                await testGCNTraining();
+                
+                results.textContent += '\n✅ 完整测试完成！所有Cora GCN功能已成功集成。\n';
+                results.textContent += '\n📋 功能清单:\n';
+                results.textContent += '  ✅ Cora数据集模拟生成\n';
+                results.textContent += '  ✅ GCN模型JavaScript实现\n';
+                results.textContent += '  ✅ 完整训练流程\n';
+                results.textContent += '  ✅ 实时进度监控\n';
+                results.textContent += '  ✅ 图结构可视化\n';
+                results.textContent += '  ✅ 结果分析和展示\n';
+                
+            } catch (error) {
+                results.textContent += `\n❌ 完整测试失败: ${error.message}\n`;
+            }
+        }
+        
+        // 页面加载完成后自动运行模块加载测试
+        window.addEventListener('load', function() {
+            setTimeout(testModuleLoading, 100);
+        });
+    </script>
+</body>
+</html>

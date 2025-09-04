@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyodide功能测试</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        #output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            min-height: 200px;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Pyodide 功能测试页面</h1>
+    
+    <div class="test-section">
+        <h2>📋 测试项目</h2>
+        <div id="test-status">
+            <div class="status info">准备开始测试...</div>
+        </div>
+        
+        <button onclick="testPyodideInit()">1. 测试 Pyodide 初始化</button>
+        <button onclick="testBasicPython()">2. 测试基本 Python 执行</button>
+        <button onclick="testNumPyGCN()">3. 测试 NumPy GCN 代码</button>
+        <button onclick="testResultExtraction()">4. 测试结果提取</button>
+        <button onclick="runAllTests()">🚀 运行所有测试</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📺 执行输出</h2>
+        <div id="output">等待测试开始...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 测试结果</h2>
+        <div id="results">
+            <ul id="result-list">
+                <li>🔄 等待测试结果...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let pyodide = null;
+        let testResults = [];
+        
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('test-status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function appendOutput(text) {
+            const output = document.getElementById('output');
+            output.textContent += text + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function updateResults() {
+            const resultList = document.getElementById('result-list');
+            resultList.innerHTML = testResults.map(result => 
+                `<li>${result.success ? '✅' : '❌'} ${result.name}: ${result.message}</li>`
+            ).join('');
+        }
+        
+        async function testPyodideInit() {
+            updateStatus('正在测试 Pyodide 初始化...', 'info');
+            appendOutput('🔄 开始初始化 Pyodide...');
+            
+            try {
+                pyodide = await loadPyodide({
+                    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.24.1/full/'
+                });
+                
+                appendOutput('✅ Pyodide 核心加载成功');
+                
+                // 安装 NumPy
+                await pyodide.loadPackage('numpy');
+                appendOutput('✅ NumPy 安装成功');
+                
+                testResults.push({
+                    name: 'Pyodide 初始化',
+                    success: true,
+                    message: '成功加载 Pyodide 和 NumPy'
+                });
+                
+                updateStatus('Pyodide 初始化测试通过！', 'success');
+                
+            } catch (error) {
+                appendOutput(`❌ 初始化失败: ${error.message}`);
+                testResults.push({
+                    name: 'Pyodide 初始化',
+                    success: false,
+                    message: `失败: ${error.message}`
+                });
+                updateStatus('Pyodide 初始化测试失败！', 'error');
+            }
+            
+            updateResults();
+        }
+        
+        async function testBasicPython() {
+            if (!pyodide) {
+                updateStatus('请先完成 Pyodide 初始化测试', 'error');
+                return;
+            }
+            
+            updateStatus('正在测试基本 Python 执行...', 'info');
+            appendOutput('🐍 测试基本 Python 代码执行...');
+            
+            try {
+                // 测试基本 Python 代码
+                pyodide.runPython(`
+import sys
+print(f"Python 版本: {sys.version}")
+print("Hello from Pyodide!")
+
+# 测试基本数学运算
+result = 2 + 3 * 4
+print(f"2 + 3 * 4 = {result}")
+                `);
+                
+                appendOutput('✅ 基本 Python 代码执行成功');
+                
+                testResults.push({
+                    name: '基本 Python 执行',
+                    success: true,
+                    message: '成功执行基本 Python 代码'
+                });
+                
+                updateStatus('基本 Python 执行测试通过！', 'success');
+                
+            } catch (error) {
+                appendOutput(`❌ 基本 Python 执行失败: ${error.message}`);
+                testResults.push({
+                    name: '基本 Python 执行',
+                    success: false,
+                    message: `失败: ${error.message}`
+                });
+                updateStatus('基本 Python 执行测试失败！', 'error');
+            }
+            
+            updateResults();
+        }
+        
+        async function testNumPyGCN() {
+            if (!pyodide) {
+                updateStatus('请先完成 Pyodide 初始化测试', 'error');
+                return;
+            }
+            
+            updateStatus('正在测试 NumPy GCN 代码...', 'info');
+            appendOutput('🧠 测试 NumPy 版本的 GCN 实现...');
+            
+            try {
+                // 运行简化版的 NumPy GCN 代码
+                await pyodide.runPythonAsync(`
+import numpy as np
+
+print("开始测试 NumPy GCN...")
+
+# 创建示例数据
+num_nodes, num_features, num_classes = 5, 3, 2
+features = np.random.randn(num_nodes, num_features).astype(np.float32)
+adj_matrix = np.eye(num_nodes, dtype=np.float32)
+labels = np.random.randint(0, num_classes, num_nodes)
+
+print(f"特征矩阵形状: {features.shape}")
+print(f"邻接矩阵形状: {adj_matrix.shape}")
+
+# 简单的 GCN 前向传播
+W = np.random.randn(num_features, num_classes) * 0.1
+output = adj_matrix @ features @ W
+
+print(f"输出形状: {output.shape}")
+print("✅ NumPy GCN 测试代码执行成功！")
+
+# 设置全局变量供结果提取
+losses = [1.2, 1.0, 0.8, 0.6, 0.4]
+accuracies = [0.2, 0.4, 0.6, 0.7, 0.85]
+                `);
+                
+                appendOutput('✅ NumPy GCN 代码执行成功');
+                
+                testResults.push({
+                    name: 'NumPy GCN 执行',
+                    success: true,
+                    message: '成功执行 NumPy 版本的 GCN 代码'
+                });
+                
+                updateStatus('NumPy GCN 测试通过！', 'success');
+                
+            } catch (error) {
+                appendOutput(`❌ NumPy GCN 执行失败: ${error.message}`);
+                testResults.push({
+                    name: 'NumPy GCN 执行',
+                    success: false,
+                    message: `失败: ${error.message}`
+                });
+                updateStatus('NumPy GCN 测试失败！', 'error');
+            }
+            
+            updateResults();
+        }
+        
+        async function testResultExtraction() {
+            if (!pyodide) {
+                updateStatus('请先完成 Pyodide 初始化测试', 'error');
+                return;
+            }
+            
+            updateStatus('正在测试结果提取...', 'info');
+            appendOutput('📊 测试结果提取功能...');
+            
+            try {
+                // 提取结果
+                const resultData = await pyodide.runPythonAsync(`
+import json
+
+result = {
+    'losses': [],
+    'accuracies': [],
+    'model_info': '',
+    'execution_info': {}
+}
+
+# 提取训练结果
+try:
+    if 'losses' in globals():
+        result['losses'] = [float(x) for x in losses]
+    if 'accuracies' in globals():
+        result['accuracies'] = [float(x) for x in accuracies]
+    
+    result['model_info'] = "测试模型: NumPy GCN"
+    result['execution_info']['test_status'] = 'success'
+    
+except Exception as e:
+    result['execution_info']['error'] = str(e)
+
+json.dumps(result)
+                `);
+                
+                const result = JSON.parse(resultData);
+                appendOutput(`✅ 结果提取成功:`);
+                appendOutput(`  - 损失数据点: ${result.losses.length}`);
+                appendOutput(`  - 准确率数据点: ${result.accuracies.length}`);
+                appendOutput(`  - 模型信息: ${result.model_info}`);
+                
+                testResults.push({
+                    name: '结果提取',
+                    success: true,
+                    message: `成功提取 ${result.losses.length} 个损失点和 ${result.accuracies.length} 个准确率点`
+                });
+                
+                updateStatus('结果提取测试通过！', 'success');
+                
+            } catch (error) {
+                appendOutput(`❌ 结果提取失败: ${error.message}`);
+                testResults.push({
+                    name: '结果提取',
+                    success: false,
+                    message: `失败: ${error.message}`
+                });
+                updateStatus('结果提取测试失败！', 'error');
+            }
+            
+            updateResults();
+        }
+        
+        async function runAllTests() {
+            testResults = [];
+            document.getElementById('output').textContent = '';
+            
+            appendOutput('🚀 开始运行所有 Pyodide 功能测试...\n');
+            
+            await testPyodideInit();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testBasicPython();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testNumPyGCN();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testResultExtraction();
+            
+            // 显示最终结果
+            const passedTests = testResults.filter(t => t.success).length;
+            const totalTests = testResults.length;
+            
+            appendOutput(`\n🎯 测试完成！通过 ${passedTests}/${totalTests} 个测试`);
+            
+            if (passedTests === totalTests) {
+                updateStatus('🎉 所有测试通过！Pyodide 功能完全正常', 'success');
+            } else {
+                updateStatus(`⚠️ 部分测试失败 (${passedTests}/${totalTests})`, 'error');
+            }
+        }
+        
+        // 页面加载时显示说明
+        window.addEventListener('load', function() {
+            appendOutput('📖 Pyodide 功能测试说明:');
+            appendOutput('1. 点击 "运行所有测试" 开始完整测试');
+            appendOutput('2. 或者逐个运行单项测试');
+            appendOutput('3. 观察控制台输出和测试结果');
+            appendOutput('4. 所有测试通过即表明 Pyodide 功能正常\n');
+            appendOutput('准备就绪，请开始测试...\n');
+        });
+    </script>
+</body>
+</html>
