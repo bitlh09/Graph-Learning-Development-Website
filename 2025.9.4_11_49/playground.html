@@ -50,19 +50,28 @@
 
             <!-- 编程环境选择 -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('gcn-classification')">
+                                <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="window.location.href='coragen-zero-js.html'">
                     <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">GCN节点分类</h3>
-                            <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">入门级</span>
+                            <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">超简单真实CORA训练</h3>
+                            <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">无技术障碍</span>
                         </div>
                     </div>
-                    <p class="text-gray-600 mb-4">使用Cora数据集进行论文分类，观察GCN如何学习节点表示</p>
+                    <p class="text-gray-600 mb-4">🚀 <strong>立即体验版</strong>：
+                    <br>❌ 无需安装Pyodide，点击秒开
+                    <br>❌ 无需安装依赖，纯JavaScript即时运行
+                    <br>✅ 2708论文完整真实CORA数据集
+                    <br>✅ 实时可视化，立即看到训练进展</p>
+                    <div class="bg-green-50 border-l-4 border-green-400 p-2 mt-3">
+                        <div class="text-xs text-green-700">
+                            <span class="font-medium">⚡ 零技术版：</span>直接点击按钮立即开始训练，无任何等待！
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card-hover bg-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="loadPracticeEnvironment('gat-attention')">

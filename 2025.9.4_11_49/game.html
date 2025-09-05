@@ -55,14 +55,22 @@
             </div>
         </div>
     </nav>
+
   <!-- 页面主体 -->
   <main class="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md">
     <!-- 标题 -->
     <h2 class="text-2xl font-bold mb-4 text-center">答题闯关模式</h2>
 
+    <!-- 难度选择 -->
+    <div class="flex justify-center space-x-4 mb-6">
+      <button id="easy-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md">基础</button>
+      <button id="medium-btn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-xl shadow-md">中等</button>
+      <button id="hard-btn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl shadow-md">进阶</button>
+    </div>
+
     <!-- 关卡进度条 -->
     <div class="mb-6">
-      <p class="mb-2">关卡进度：第 <span id="current-level">1</span> 关 / 共 10 关</p>
+      <p class="mb-2">关卡进度：第 <span id="current-level">1</span> 关 / 共 <span id="total-levels">10</span> 关</p>
       <div class="progress-bar">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
@@ -74,10 +82,13 @@
       <form id="quiz-form" class="space-y-3"></form>
     </section>
 
-    <!-- 提交按钮 -->
-    <div class="text-center">
+    <!-- 操作按钮 -->
+    <div class="flex items-center justify-center gap-3">
       <button id="submit-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md">
         提交答案
+      </button>
+      <button id="restart-btn" class="hidden bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-xl shadow-md">
+        再来一组
       </button>
     </div>
 
@@ -87,85 +98,222 @@
 
   <!-- JS 脚本 -->
   <script>
-    // 题库（10关）
-    const questions = [
-      {
-        question: "以下哪种是最经典的图神经网络模型？",
-        options: ["CNN", "GCN", "RNN", "LSTM"],
-        answer: 1
-      },
-      {
-        question: "GCN 最常用于处理哪类数据？",
-        options: ["图结构数据", "序列数据", "图像数据", "表格数据"],
-        answer: 0
-      },
-      {
-        question: "在图中，节点之间通过什么表示关系？",
-        options: ["边", "权重", "标签", "矩阵"],
-        answer: 0
-      },
-      {
-        question: "以下哪种方法常用于图表示学习？",
-        options: ["Word2Vec", "Node2Vec", "BERT", "SVM"],
-        answer: 1
-      },
-      {
-        question: "图神经网络的输入通常包括？",
-        options: ["节点特征和邻接矩阵", "图像像素", "序列词向量", "表格数值"],
-        answer: 0
-      },
-      {
-        question: "以下哪项不是图卷积的主要操作？",
-        options: ["邻居聚合", "特征变换", "池化降维", "循环展开"],
-        answer: 3
-      },
-      {
-        question: "在社交网络分析中，GNN 可以用来预测什么？",
-        options: ["节点分类", "边的存在性", "社群划分", "以上都可以"],
-        answer: 3
-      },
-      {
-        question: "Graph Attention Network (GAT) 引入了什么机制？",
-        options: ["卷积", "注意力机制", "循环", "强化学习"],
-        answer: 1
-      },
-      {
-        question: "以下哪种任务最适合用 GNN 解决？",
-        options: ["图像识别", "语音识别", "节点分类", "机器翻译"],
-        answer: 2
-      },
-      {
-        question: "完成 10 关后，你会看到什么？",
-        options: ["通关成功提示", "重新开始按钮", "积分榜", "以上都有可能"],
-        answer: 0
-      }
+    const questionBank = [
+    {question:"以下哪种是最经典的图神经网络模型？",options:["CNN","GCN","RNN","LSTM"],answer:1,difficulty:"easy"},
+    {question:"GCN 最常用于处理哪类数据？",options:["图结构数据","序列数据","图像数据","表格数据"],answer:0,difficulty:"easy"},
+    {question:"在图中，节点之间通过什么表示关系？",options:["边","权重","标签","矩阵"],answer:0,difficulty:"easy"},
+    {question:"以下哪种方法常用于图表示学习？",options:["Word2Vec","Node2Vec","BERT","SVM"],answer:1,difficulty:"medium"},
+    {question:"图神经网络的输入通常包括？",options:["节点特征和邻接矩阵","图像像素","序列词向量","表格数值"],answer:0,difficulty:"easy"},
+    {question:"以下哪项不是图卷积的主要操作？",options:["邻居聚合","特征变换","池化降维","循环展开"],answer:3,difficulty:"medium"},
+    {question:"在社交网络分析中，GNN 可以用来预测什么？",options:["节点分类","边的存在性","社群划分","以上都可以"],answer:3,difficulty:"easy"},
+    {question:"Graph Attention Network (GAT) 引入了什么机制？",options:["卷积","注意力机制","循环","强化学习"],answer:1,difficulty:"medium"},
+    {question:"以下哪种任务最适合用 GNN 解决？",options:["图像识别","语音识别","节点分类","机器翻译"],answer:2,difficulty:"easy"},
+    {question:"Graph AutoEncoder (GAE) 的主要用途是？",options:["节点分类","图生成与链接预测","图卷积计算","图边采样"],answer:1,difficulty:"medium"},
+    {question:"GNN 中的消息传递机制主要用于？",options:["节点特征更新","图像分类","序列生成","图像生成"],answer:0,difficulty:"easy"},
+    {question:"以下哪种方法可以增强 GNN 的表达能力？",options:["增加层数","减少节点数","增加边数","减少特征维度"],answer:0,difficulty:"easy"},
+    {question:"在图神经网络中，边的权重通常表示什么？",options:["节点的标签","节点的特征","节点之间的关系强度","节点的度数"],answer:2,difficulty:"easy"},
+    {question:"以下哪种任务不适合使用 GNN？",options:["图像分类","节点分类","图分类","链接预测"],answer:0,difficulty:"easy"},
+    {question:"GNN 的训练通常使用哪种优化算法？",options:["梯度下降","遗传算法","模拟退火","粒子群优化"],answer:0,difficulty:"easy"},
+    {question:"以下哪种方法可以提高 GNN 的训练效率？",options:["增加训练数据","使用更深的网络","使用更大的批量大小","使用更小的学习率"],answer:0,difficulty:"easy"},
+    {question:"在 GNN 中，节点的特征通常表示什么？",options:["节点的标签","节点的度数","节点的属性","节点之间的关系"],answer:2,difficulty:"easy"},
+    {question:"以下哪种方法可以用于 GNN 的正则化？",options:["Dropout","L2 正则化","数据增强","以上都是"],answer:3,difficulty:"medium"},
+    {question:"GNN 中的池化操作主要用于？",options:["减少图的大小","增加图的大小","改变节点的特征","改变边的权重"],answer:0,difficulty:"medium"},
+    {question:"以下哪种方法可以用于处理图中的异质性？",options:["使用异质 GNN","使用同质 GNN","使用传统的神经网络","以上都不是"],answer:0,difficulty:"medium"},
+    {question:"GCN 的邻居聚合操作通常是通过什么实现的？",options:["矩阵乘法","卷积核","循环神经网络","注意力机制"],answer:0,difficulty:"medium"},
+    {question:"GraphSAGE 模型的核心思想是？",options:["基于采样的节点聚合","全局特征编码","序列生成","边预测"],answer:0,difficulty:"medium"},
+    {question:"GAT 使用注意力机制的目的是什么？",options:["选择性关注邻居节点","提高计算速度","减少内存消耗","生成节点标签"],answer:0,difficulty:"medium"},
+    {question:"在 GNN 中，节点分类任务通常属于？",options:["监督学习","无监督学习","强化学习","生成式模型"],answer:0,difficulty:"easy"},
+    {question:"在 GNN 中，链接预测任务通常属于？",options:["监督学习","无监督学习","强化学习","生成式模型"],answer:1,difficulty:"medium"},
+    {question:"GCN 中的激活函数常用哪种？",options:["ReLU","Sigmoid","Tanh","Softmax"],answer:0,difficulty:"easy"},
+    {question:"在图卷积中，节点特征的更新公式包含哪两部分？",options:["邻居特征聚合和自身特征","节点标签和边权重","全局特征和局部特征","输入和输出"],answer:0,difficulty:"medium"},
+    {question:"Graph Attention Network 相比 GCN 的优势是？",options:["能够区分邻居重要性","更快计算速度","更少参数","无需邻接矩阵"],answer:0,difficulty:"medium"},
+    {question:"以下哪种 GNN 模型适合大规模图数据？",options:["GraphSAGE","GCN","GAT","R-GCN"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，节点表示学习的主要目标是？",options:["提取节点特征","预测节点标签","编码邻居信息","以上都是"],answer:3,difficulty:"medium"},
+    {question:"R-GCN 用于处理哪类图？",options:["有向图","异质图","无向图","完全图"],answer:1,difficulty:"medium"},
+    {question:"以下哪种方法可以用于图生成任务？",options:["GraphVAE","GCN","GAT","GraphSAGE"],answer:0,difficulty:"hard"},
+    {question:"Graph AutoEncoder 的损失函数通常是？",options:["重建误差","交叉熵","均方误差","KL 散度"],answer:0,difficulty:"medium"},
+    {question:"在图卷积中，邻居节点特征被乘以什么？",options:["权重矩阵","激活函数","注意力系数","标签向量"],answer:0,difficulty:"medium"},
+    {question:"以下哪种方法可以用于图嵌入？",options:["DeepWalk","CNN","RNN","Transformer"],answer:0,difficulty:"medium"},
+    {question:"Node2Vec 的核心思想是？",options:["随机游走生成序列","卷积聚合特征","注意力机制","邻居池化"],answer:0,difficulty:"medium"},
+    {question:"GraphSAGE 的聚合函数有哪些常用选择？",options:["Mean, LSTM, Pooling","CNN, RNN, Transformer","Softmax, ReLU, Sigmoid","MaxPooling, MinPooling"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，边特征通常用于？",options:["节点特征更新","边分类任务","图卷积计算","节点嵌入生成"],answer:1,difficulty:"medium"},
+    {question:"Graph Attention Network 的注意力分数由什么计算？",options:["邻居节点特征和权重矩阵","全局特征","节点度数","标签信息"],answer:0,difficulty:"medium"},
+    {question:"以下哪种方法适合图分类任务？",options:["GIN","GCN","GAT","GraphSAGE"],answer:0,difficulty:"medium"},
+    {question:"GIN 的核心优势是？",options:["理论上最强的区分能力","计算速度快","减少内存消耗","不依赖邻接矩阵"],answer:0,difficulty:"medium"},
+    {question:"在图卷积中，特征标准化通常通过什么实现？",options:["度归一化","批标准化","激活函数","损失函数"],answer:0,difficulty:"medium"},
+    {question:"Graph Transformer 模型适用于？",options:["图数据的全局建模","序列数据","图像数据","文本数据"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，跳跃连接主要用于？",options:["缓解过平滑问题","加快计算速度","减少参数","提高准确率"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，过平滑问题表现为？",options:["节点特征趋于相似","梯度爆炸","节点标签丢失","边权失效"],answer:0,difficulty:"medium"},
+    {question:"以下哪种方法用于图自监督学习？",options:["GraphCL","GCN","GAT","GraphSAGE"],answer:0,difficulty:"hard"},
+    {question:"图对比学习的核心思想是？",options:["最大化同类节点相似度，最小化异类节点相似度","预测节点标签","聚合邻居特征","计算图卷积"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，边分类任务通常用于？",options:["知识图谱关系预测","节点分类","图分类","聚合节点特征"],answer:0,difficulty:"medium"},
+    {question:"在图卷积中，归一化邻接矩阵可以避免？",options:["梯度消失或爆炸","特征丢失","邻居信息丢失","节点标签错误"],answer:0,difficulty:"medium"},
+    {question:"Graph Neural Network 可用于哪类推荐系统？",options:["社交推荐","协同过滤","内容推荐","以上都可以"],answer:3,difficulty:"medium"},
+    {question:"Graph Convolutional Matrix 的计算核心是？",options:["邻居节点加权和","全局特征","卷积核","边特征"],answer:0,difficulty:"medium"},
+    {question:"R-GCN 相比 GCN 的优势是？",options:["处理异质图","加快训练速度","减少内存","无需邻接矩阵"],answer:0,difficulty:"medium"},
+    {question:"在图生成模型中，VGAE 的核心任务是？",options:["节点嵌入生成和图重建","节点分类","边预测","图卷积计算"],answer:0,difficulty:"hard"},
+    {question:"Graph AutoEncoder 适合用于？",options:["无监督节点表示学习","节点分类","边预测","图卷积"],answer:0,difficulty:"medium"},
+    {question:"在图注意力网络中，多头注意力的作用是？",options:["增强模型表达能力","减少计算量","减少内存消耗","降低过拟合"],answer:0,difficulty:"medium"},
+    {question:"GNN 模型的过拟合问题可通过？",options:["Dropout","增加层数","减少节点","增加邻居"],answer:0,difficulty:"easy"},
+    {question:"在图嵌入方法中，DeepWalk 使用什么方法？",options:["随机游走+Skip-gram","卷积","LSTM","注意力机制"],answer:0,difficulty:"medium"},
+    {question:"在节点分类任务中，半监督 GCN 训练使用？",options:["标签信息+图结构","仅图结构","仅特征","无监督信息"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，Graph Pooling 的作用是？",options:["压缩图表示","增加节点特征","生成边权","提升卷积速度"],answer:0,difficulty:"medium"},
+    {question:"以下哪种方法可以处理动态图？",options:["Dynamic GNN","GCN","GAT","GraphSAGE"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，节点度数信息通常用于？",options:["归一化邻居聚合","特征生成","边预测","图分类"],answer:0,difficulty:"medium"},
+    {question:"在图自编码器中，解码器通常用于？",options:["重建邻接矩阵","节点分类","边分类","生成特征"],answer:0,difficulty:"medium"},
+    {question:"Graph Contrastive Learning 的目标是？",options:["学习区分性节点表示","图卷积","节点聚合","边权预测"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，邻接矩阵通常用于？",options:["表示图结构","表示节点特征","存储标签","计算激活函数"],answer:0,difficulty:"easy"},
+    {question:"R-GCN 的应用场景主要是？",options:["知识图谱","图像识别","文本分类","序列预测"],answer:0,difficulty:"medium"},
+    {question:"在图注意力网络中，注意力权重计算依赖？",options:["节点特征和权重矩阵","全局图特征","节点标签","邻接矩阵"],answer:0,difficulty:"medium"},
+    {question:"GraphSAGE 的训练方式主要是？",options:["采样+聚合","全局聚合","无监督训练","强化学习"],answer:0,difficulty:"medium"},
+    {question:"在图卷积网络中，ReLU 的作用是？",options:["增加非线性","归一化特征","减少过拟合","生成边权"],answer:0,difficulty:"easy"},
+    {question:"在图神经网络中，异质图表示？",options:["包含多种节点和边类型","所有节点同质","无边权","完全图"],answer:0,difficulty:"medium"},
+    {question:"Graph Transformer 的位置编码用于？",options:["捕捉节点顺序信息","节点标签","边权","邻居特征"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，残差连接用于？",options:["缓解梯度消失","生成节点标签","增加边权","减少邻居聚合"],answer:0,difficulty:"medium"},
+    {question:"图神经网络常用于哪类任务？",options:["社交网络分析","化学分子属性预测","知识图谱","以上都可以"],answer:3,difficulty:"easy"},
+    {question:"Graph Attention Network 的聚合方式是？",options:["加权求和","均值聚合","最大池化","最小池化"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，节点表示可用于？",options:["节点分类","链接预测","图分类","以上都可"],answer:3,difficulty:"easy"},
+    {question:"Graph AutoEncoder 的输入包括？",options:["节点特征和邻接矩阵","节点标签","图嵌入","边权"],answer:0,difficulty:"medium"},
+    {question:"GraphVAE 的核心思想是？",options:["变分自编码器生成图","图卷积","图注意力","节点分类"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，跳跃连接有助于？",options:["缓解过平滑","减少计算","增加邻居","增强边权"],answer:0,difficulty:"medium"},
+    {question:"Graph Contrastive Learning 常用的数据增强方法是？",options:["节点特征掩码","边删除或扰动","图节点重排","以上都可以"],answer:3,difficulty:"hard"},
+    {question:"以下哪种方法可用于图神经网络可解释性？",options:["Grad-CAM","GNNExplainer","Integrated Gradients","以上都可"],answer:3,difficulty:"medium"},
+    {question:"在图神经网络中，Batch Normalization 作用是？",options:["加速训练","减少过拟合","标准化特征","以上都可"],answer:3,difficulty:"medium"},
+    {question:"在图神经网络中，正则化方法包括？",options:["Dropout","L2正则","数据增强","以上都可"],answer:3,difficulty:"easy"},
+    {question:"GraphSAGE 的聚合函数不包括？",options:["FFT","Mean","LSTM","Pooling"],answer:0,difficulty:"medium"},
+    {question:"图卷积操作的核心思想是？",options:["邻居特征聚合","节点标签预测","全局图嵌入","边权计算"],answer:0,difficulty:"easy"},
+    {question:"GNN 的训练目标通常是？",options:["最小化损失函数","最大化邻居数","增加节点数","减少边数"],answer:0,difficulty:"easy"},
+    {question:"在图神经网络中，Edge Dropout 用于？",options:["防止过拟合","增加训练数据","生成图","减少节点"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，邻居采样主要用于？",options:["大规模图加速训练","增加节点数","减少边数","提高准确率"],answer:0,difficulty:"medium"},
+    {question:"图神经网络的节点嵌入通常用于？",options:["节点分类","链接预测","图分类","以上都可"],answer:3,difficulty:"easy"},
+    {question:"在图注意力网络中，注意力权重计算基于？",options:["节点特征","邻居特征","权重矩阵","以上都可"],answer:3,difficulty:"medium"},
+    {question:"在图卷积网络中，归一化操作的目的？",options:["防止特征爆炸","减少参数","增加邻居","生成边权"],answer:0,difficulty:"medium"},
+    {question:"Graph Transformer 的核心机制是？",options:["自注意力机制","卷积","LSTM","池化"],answer:0,difficulty:"hard"},
+    {question:"在图神经网络中，边分类常用于？",options:["知识图谱关系预测","节点分类","图分类","聚合节点特征"],answer:0,difficulty:"medium"},
+    {question:"GNN 可应用于哪类化学任务？",options:["分子属性预测","药物发现","蛋白质交互预测","以上都可"],answer:3,difficulty:"medium"},
+    {question:"在图神经网络中，节点特征维度过大可能导致？",options:["计算复杂度增加","过拟合","梯度消失","以上都可"],answer:3,difficulty:"medium"},
+    {question:"Graph AutoEncoder 的解码器通常使用？",options:["Inner Product","卷积","注意力","RNN"],answer:0,difficulty:"medium"},
+    {question:"GNN 在半监督学习中常用？",options:["节点标签+图结构","仅节点标签","仅图结构","无监督信息"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，过平滑问题的解决方法是？",options:["跳跃连接","残差连接","增加层数","以上都可"],answer:3,difficulty:"medium"},
+    {question:"在图神经网络中，节点聚合操作通常包括？",options:["Mean, Sum, Max","卷积, 注意力, LSTM","池化, Dropout, ReLU","FFT, CNN, RNN"],answer:0,difficulty:"medium"},
+    {question:"GNN 在推荐系统中可用于？",options:["社交推荐","协同过滤","内容推荐","以上都可"],answer:3,difficulty:"medium"},
+    {question:"图神经网络中的邻居聚合操作核心是？",options:["整合邻居节点信息","节点标签预测","全局图嵌入","边权计算"],answer:0,difficulty:"easy"},
+    {question:"R-GCN 模型主要用于？",options:["多关系图","同质图","无向图","完全图"],answer:0,difficulty:"medium"},
+    {question:"Graph Attention Network 的核心优势是？",options:["区分邻居重要性","减少参数","无需邻接矩阵","快速训练"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，节点嵌入可用于？",options:["节点分类","链接预测","图分类","以上都可"],answer:3,difficulty:"easy"},
+    {question:"GraphSAGE 的核心特点是？",options:["基于采样的邻居聚合","全局聚合","无需邻接矩阵","快速训练"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，图卷积的线性变换作用是？",options:["特征变换","邻居聚合","节点分类","边预测"],answer:0,difficulty:"medium"},
+    {question:"图神经网络的损失函数通常用于？",options:["最小化预测误差","最大化邻居数","增加节点数","减少边数"],answer:0,difficulty:"easy"},
+    {question:"GNN 模型在大规模图训练中常用方法？",options:["邻居采样","全量训练","增加层数","减少节点"],answer:0,difficulty:"medium"},
+    {question:"在图神经网络中，节点特征融合方式包括？",options:["Concat, Mean, Sum","卷积, LSTM, Attention","池化, Dropout, ReLU","FFT, CNN, RNN"],answer:0,difficulty:"medium"},
+    {question:"Graph Contrastive Learning 用于？",options:["自监督节点表示学习","节点分类","图分类","边预测"],answer:0,difficulty:"hard"},
+    {question:"Graph Transformer 用于？",options:["全局图建模","节点分类","边预测","邻居聚合"],answer:0,difficulty:"hard"},
+    {question:"GNN 可用于蛋白质预测任务吗？",options:["是","否","仅部分模型","视情况而定"],answer:0,difficulty:"medium"},
+    {question:"图神经网络在化学分子预测中常用输入？",options:["原子特征和化学键","分子式","节点标签","边权"],answer:0,difficulty:"medium"},
+    {question:"GraphVAE 的核心思想是？",options:["变分自编码器生成图","图卷积","节点分类","边预测"],answer:0,difficulty:"hard"},
+    {question:"Graph AutoEncoder 的训练目标是？",options:["重建邻接矩阵","节点分类","边预测","生成特征"],answer:0,difficulty:"medium"},
+    {question:"Graph Attention Network 聚合方式？",options:["加权求和","均值聚合","最大池化","最小池化"],answer:0,difficulty:"medium"}
     ];
 
-    let currentLevel = 0; // 当前关卡编号
 
+    // 常量：每轮抽取题量
+    const QUIZ_SIZE = 10;
+
+    // 状态
+    let selectedDifficulty = "easy";
+    let currentLevel = 0;                      // 当前题号（0-based）
+    let currentQuestions = [];                 // 本轮抽取的题目集（长度 <= QUIZ_SIZE）
+
+    // DOM
     const questionText = document.getElementById("question-text");
     const quizForm = document.getElementById("quiz-form");
     const feedback = document.getElementById("feedback");
     const progressFill = document.getElementById("progress-fill");
     const currentLevelSpan = document.getElementById("current-level");
+    const totalLevelsSpan = document.getElementById("total-levels");
     const submitBtn = document.getElementById("submit-btn");
+    const restartBtn = document.getElementById("restart-btn");
+
+    // 工具：按难度过滤题库
+    function getPoolByDifficulty(diff) {
+      return questionBank.filter(q => q.difficulty === diff);
+    }
+
+    // 工具：从数组随机抽取 n 个不重复元素（Fisher-Yates 洗牌）
+    function sampleArray(arr, n) {
+      const a = arr.slice(); // 浅拷贝
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a.slice(0, Math.min(n, a.length));
+    }
+
+    // 初始化一轮（设置难度 -> 随机抽题 -> 渲染第一题）
+    function initRound(diff) {
+      selectedDifficulty = diff;
+      const pool = getPoolByDifficulty(diff);
+      currentQuestions = sampleArray(pool, QUIZ_SIZE);
+      currentLevel = 0;
+
+      // UI 初始化
+      totalLevelsSpan.textContent = currentQuestions.length || 0;
+      currentLevelSpan.textContent = currentQuestions.length ? 1 : 0;
+      submitBtn.classList.remove("hidden");
+      restartBtn.classList.add("hidden");
+      feedback.textContent = "";
+
+      if (currentQuestions.length === 0) {
+        // 该难度无题
+        questionText.textContent = "该难度暂无线题，请先添加题库或更换难度。";
+        quizForm.innerHTML = "";
+        updateProgress();
+        return;
+      }
+
+      loadQuestion(currentLevel);
+      updateProgress();
+    }
 
     // 渲染题目
     function loadQuestion(level) {
-      const q = questions[level];
+      const q = currentQuestions[level];
       questionText.textContent = `题目 ${level + 1}：${q.question}`;
       quizForm.innerHTML = "";
+
       q.options.forEach((opt, i) => {
+        const id = `opt-${level}-${i}`;
         const label = document.createElement("label");
-        label.className = "flex items-center space-x-2";
-        label.innerHTML = `<input type="radio" name="answer" value="${i}" class="text-blue-600"> <span>${opt}</span>`;
+        label.className = "flex items-center space-x-2 cursor-pointer";
+        label.setAttribute("for", id);
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "answer";
+        input.value = i;
+        input.id = id;
+        input.className = "text-blue-600";
+
+        const span = document.createElement("span");
+        span.textContent = opt;
+
+        label.appendChild(input);
+        label.appendChild(span);
         quizForm.appendChild(label);
       });
-      feedback.textContent = "";
+    }
+
+    // 更新进度条
+    function updateProgress() {
+      const total = currentQuestions.length || 1;
+      const width = ((currentLevel + 1) / total) * 100;
+      progressFill.style.width = currentQuestions.length ? `${width}%` : "0%";
     }
 
     // 提交答案
-    submitBtn.addEventListener("click", () => {
+    document.getElementById("submit-btn").addEventListener("click", () => {
+      if (!currentQuestions.length) return;
+
       const selected = document.querySelector('input[name="answer"]:checked');
       if (!selected) {
         feedback.textContent = "请选择一个答案！";
@@ -173,33 +321,51 @@
         return;
       }
 
-      const answer = parseInt(selected.value);
-      if (answer === questions[currentLevel].answer) {
+      const userAnswer = parseInt(selected.value, 10);
+      const correctAnswer = currentQuestions[currentLevel].answer;
+
+      if (userAnswer === correctAnswer) {
         feedback.textContent = "✅ 正确！进入下一关～";
         feedback.className = "mt-4 text-center font-semibold text-green-600";
 
         setTimeout(() => {
           currentLevel++;
-          if (currentLevel < questions.length) {
+          const total = currentQuestions.length;
+          if (currentLevel < total) {
             currentLevelSpan.textContent = currentLevel + 1;
-            progressFill.style.width = ((currentLevel + 1) / questions.length * 100) + "%";
             loadQuestion(currentLevel);
+            updateProgress();
+            feedback.textContent = "";
           } else {
+            // 通关
             questionText.textContent = "🎉 恭喜你，成功通关！";
             quizForm.innerHTML = "";
-            submitBtn.style.display = "none";
+            submitBtn.classList.add("hidden");
+            restartBtn.classList.remove("hidden");
+            feedback.textContent = "点“再来一组”可重新随机抽题。";
+            feedback.className = "mt-4 text-center font-semibold text-blue-600";
+            progressFill.style.width = "100%";
+            currentLevelSpan.textContent = total; // 保持一致显示
           }
-        }, 1000);
-
+        }, 600);
       } else {
         feedback.textContent = "❌ 错误，再试一次！";
         feedback.className = "mt-4 text-center font-semibold text-red-600";
       }
     });
 
-    // 初始化加载第 1 题
-    loadQuestion(currentLevel);
-  </script>
+    // 再来一组（保持当前难度，重新随机 10 题）
+    restartBtn.addEventListener("click", () => {
+      initRound(selectedDifficulty);
+    });
 
+    // 难度切换
+    document.getElementById("easy-btn").addEventListener("click", () => initRound("easy"));
+    document.getElementById("medium-btn").addEventListener("click", () => initRound("medium"));
+    document.getElementById("hard-btn").addEventListener("click", () => initRound("hard"));
+
+    // 首次初始化（默认基础难度）
+    initRound("easy");
+  </script>
 </body>
 </html>

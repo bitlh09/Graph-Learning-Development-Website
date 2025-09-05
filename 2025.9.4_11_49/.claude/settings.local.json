@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\Users\\20265\\Documents\\GitHub\\Graph-Learning-Development-Website\\2025.9.4_11_49/**)",
+      "Read(/C:\\Users\\20265\\Documents\\GitHub\\Graph-Learning-Development-Website\\2025.9.4_11_49/**)",
+      "Read(/C:\\Users\\20265\\Documents\\GitHub\\Graph-Learning-Development-Website\\2025.9.4_11_49/**)",
+      "Read(/C:\\Users\\20265\\Documents\\GitHub\\Graph-Learning-Development-Website\\2025.9.4_11_49/**)",
+      "Read(/C:\\Users\\20265\\Documents\\GitHub\\Graph-Learning-Development-Website\\2025.9.4_11_49/**)",
+      "Read(/C:\\Users\\20265\\Documents\\GitHub\\Graph-Learning-Development-Website\\2025.9.4_11_49/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
