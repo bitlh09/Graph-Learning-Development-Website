@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GCN vs GAT 对比实践 - 图学习算法实践与教程</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+</head>
+<body class="bg-gray-50">
+  <!-- 导航栏 -->
+  <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 flex items-center">
+            <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-white text-xl font-bold">GraphLearn</span>
+          </div>
+          <div class="hidden md:block ml-10">
+            <div class="flex space-x-8">
+              <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+              <a href="tutorials.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+              <a href="playground.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+              <a href="community.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+              <a href="resources.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+              <a href="game.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">答题闯关</a>
+              <a href="team.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <a href="register.html" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">登录/注册</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="bg-gradient-to-r from-indigo-500 to-purple-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-white">GCN vs GAT 对比实践</h1>
+          <p class="mt-3 text-indigo-50 text-lg">一眼看懂两大经典图神经网络：从直觉到可视化，从参数到效果，点一点，立刻有感。</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">交互式可视化</span>
+            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">注意力权重</span>
+            <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">训练曲线</span>
+          </div>
+        </div>
+        <div class="bg-white/10 rounded-xl p-6 backdrop-filter backdrop-blur-md">
+          <p class="text-white/90">小提示：点击“立即对比”直接看到两者的差异；或调整右侧参数，观察表现如何变化。</p>
+          <button id="quickCompareBtn" class="mt-4 bg-white text-indigo-600 px-5 py-2 rounded-lg font-medium hover:bg-indigo-50">✨ 立即对比</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- 控制面板 -->
+    <section class="bg-white rounded-xl shadow-lg p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <div>
+          <label class="block text-sm text-gray-600 mb-2">学习率</label>
+          <input id="lrInput" type="range" min="0.0005" max="0.05" step="0.0005" value="0.01" class="w-full" />
+          <div class="text-xs text-gray-500 mt-1"><span id="lrVal">0.0100</span></div>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-2">训练轮数</label>
+          <input id="epochInput" type="range" min="50" max="300" step="10" value="120" class="w-full" />
+          <div class="text-xs text-gray-500 mt-1"><span id="epochVal">120</span> epochs</div>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-2">GAT 注意力头数</label>
+          <input id="headInput" type="range" min="1" max="8" step="1" value="4" class="w-full" />
+          <div class="text-xs text-gray-500 mt-1"><span id="headVal">4</span> heads</div>
+        </div>
+        <div class="flex gap-3">
+          <button id="runBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">运行/更新</button>
+          <button id="resetBtn" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200">重置</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 对比区 -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- GCN -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">GCN - 卷积式消息传递</h2>
+          <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">结构敏感</span>
+        </div>
+        <div id="gcnGraphWrap" class="relative border rounded-md" style="height:260px;">
+          <div id="gcn-graph" class="absolute inset-0"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div class="border rounded-md p-2">
+            <div id="gcn-loss-chart" style="height:140px"></div>
+          </div>
+          <div class="border rounded-md p-2">
+            <div id="gcn-accuracy-chart" style="height:140px"></div>
+          </div>
+        </div>
+      </div>
+      <!-- GAT -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">GAT - 注意力聚合</h2>
+          <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">自适应关注</span>
+        </div>
+        <div id="gatGraphWrap" class="relative border rounded-md" style="height:260px;">
+          <div id="gat-graph" class="absolute inset-0"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div class="border rounded-md p-2">
+            <div id="gat-loss-chart" style="height:140px"></div>
+          </div>
+          <div class="border rounded-md p-2">
+            <div id="gat-accuracy-chart" style="height:140px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 结论提示 -->
+    <section class="mt-10 bg-white rounded-xl shadow-lg p-6">
+      <h3 class="text-lg font-semibold mb-2">如何选择？</h3>
+      <p class="text-gray-600">如果你的图结构较规整、噪声较小，GCN 往往稳定高效；当你希望模型学会“更关注谁”时，GAT 的注意力机制会更灵活。试着拖动上面的参数，看看你的直觉是否与曲线一致。</p>
+    </section>
+  </main>
+
+  <!-- 外部库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+  <!-- 本地脚本 -->
+  <script src="js/visualization.js"></script>
+  <script src="js/gcn-gat-practice.js"></script>
+</body>
+</html>

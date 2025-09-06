@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GraphSAGE 节点分类 · 可交互演示</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <!-- 统一使用 cdnjs 并使用 defer，保证与 playground 预加载一致且不阻塞渲染 -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    .page-wrap { min-height: 100vh; display: flex; flex-direction: column; }
+    .container { width: 92%; max-width: 1100px; margin: 0 auto; }
+    .nav { height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .btn { padding: 10px 14px; background: linear-gradient(135deg,#7c3aed,#3b82f6); color: #fff; border: 0; border-radius: 10px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 20px rgba(99,102,241,.35); transition: transform .15s ease; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.secondary { background: #111827; box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+    .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #EEF2FF; color: #4F46E5; }
+    .card { background: #fff; border-radius: 16px; box-shadow: 0 15px 40px rgba(2,6,23,.08); overflow: hidden; }
+    .pad { padding: 24px; }
+    .muted { color: #6b7280; }
+    .grid { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    .controls { display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+    .control { background: #F9FAFB; border-radius: 12px; padding: 12px 14px; display:flex; align-items:center; gap:10px; }
+    .control label { font-weight: 600; font-size: 14px; color: #111827; }
+    .control input[type=range] { width: 180px; }
+    .kv { color:#111827; font-weight:700; }
+    .viz-wrap { position: relative; }
+    .viz { height: 320px; }
+    .charts { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+    .hero-h1 { font-size: clamp(26px, 4vw, 42px); line-height: 1.1; color: #111827; font-weight: 800; letter-spacing: -0.02em; }
+    .hero-sub { font-size: clamp(15px, 2.3vw, 18px); color: #4b5563; }
+  </style>
+</head>
+<body class="gradient-bg">
+  <div class="page-wrap">
+    <!-- 顶部导航 -->
+    <header class="container">
+      <nav class="nav">
+        <a href="index.html" style="font-weight:800; color:#111827; text-decoration:none;">Graph Learning</a>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <a class="btn secondary" href="playground.html">Playground</a>
+          <a class="btn secondary" href="gcn-gat-practice.html">GCN vs GAT</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="container" style="padding: 24px 0 8px 0;">
+      <div class="card pad" style="background: radial-gradient(1200px 400px at 0% 0%, rgba(139,92,246,.08), transparent 60%), #fff;">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+          <div style="flex:1 1 420px; min-width:300px;">
+            <div class="badge">GraphSAGE · Inductive Learning</div>
+            <h1 class="hero-h1" style="margin:10px 0 8px 0;">用 K-L 采样，快速看懂 GraphSAGE 的“邻居聚合”</h1>
+            <p class="hero-sub">选择每层采样邻居数 K 与层数 L，点击一键演示，观察采样的邻居如何影响表征质量与收敛速度。</p>
+            <div style="display:flex; gap:10px; margin-top:14px; flex-wrap: wrap;">
+              <button id="runBtn" class="btn">🚀 一键采样 + 训练</button>
+              <button id="storyBtn" class="btn">📖 案例故事模式</button>
+              <button id="resetBtn" class="btn secondary">重置</button>
+            </div>
+          </div>
+          <div class="card" style="flex:1 1 360px; min-width:280px;">
+            <div class="pad">
+              <div class="controls">
+                <div class="control">
+                  <label for="kSlider">每层采样邻居 K：</label>
+                  <input id="kSlider" type="range" min="1" max="5" step="1" value="2" />
+                  <span class="kv"><span id="kValue">2</span></span>
+                </div>
+                <div class="control">
+                  <label for="lSlider">层数 L：</label>
+                  <input id="lSlider" type="range" min="1" max="3" step="1" value="2" />
+                  <span class="kv"><span id="lValue">2</span></span>
+                </div>
+                <div class="control">
+                  <label for="strategySelect">采样策略：</label>
+                  <select id="strategySelect" style="padding:6px 8px; border-radius:8px; border:1px solid #e5e7eb; background:#fff;">
+                    <option value="uniform">均匀采样</option>
+                    <option value="degree">基于度采样</option>
+                    <option value="importance">重要性采样</option>
+                  </select>
+                </div>
+              </div>
+              <p class="muted" style="margin-top:10px;">提示：更大的 K/L 能更充分地聚合信息，通常收敛更快，但也可能带来冗余与噪声；不同采样策略会影响收敛速度与泛化性能。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 可视化与曲线 -->
+    <section class="container" style="padding: 8px 0 24px 0;">
+      <div class="grid grid-2">
+        <div class="card pad viz-wrap">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <h3 style="font-weight:800; color:#111827;">图结构（采样邻居高亮）</h3>
+            <span class="muted">十节点示例图 · 力导向布局</span>
+          </div>
+          <div id="graph-visualization" class="viz"></div>
+          <div id="story-text" class="muted" style="min-height:22px; margin-top:6px;"></div>
+        </div>
+        <div class="card pad">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <h3 style="font-weight:800; color:#111827;">训练曲线</h3>
+            <span class="muted">Loss 与 Accuracy</span>
+          </div>
+          <div class="charts">
+            <div id="loss-chart" style="height:260px;"></div>
+            <div id="accuracy-chart" style="height:260px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 解释文案 -->
+    <section class="container" style="padding-bottom: 32px;">
+      <div class="card pad">
+        <h3 style="font-weight:800; color:#111827; margin-bottom:8px;">为什么是 GraphSAGE？</h3>
+        <p class="muted" style="margin-bottom:8px;">它是面向大规模图的“归纳学习”方法：不需要把整张图都放进模型里，仅采样局部邻居就能在线泛化到新节点。</p>
+        <ul class="muted" style="padding-left: 18px; list-style: disc;">
+          <li>调大 K/L → 更多邻居参与聚合 → 一般更快收敛，但可能过拟合或引入噪声</li>
+          <li>调小 K/L → 更快更轻量 → 可能欠拟合，但推理时延低、吞吐高</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- 将通用可视化与页面脚本置于底部并使用 defer，提高首屏渲染速度 -->
+  <script defer src="js/visualization.js"></script>
+  <script defer src="js/graphsage.js"></script>
+</body>
+</html>

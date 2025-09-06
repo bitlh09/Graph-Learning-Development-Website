@@ -15,15 +15,23 @@ function renderCharts(losses, accs) {
         yaxis: { title: 'Loss' }
     });
     
-    // 准确率曲线
-    Plotly.newPlot('accuracy-chart', [{
-        y: accs, 
-        type: 'scatter', 
-        name: 'Acc', 
-        line: { color: '#10b981' }
-    }], {
+    // 准确率曲线（支持 train/val 对比）
+    var accTraces;
+    if (Array.isArray(accs)) {
+        accTraces = [{ y: accs, type: 'scatter', name: 'Acc', line: { color: '#10b981' } }];
+    } else if (accs && Array.isArray(accs.train) && Array.isArray(accs.val)) {
+        accTraces = [
+            { y: accs.train, type: 'scatter', name: 'Train Acc', line: { color: '#10b981' } },
+            { y: accs.val, type: 'scatter', name: 'Val Acc', line: { color: '#f59e0b' } }
+        ];
+    } else {
+        accTraces = [{ y: [], type: 'scatter', name: 'Acc', line: { color: '#10b981' } }];
+    }
+    Plotly.newPlot('accuracy-chart', accTraces, {
         margin: { t: 10, b: 30, l: 40, r: 10 }, 
-        yaxis: { title: 'Accuracy', range: [0, 1] }
+        yaxis: { title: 'Accuracy', range: [0, 1] },
+        showlegend: accTraces.length > 1,
+        legend: { orientation: 'h' }
     });
 }
 
@@ -83,6 +91,14 @@ function renderGraph(finalAcc, correctFlags, neighborsInfo, attentionWeights) {
         .attr('x2', '100%').attr('y2', '0%');
     attentionGradient.append('stop').attr('offset', '0%').attr('stop-color', '#3b82f6');
     attentionGradient.append('stop').attr('offset', '100%').attr('stop-color', '#8b5cf6');
+
+    // 定义采样高亮渐变（用于被采样的邻居连边）
+    var samplingGradient = defs.append('linearGradient')
+        .attr('id', 'samplingGradient')
+        .attr('x1', '0%').attr('y1', '0%')
+        .attr('x2', '100%').attr('y2', '0%');
+    samplingGradient.append('stop').attr('offset', '0%').attr('stop-color', '#f59e0b');
+    samplingGradient.append('stop').attr('offset', '100%').attr('stop-color', '#ef4444');
     
     // 根据是否有邻居信息判断是 GraphSAGE 还是 GCN
     var isGraphSAGE = neighborsInfo && Object.keys(neighborsInfo).length > 0;
@@ -96,7 +112,7 @@ function renderGraph(finalAcc, correctFlags, neighborsInfo, attentionWeights) {
                 id: i, 
                 label: ['类别A', '类别A', '类别A', '类别B', '类别B', '类别B', 
                        '类别C', '类别C', '类别C', '类别C'][i],
-                sampledNeighbors: neighborsInfo && neighborsInfo[i] ? neighborsInfo[i] : [],
+                sampledNeighbors: neighborsInfo && neighborsInfo[i] ? (Array.isArray(neighborsInfo[i]) ? neighborsInfo[i] : (neighborsInfo[i].flat || [])) : [],
                 embedding: [Math.random(), Math.random(), Math.random()]
             }; 
         });
