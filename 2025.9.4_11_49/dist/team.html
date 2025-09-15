@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队 - 图学习算法实践与教程</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex space-x-8">
+                            <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                            <a href="tutorials.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
+                            <a href="playground.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
+                            <a href="community.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="resources.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="game.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">答题闯关</a>
+                            <a href="team.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleLogin()" class="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                        登录/注册
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="gradient-bg text-white px-6 py-8">
+                    <h1 class="text-3xl font-bold">我们的学习小组</h1>
+                    <p class="mt-2 text-blue-100">这里是小组总体介绍与成员入口。每位成员有自己的独立页面。</p>
+                </div>
+
+                <div class="p-6">
+                    <section class="mb-12">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">小组简介</h2>
+                        <p class="text-gray-700 leading-7">
+                            我们小组专注于图神经网络（Graph Neural Networks, GNN）的研究与应用，涵盖模型原理、算法优化及实践场景。近期目标是系统学习经典论文，如《Graph Convolutional Networks》《Graph Attention Networks》等，结合在线课程（Stanford、MIT 等）提升理论基础。同时，我们将基于 PyTorch Geometric 和 Deep Graph Library 框架进行实验，探索在推荐系统、知识图谱、交通预测等领域的应用。分工方面，研究组负责论文复现与算法优化，工程组负责框架使用及实验实现，资料组整理学习资源与技术博客。例行会议安排每周两次，讨论进度与问题。相关资料存放在共享仓库，便于同步更新与协作。
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-6">成员列表</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <a href="member1.html" class="group bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">成员一</h3>
+                                <p class="text-sm text-gray-600 mt-1">进入个人页面</p>
+                            </a>
+                            <a href="member2.html" class="group bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">成员二</h3>
+                                <p class="text-sm text-gray-600 mt-1">进入个人页面</p>
+                            </a>
+                            <a href="member3.html" class="group bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">成员三</h3>
+                                <p class="text-sm text-gray-600 mt-1">进入个人页面</p>
+                            </a>
+                            <a href="member4.html" class="group bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">成员四</h3>
+                                <p class="text-sm text-gray-600 mt-1">进入个人页面</p>
+                            </a>
+                            <a href="member5.html" class="group bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">成员五</h3>
+                                <p class="text-sm text-gray-600 mt-1">进入个人页面</p>
+                            </a>
+                            <a href="member6.html" class="group bg-white rounded-lg shadow p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">成员六</h3>
+                                <p class="text-sm text-gray-600 mt-1">进入个人页面</p>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 引入必要的外部库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    
+    <!-- 引入本地JavaScript文件 -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/tutorials.js"></script>
+    
+    <script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化认证状态
+        renderAuthState();
+    });
+    </script>
+</body>
+</html>
+

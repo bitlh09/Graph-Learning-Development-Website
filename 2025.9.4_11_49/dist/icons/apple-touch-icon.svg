@@ -1,0 +1,45 @@
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="180" height="180" rx="28" fill="url(#bgGradient)"/>
+  
+  <!-- Graph connections -->
+  <g stroke="#ffffff" stroke-width="2" opacity="0.8">
+    <line x1="52" y1="63" x2="88" y2="42" />
+    <line x1="88" y1="42" x2="123" y2="63" />
+    <line x1="52" y1="63" x2="70" y2="98" />
+    <line x1="123" y1="63" x2="105" y2="98" />
+    <line x1="70" y1="98" x2="105" y2="98" />
+    <line x1="88" y1="42" x2="88" y2="70" />
+    <line x1="52" y1="112" x2="88" y2="133" />
+    <line x1="88" y1="133" x2="123" y2="112" />
+  </g>
+  
+  <!-- Graph nodes -->
+  <g fill="url(#nodeGradient)" stroke="#ffffff" stroke-width="1.5">
+    <circle cx="52" cy="63" r="9" />
+    <circle cx="88" cy="42" r="11" />
+    <circle cx="123" cy="63" r="9" />
+    <circle cx="70" cy="98" r="7" />
+    <circle cx="105" cy="98" r="7" />
+    <circle cx="88" cy="70" r="5" />
+    <circle cx="52" cy="112" r="6" />
+    <circle cx="88" cy="133" r="8" />
+    <circle cx="123" cy="112" r="6" />
+  </g>
+  
+  <!-- Brand text -->
+  <text x="90" y="158" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#ffffff">
+    GraphLearn
+  </text>
+</svg>

@@ -1,32 +1,562 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>答题闯关 - Quiz</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-  <link href="css/styles.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答题闯关</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
   <style>
+    /* 全局美化样式 */
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
     .progress-bar {
-      height: 1rem;
-      background-color: #e5e7eb;
+      height: 1.25rem;
+      background: linear-gradient(90deg, #f3f4f6, #e5e7eb);
       border-radius: 9999px;
       overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
+    
+    .progress-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.3), transparent);
+      border-radius: 9999px 9999px 0 0;
+    }
+    
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #2563EB, #7C3AED);
-      width: 10%; /* 初始关卡 1/10 */
-      transition: width 0.3s ease;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+      width: 1%;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      border-radius: 9999px;
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+      border-radius: 9999px 9999px 0 0;
+    }
+    .learning-path {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 2rem 0;
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      border-radius: 1.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .path-node {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.75rem 0;
+      position: relative;
+      background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+      color: #6B7280;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .path-node::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.3));
+      z-index: -1;
+    }
+    
+    .path-node.unlocked {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .path-node.completed {
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      color: white;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .path-node.current {
+      background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+      color: white;
+      transform: scale(1.15);
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3), 0 8px 25px rgba(139, 92, 246, 0.5);
+      animation: pulse-glow 2s infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3), 0 8px 25px rgba(139, 92, 246, 0.5); }
+      50% { box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.5), 0 8px 30px rgba(139, 92, 246, 0.7); }
+    }
+    
+    .path-node.locked {
+      background: linear-gradient(135deg, #9CA3AF, #6B7280);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .path-node:hover:not(.locked) {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .path-connector {
+      width: 6px;
+      height: 40px;
+      background: linear-gradient(to bottom, #e5e7eb, #d1d5db);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 3px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .path-connector::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+      border-radius: 1px;
+    }
+    
+    .path-connector.active {
+      background: linear-gradient(to bottom, #10B981, #059669);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+    
+    .path-connector.excellent {
+      background: linear-gradient(to bottom, #10B981, #34D399, #6EE7B7);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+      animation: shimmer 3s infinite;
+    }
+    
+    .path-connector.good {
+      background: linear-gradient(to bottom, #F59E0B, #FBBF24, #FCD34D);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+    }
+    
+    .path-connector.needs-improvement {
+      background: linear-gradient(to bottom, #EF4444, #F87171, #FCA5A5);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+    
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .visual-explanation {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+      border-left: 4px solid #3B82F6;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .visual-explanation:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+    }
+    
+    .recommendation-card {
+      margin-top: 1rem;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1));
+      border-left: 4px solid #2563EB;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .recommendation-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(37, 99, 235, 0.15);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes fadeIn {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .slide-in {
+      animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    .category-label {
+      font-size: 12px;
+      color: #374151;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+      margin: 0 4px;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+    
+    .category-label:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .difficulty-indicator {
+      position: absolute;
+      bottom: -8px;
+      right: -8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .difficulty-indicator:hover {
+      transform: scale(1.2);
+    }
+    
+    /* 添加装饰性图标 */
+    .icon-decoration {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 1.2em;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      border-radius: 50%;
+      animation: sparkle 2s infinite;
+    }
+    
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    
+    .sparkle:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+    .sparkle:nth-child(2) { top: 20%; right: 30%; animation-delay: 0.5s; }
+    .sparkle:nth-child(3) { bottom: 30%; left: 40%; animation-delay: 1s; }
+    .sparkle:nth-child(4) { bottom: 20%; right: 20%; animation-delay: 1.5s; }
+    .knowledge-map {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(249, 250, 251, 0.8), rgba(243, 244, 246, 0.8));
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .knowledge-area {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .knowledge-area:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+    }
+    
+    .mastery-bar {
+      height: 12px;
+      background: linear-gradient(135deg, #E5E7EB, #D1D5DB);
+      border-radius: 6px;
+      margin: 0.75rem 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mastery-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+      border-radius: 6px 6px 0 0;
+    }
+    
+    .mastery-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mastery-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer-mastery 2s infinite;
+    }
+    
+    @keyframes shimmer-mastery {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    /* 美化按钮样式 */
+    .mode-btn {
+      position: relative;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mode-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .mode-btn:hover::before {
+      left: 100%;
+    }
+    
+    .mode-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .mode-btn:active {
+      transform: translateY(0);
+    }
+    
+    .linear-mode {
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white;
+    }
+    
+    .adaptive-mode {
+      background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+      color: white;
+    }
+    
+    .submit-btn, .next-btn, .restart-btn {
+      position: relative;
+      padding: 12px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .submit-btn {
+      background: linear-gradient(135deg, #3B82F6, #1E40AF);
+      color: white;
+    }
+    
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+    
+    .next-btn {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+    }
+    
+    .next-btn:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+    
+    .restart-btn {
+      background: linear-gradient(135deg, #3B82F6, #1E40AF);
+      color: white;
+    }
+    
+    .restart-btn:hover {
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* 美化答题卡片 */
+    #quiz-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.9));
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    #quiz-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* 美化选项样式 */
+    .quiz-option {
+      padding: 12px 16px;
+      margin: 8px 0;
+      border-radius: 12px;
+      border: 2px solid #E5E7EB;
+      background: linear-gradient(135deg, #FFFFFF, #F9FAFB);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .quiz-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: left 0.3s;
+    }
+    
+    .quiz-option:hover::before {
+      left: 100%;
+    }
+    
+    .quiz-option:hover {
+      border-color: #3B82F6;
+      transform: translateX(5px);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+    }
+    
+    .quiz-option.selected {
+      border-color: #3B82F6;
+      background: linear-gradient(135deg, #EBF4FF, #DBEAFE);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* 美化反馈区域 */
+    #feedback {
+      border-radius: 1.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+    
+    #feedback.correct {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    
+    #feedback.incorrect {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(248, 113, 113, 0.1));
+      border-color: rgba(239, 68, 68, 0.3);
     }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50">
 
-  <!-- 导航栏 -->
-  <!-- 导航栏 -->
+    <!-- 导航栏 -->
     <nav class="gradient-bg shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
@@ -40,8 +570,8 @@
                             <a href="index.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">首页</a>
                             <a href="tutorials.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">教程</a>
                             <a href="playground.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">在线实践</a>
-                            <a href="community.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
-                            <a href="resources.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
+                            <a href="community.html" class="nav-link text-blue-200 px-3 py-2 rounded-md text-sm font-medium">社区</a>
+                            <a href="resources.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">资源</a>
                             <a href="game.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">答题闯关</a>
                             <a href="team.html" class="nav-link text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">团队</a>
                         </div>
@@ -57,315 +587,845 @@
     </nav>
 
   <!-- 页面主体 -->
-  <main class="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md">
+  <main class="max-w-6xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md glass-effect" style="position: relative;">
+    <!-- 装饰性闪烁元素 -->
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    <div class="sparkle"></div>
+    
     <!-- 标题 -->
-    <h2 class="text-2xl font-bold mb-4 text-center">答题闯关模式</h2>
+    <h2 class="text-2xl font-bold mb-4 text-center">
+      <span class="icon-decoration">🎯</span>
+      个性化学习路径闯关
+      <span class="icon-decoration">🚀</span>
+    </h2>
 
-    <!-- 难度选择 -->
-    <div class="flex justify-center space-x-4 mb-6">
-      <button id="easy-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md">基础</button>
-      <button id="medium-btn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-xl shadow-md">中等</button>
-      <button id="hard-btn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl shadow-md">进阶</button>
+    <!-- 模式选择 -->
+    <div class="flex justify-center mb-6 space-x-4">
+      <button id="linear-mode-btn" class="mode-btn linear-mode">
+        线性闯关模式
+      </button>
+      <button id="adaptive-mode-btn" class="mode-btn adaptive-mode">
+        个性化学习模式
+      </button>
+    </div>
+
+    <!-- 用户水平指示器 -->
+    <div id="user-level-indicator" class="mb-6 p-4 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg hidden">
+      <h3 class="font-semibold mb-2">
+        <span class="icon-decoration">📊</span>
+        您的当前水平
+      </h3>
+      <div class="flex items-center">
+        <span class="text-sm mr-2">水平等级:</span>
+        <div class="flex space-x-1">
+          <span id="user-level-stars" class="text-yellow-500"></span>
+        </div>
+        <span id="user-level-text" class="ml-2 text-sm font-medium"></span>
+      </div>
+      <div class="mt-2 text-sm text-gray-600" id="level-description"></div>
+    </div>
+
+    <!-- 知识掌握情况 -->
+    <div id="knowledge-progress" class="mb-6 p-4 bg-gray-50 rounded-lg hidden">
+      <h3 class="font-semibold mb-3">
+        <span class="icon-decoration">📈</span>
+        知识掌握情况
+      </h3>
+      <div class="knowledge-map">
+        <!-- 动态生成知识领域 -->
+      </div>
     </div>
 
     <!-- 关卡进度条 -->
     <div class="mb-6">
-      <p class="mb-2">关卡进度：第 <span id="current-level">1</span> 关 / 共 <span id="total-levels">10</span> 关</p>
+      <p class="mb-2">关卡进度：第 <span id="current-level">1</span> 关 / 共 <span id="total-levels">100</span> 关</p>
       <div class="progress-bar">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
     </div>
 
+    <!-- 学习路径地图 -->
+    <div id="learning-path-container" class="hidden">
+      <h3 class="text-lg font-semibold mb-4 text-center">
+        <span class="icon-decoration">🗺️</span>
+        您的个性化学习路径
+        <span class="icon-decoration">✨</span>
+      </h3>
+      <div class="learning-path">
+        <!-- 动态生成学习路径 -->
+      </div>
+    </div>
+
     <!-- 答题卡 -->
     <section id="quiz-card" class="mb-6">
-      <h3 id="question-text" class="text-lg font-semibold mb-4">题目加载中...</h3>
+      <div class="flex justify-between items-center mb-3">
+        <h3 id="question-text" class="text-lg font-semibold">题目加载中...</h3>
+        <div class="flex items-center">
+          <span class="category-label" id="question-category"></span>
+          <span class="difficulty-indicator ml-2" id="question-difficulty"></span>
+        </div>
+      </div>
       <form id="quiz-form" class="space-y-3"></form>
     </section>
 
-    <!-- 操作按钮 -->
-    <div class="flex items-center justify-center gap-3">
-      <button id="submit-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow-md">
+    <!-- 提交按钮 -->
+    <div class="text-center">
+      <button id="submit-btn" class="submit-btn">
         提交答案
-      </button>
-      <button id="restart-btn" class="hidden bg-gray-700 hover:bg-gray-800 text-white px-6 py-2 rounded-xl shadow-md">
-        再来一组
       </button>
     </div>
 
     <!-- 答案反馈 -->
-    <p id="feedback" class="mt-4 text-center font-semibold"></p>
+    <div id="feedback" class="mt-4 p-4 rounded-lg hidden">
+      <h4 class="font-semibold mb-2" id="feedback-title"></h4>
+      <p id="feedback-content" class="mb-3"></p>
+      
+      <!-- 可视化解释 -->
+      <div id="visual-explanation" class="visual-explanation hidden">
+        <h5 class="font-semibold mb-2">📊 可视化解释</h5>
+        <div id="explanation-content"></div>
+      </div>
+      
+      <!-- 学习资源推荐 -->
+      <div id="resource-recommendation" class="recommendation-card hidden">
+        <h5 class="font-semibold mb-2">📚 推荐学习资源</h5>
+        <ul id="resource-list" class="list-disc pl-5"></ul>
+      </div>
+    </div>
+
+    <!-- 下一关按钮 -->
+    <div class="text-center mt-4 hidden" id="next-level-container">
+      <button id="next-level-btn" class="next-btn">
+        进入下一关
+      </button>
+    </div>
+
+    <!-- 通关庆祝 -->
+    <div id="completion-celebration" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+      <div class="bg-white p-8 rounded-2xl text-center max-w-md">
+        <div class="text-6xl mb-4">🎉</div>
+        <h3 class="text-2xl font-bold mb-4">恭喜通关！</h3>
+        <p class="mb-4">您已成功完成个性化学习路径！</p>
+        <p class="text-lg font-semibold mb-4">最终得分: <span id="final-score">0</span></p>
+        <button id="restart-btn" class="restart-btn">
+          重新开始
+        </button>
+      </div>
+    </div>
   </main>
 
   <!-- JS 脚本 -->
   <script>
-    const questionBank = [
-    {question:"以下哪种是最经典的图神经网络模型？",options:["CNN","GCN","RNN","LSTM"],answer:1,difficulty:"easy"},
-    {question:"GCN 最常用于处理哪类数据？",options:["图结构数据","序列数据","图像数据","表格数据"],answer:0,difficulty:"easy"},
-    {question:"在图中，节点之间通过什么表示关系？",options:["边","权重","标签","矩阵"],answer:0,difficulty:"easy"},
-    {question:"以下哪种方法常用于图表示学习？",options:["Word2Vec","Node2Vec","BERT","SVM"],answer:1,difficulty:"medium"},
-    {question:"图神经网络的输入通常包括？",options:["节点特征和邻接矩阵","图像像素","序列词向量","表格数值"],answer:0,difficulty:"easy"},
-    {question:"以下哪项不是图卷积的主要操作？",options:["邻居聚合","特征变换","池化降维","循环展开"],answer:3,difficulty:"medium"},
-    {question:"在社交网络分析中，GNN 可以用来预测什么？",options:["节点分类","边的存在性","社群划分","以上都可以"],answer:3,difficulty:"easy"},
-    {question:"Graph Attention Network (GAT) 引入了什么机制？",options:["卷积","注意力机制","循环","强化学习"],answer:1,difficulty:"medium"},
-    {question:"以下哪种任务最适合用 GNN 解决？",options:["图像识别","语音识别","节点分类","机器翻译"],answer:2,difficulty:"easy"},
-    {question:"Graph AutoEncoder (GAE) 的主要用途是？",options:["节点分类","图生成与链接预测","图卷积计算","图边采样"],answer:1,difficulty:"medium"},
-    {question:"GNN 中的消息传递机制主要用于？",options:["节点特征更新","图像分类","序列生成","图像生成"],answer:0,difficulty:"easy"},
-    {question:"以下哪种方法可以增强 GNN 的表达能力？",options:["增加层数","减少节点数","增加边数","减少特征维度"],answer:0,difficulty:"easy"},
-    {question:"在图神经网络中，边的权重通常表示什么？",options:["节点的标签","节点的特征","节点之间的关系强度","节点的度数"],answer:2,difficulty:"easy"},
-    {question:"以下哪种任务不适合使用 GNN？",options:["图像分类","节点分类","图分类","链接预测"],answer:0,difficulty:"easy"},
-    {question:"GNN 的训练通常使用哪种优化算法？",options:["梯度下降","遗传算法","模拟退火","粒子群优化"],answer:0,difficulty:"easy"},
-    {question:"以下哪种方法可以提高 GNN 的训练效率？",options:["增加训练数据","使用更深的网络","使用更大的批量大小","使用更小的学习率"],answer:0,difficulty:"easy"},
-    {question:"在 GNN 中，节点的特征通常表示什么？",options:["节点的标签","节点的度数","节点的属性","节点之间的关系"],answer:2,difficulty:"easy"},
-    {question:"以下哪种方法可以用于 GNN 的正则化？",options:["Dropout","L2 正则化","数据增强","以上都是"],answer:3,difficulty:"medium"},
-    {question:"GNN 中的池化操作主要用于？",options:["减少图的大小","增加图的大小","改变节点的特征","改变边的权重"],answer:0,difficulty:"medium"},
-    {question:"以下哪种方法可以用于处理图中的异质性？",options:["使用异质 GNN","使用同质 GNN","使用传统的神经网络","以上都不是"],answer:0,difficulty:"medium"},
-    {question:"GCN 的邻居聚合操作通常是通过什么实现的？",options:["矩阵乘法","卷积核","循环神经网络","注意力机制"],answer:0,difficulty:"medium"},
-    {question:"GraphSAGE 模型的核心思想是？",options:["基于采样的节点聚合","全局特征编码","序列生成","边预测"],answer:0,difficulty:"medium"},
-    {question:"GAT 使用注意力机制的目的是什么？",options:["选择性关注邻居节点","提高计算速度","减少内存消耗","生成节点标签"],answer:0,difficulty:"medium"},
-    {question:"在 GNN 中，节点分类任务通常属于？",options:["监督学习","无监督学习","强化学习","生成式模型"],answer:0,difficulty:"easy"},
-    {question:"在 GNN 中，链接预测任务通常属于？",options:["监督学习","无监督学习","强化学习","生成式模型"],answer:1,difficulty:"medium"},
-    {question:"GCN 中的激活函数常用哪种？",options:["ReLU","Sigmoid","Tanh","Softmax"],answer:0,difficulty:"easy"},
-    {question:"在图卷积中，节点特征的更新公式包含哪两部分？",options:["邻居特征聚合和自身特征","节点标签和边权重","全局特征和局部特征","输入和输出"],answer:0,difficulty:"medium"},
-    {question:"Graph Attention Network 相比 GCN 的优势是？",options:["能够区分邻居重要性","更快计算速度","更少参数","无需邻接矩阵"],answer:0,difficulty:"medium"},
-    {question:"以下哪种 GNN 模型适合大规模图数据？",options:["GraphSAGE","GCN","GAT","R-GCN"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，节点表示学习的主要目标是？",options:["提取节点特征","预测节点标签","编码邻居信息","以上都是"],answer:3,difficulty:"medium"},
-    {question:"R-GCN 用于处理哪类图？",options:["有向图","异质图","无向图","完全图"],answer:1,difficulty:"medium"},
-    {question:"以下哪种方法可以用于图生成任务？",options:["GraphVAE","GCN","GAT","GraphSAGE"],answer:0,difficulty:"hard"},
-    {question:"Graph AutoEncoder 的损失函数通常是？",options:["重建误差","交叉熵","均方误差","KL 散度"],answer:0,difficulty:"medium"},
-    {question:"在图卷积中，邻居节点特征被乘以什么？",options:["权重矩阵","激活函数","注意力系数","标签向量"],answer:0,difficulty:"medium"},
-    {question:"以下哪种方法可以用于图嵌入？",options:["DeepWalk","CNN","RNN","Transformer"],answer:0,difficulty:"medium"},
-    {question:"Node2Vec 的核心思想是？",options:["随机游走生成序列","卷积聚合特征","注意力机制","邻居池化"],answer:0,difficulty:"medium"},
-    {question:"GraphSAGE 的聚合函数有哪些常用选择？",options:["Mean, LSTM, Pooling","CNN, RNN, Transformer","Softmax, ReLU, Sigmoid","MaxPooling, MinPooling"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，边特征通常用于？",options:["节点特征更新","边分类任务","图卷积计算","节点嵌入生成"],answer:1,difficulty:"medium"},
-    {question:"Graph Attention Network 的注意力分数由什么计算？",options:["邻居节点特征和权重矩阵","全局特征","节点度数","标签信息"],answer:0,difficulty:"medium"},
-    {question:"以下哪种方法适合图分类任务？",options:["GIN","GCN","GAT","GraphSAGE"],answer:0,difficulty:"medium"},
-    {question:"GIN 的核心优势是？",options:["理论上最强的区分能力","计算速度快","减少内存消耗","不依赖邻接矩阵"],answer:0,difficulty:"medium"},
-    {question:"在图卷积中，特征标准化通常通过什么实现？",options:["度归一化","批标准化","激活函数","损失函数"],answer:0,difficulty:"medium"},
-    {question:"Graph Transformer 模型适用于？",options:["图数据的全局建模","序列数据","图像数据","文本数据"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，跳跃连接主要用于？",options:["缓解过平滑问题","加快计算速度","减少参数","提高准确率"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，过平滑问题表现为？",options:["节点特征趋于相似","梯度爆炸","节点标签丢失","边权失效"],answer:0,difficulty:"medium"},
-    {question:"以下哪种方法用于图自监督学习？",options:["GraphCL","GCN","GAT","GraphSAGE"],answer:0,difficulty:"hard"},
-    {question:"图对比学习的核心思想是？",options:["最大化同类节点相似度，最小化异类节点相似度","预测节点标签","聚合邻居特征","计算图卷积"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，边分类任务通常用于？",options:["知识图谱关系预测","节点分类","图分类","聚合节点特征"],answer:0,difficulty:"medium"},
-    {question:"在图卷积中，归一化邻接矩阵可以避免？",options:["梯度消失或爆炸","特征丢失","邻居信息丢失","节点标签错误"],answer:0,difficulty:"medium"},
-    {question:"Graph Neural Network 可用于哪类推荐系统？",options:["社交推荐","协同过滤","内容推荐","以上都可以"],answer:3,difficulty:"medium"},
-    {question:"Graph Convolutional Matrix 的计算核心是？",options:["邻居节点加权和","全局特征","卷积核","边特征"],answer:0,difficulty:"medium"},
-    {question:"R-GCN 相比 GCN 的优势是？",options:["处理异质图","加快训练速度","减少内存","无需邻接矩阵"],answer:0,difficulty:"medium"},
-    {question:"在图生成模型中，VGAE 的核心任务是？",options:["节点嵌入生成和图重建","节点分类","边预测","图卷积计算"],answer:0,difficulty:"hard"},
-    {question:"Graph AutoEncoder 适合用于？",options:["无监督节点表示学习","节点分类","边预测","图卷积"],answer:0,difficulty:"medium"},
-    {question:"在图注意力网络中，多头注意力的作用是？",options:["增强模型表达能力","减少计算量","减少内存消耗","降低过拟合"],answer:0,difficulty:"medium"},
-    {question:"GNN 模型的过拟合问题可通过？",options:["Dropout","增加层数","减少节点","增加邻居"],answer:0,difficulty:"easy"},
-    {question:"在图嵌入方法中，DeepWalk 使用什么方法？",options:["随机游走+Skip-gram","卷积","LSTM","注意力机制"],answer:0,difficulty:"medium"},
-    {question:"在节点分类任务中，半监督 GCN 训练使用？",options:["标签信息+图结构","仅图结构","仅特征","无监督信息"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，Graph Pooling 的作用是？",options:["压缩图表示","增加节点特征","生成边权","提升卷积速度"],answer:0,difficulty:"medium"},
-    {question:"以下哪种方法可以处理动态图？",options:["Dynamic GNN","GCN","GAT","GraphSAGE"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，节点度数信息通常用于？",options:["归一化邻居聚合","特征生成","边预测","图分类"],answer:0,difficulty:"medium"},
-    {question:"在图自编码器中，解码器通常用于？",options:["重建邻接矩阵","节点分类","边分类","生成特征"],answer:0,difficulty:"medium"},
-    {question:"Graph Contrastive Learning 的目标是？",options:["学习区分性节点表示","图卷积","节点聚合","边权预测"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，邻接矩阵通常用于？",options:["表示图结构","表示节点特征","存储标签","计算激活函数"],answer:0,difficulty:"easy"},
-    {question:"R-GCN 的应用场景主要是？",options:["知识图谱","图像识别","文本分类","序列预测"],answer:0,difficulty:"medium"},
-    {question:"在图注意力网络中，注意力权重计算依赖？",options:["节点特征和权重矩阵","全局图特征","节点标签","邻接矩阵"],answer:0,difficulty:"medium"},
-    {question:"GraphSAGE 的训练方式主要是？",options:["采样+聚合","全局聚合","无监督训练","强化学习"],answer:0,difficulty:"medium"},
-    {question:"在图卷积网络中，ReLU 的作用是？",options:["增加非线性","归一化特征","减少过拟合","生成边权"],answer:0,difficulty:"easy"},
-    {question:"在图神经网络中，异质图表示？",options:["包含多种节点和边类型","所有节点同质","无边权","完全图"],answer:0,difficulty:"medium"},
-    {question:"Graph Transformer 的位置编码用于？",options:["捕捉节点顺序信息","节点标签","边权","邻居特征"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，残差连接用于？",options:["缓解梯度消失","生成节点标签","增加边权","减少邻居聚合"],answer:0,difficulty:"medium"},
-    {question:"图神经网络常用于哪类任务？",options:["社交网络分析","化学分子属性预测","知识图谱","以上都可以"],answer:3,difficulty:"easy"},
-    {question:"Graph Attention Network 的聚合方式是？",options:["加权求和","均值聚合","最大池化","最小池化"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，节点表示可用于？",options:["节点分类","链接预测","图分类","以上都可"],answer:3,difficulty:"easy"},
-    {question:"Graph AutoEncoder 的输入包括？",options:["节点特征和邻接矩阵","节点标签","图嵌入","边权"],answer:0,difficulty:"medium"},
-    {question:"GraphVAE 的核心思想是？",options:["变分自编码器生成图","图卷积","图注意力","节点分类"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，跳跃连接有助于？",options:["缓解过平滑","减少计算","增加邻居","增强边权"],answer:0,difficulty:"medium"},
-    {question:"Graph Contrastive Learning 常用的数据增强方法是？",options:["节点特征掩码","边删除或扰动","图节点重排","以上都可以"],answer:3,difficulty:"hard"},
-    {question:"以下哪种方法可用于图神经网络可解释性？",options:["Grad-CAM","GNNExplainer","Integrated Gradients","以上都可"],answer:3,difficulty:"medium"},
-    {question:"在图神经网络中，Batch Normalization 作用是？",options:["加速训练","减少过拟合","标准化特征","以上都可"],answer:3,difficulty:"medium"},
-    {question:"在图神经网络中，正则化方法包括？",options:["Dropout","L2正则","数据增强","以上都可"],answer:3,difficulty:"easy"},
-    {question:"GraphSAGE 的聚合函数不包括？",options:["FFT","Mean","LSTM","Pooling"],answer:0,difficulty:"medium"},
-    {question:"图卷积操作的核心思想是？",options:["邻居特征聚合","节点标签预测","全局图嵌入","边权计算"],answer:0,difficulty:"easy"},
-    {question:"GNN 的训练目标通常是？",options:["最小化损失函数","最大化邻居数","增加节点数","减少边数"],answer:0,difficulty:"easy"},
-    {question:"在图神经网络中，Edge Dropout 用于？",options:["防止过拟合","增加训练数据","生成图","减少节点"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，邻居采样主要用于？",options:["大规模图加速训练","增加节点数","减少边数","提高准确率"],answer:0,difficulty:"medium"},
-    {question:"图神经网络的节点嵌入通常用于？",options:["节点分类","链接预测","图分类","以上都可"],answer:3,difficulty:"easy"},
-    {question:"在图注意力网络中，注意力权重计算基于？",options:["节点特征","邻居特征","权重矩阵","以上都可"],answer:3,difficulty:"medium"},
-    {question:"在图卷积网络中，归一化操作的目的？",options:["防止特征爆炸","减少参数","增加邻居","生成边权"],answer:0,difficulty:"medium"},
-    {question:"Graph Transformer 的核心机制是？",options:["自注意力机制","卷积","LSTM","池化"],answer:0,difficulty:"hard"},
-    {question:"在图神经网络中，边分类常用于？",options:["知识图谱关系预测","节点分类","图分类","聚合节点特征"],answer:0,difficulty:"medium"},
-    {question:"GNN 可应用于哪类化学任务？",options:["分子属性预测","药物发现","蛋白质交互预测","以上都可"],answer:3,difficulty:"medium"},
-    {question:"在图神经网络中，节点特征维度过大可能导致？",options:["计算复杂度增加","过拟合","梯度消失","以上都可"],answer:3,difficulty:"medium"},
-    {question:"Graph AutoEncoder 的解码器通常使用？",options:["Inner Product","卷积","注意力","RNN"],answer:0,difficulty:"medium"},
-    {question:"GNN 在半监督学习中常用？",options:["节点标签+图结构","仅节点标签","仅图结构","无监督信息"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，过平滑问题的解决方法是？",options:["跳跃连接","残差连接","增加层数","以上都可"],answer:3,difficulty:"medium"},
-    {question:"在图神经网络中，节点聚合操作通常包括？",options:["Mean, Sum, Max","卷积, 注意力, LSTM","池化, Dropout, ReLU","FFT, CNN, RNN"],answer:0,difficulty:"medium"},
-    {question:"GNN 在推荐系统中可用于？",options:["社交推荐","协同过滤","内容推荐","以上都可"],answer:3,difficulty:"medium"},
-    {question:"图神经网络中的邻居聚合操作核心是？",options:["整合邻居节点信息","节点标签预测","全局图嵌入","边权计算"],answer:0,difficulty:"easy"},
-    {question:"R-GCN 模型主要用于？",options:["多关系图","同质图","无向图","完全图"],answer:0,difficulty:"medium"},
-    {question:"Graph Attention Network 的核心优势是？",options:["区分邻居重要性","减少参数","无需邻接矩阵","快速训练"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，节点嵌入可用于？",options:["节点分类","链接预测","图分类","以上都可"],answer:3,difficulty:"easy"},
-    {question:"GraphSAGE 的核心特点是？",options:["基于采样的邻居聚合","全局聚合","无需邻接矩阵","快速训练"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，图卷积的线性变换作用是？",options:["特征变换","邻居聚合","节点分类","边预测"],answer:0,difficulty:"medium"},
-    {question:"图神经网络的损失函数通常用于？",options:["最小化预测误差","最大化邻居数","增加节点数","减少边数"],answer:0,difficulty:"easy"},
-    {question:"GNN 模型在大规模图训练中常用方法？",options:["邻居采样","全量训练","增加层数","减少节点"],answer:0,difficulty:"medium"},
-    {question:"在图神经网络中，节点特征融合方式包括？",options:["Concat, Mean, Sum","卷积, LSTM, Attention","池化, Dropout, ReLU","FFT, CNN, RNN"],answer:0,difficulty:"medium"},
-    {question:"Graph Contrastive Learning 用于？",options:["自监督节点表示学习","节点分类","图分类","边预测"],answer:0,difficulty:"hard"},
-    {question:"Graph Transformer 用于？",options:["全局图建模","节点分类","边预测","邻居聚合"],answer:0,difficulty:"hard"},
-    {question:"GNN 可用于蛋白质预测任务吗？",options:["是","否","仅部分模型","视情况而定"],answer:0,difficulty:"medium"},
-    {question:"图神经网络在化学分子预测中常用输入？",options:["原子特征和化学键","分子式","节点标签","边权"],answer:0,difficulty:"medium"},
-    {question:"GraphVAE 的核心思想是？",options:["变分自编码器生成图","图卷积","节点分类","边预测"],answer:0,difficulty:"hard"},
-    {question:"Graph AutoEncoder 的训练目标是？",options:["重建邻接矩阵","节点分类","边预测","生成特征"],answer:0,difficulty:"medium"},
-    {question:"Graph Attention Network 聚合方式？",options:["加权求和","均值聚合","最大池化","最小池化"],answer:0,difficulty:"medium"}
+    // 题库数据 - 扩展更多题目
+    const questions = [
+      // 基础概念类
+      {id: 1, question:"以下哪种是最经典的图神经网络模型？",options:["CNN","GCN","RNN","LSTM"],answer:1, category:"基础概念", difficulty:1,
+       explanation:"GCN（图卷积网络）是最经典的图神经网络模型，专门用于处理图结构数据。",
+       resources:["教程：GCN基本原理","视频：图卷积网络详解"], prerequisites: []},
+      
+      {id: 2, question:"GCN 最常用于处理哪类数据？",options:["图结构数据","序列数据","图像数据","表格数据"],answer:0, category:"基础概念", difficulty:1,
+       explanation:"GCN专门设计用于处理图结构数据，能够有效捕捉节点之间的关系。",
+       resources:["文章：图数据结构入门","教程：GCN应用场景"], prerequisites: [1]},
+      
+      {id: 3, question:"在图中，节点之间通过什么表示关系？",options:["边","权重","标签","矩阵"],answer:0, category:"基础概念", difficulty:1,
+       explanation:"图中的节点通过边(edge)来表示彼此之间的关系。",
+       resources:["教程：图论基础","视频：图的表示方法"], prerequisites: [1]},
+      
+      // 模型架构类
+      {id: 4, question:"Graph Attention Network (GAT) 引入了什么机制？",options:["卷积","注意力机制","循环","强化学习"],answer:1, category:"模型架构", difficulty:2,
+       explanation:"GAT引入了注意力机制，使模型能够为不同的邻居节点分配不同的重要性权重。",
+       resources:["论文：Graph Attention Networks","教程：注意力机制在图神经网络中的应用"], prerequisites: [1,2]},
+      
+      {id: 5, question:"GraphSAGE 模型的核心思想是？",options:["基于采样的节点聚合","全局特征编码","序列生成","边预测"],answer:0, category:"模型架构", difficulty:2,
+       explanation:"GraphSAGE通过采样和聚合邻居节点的特征来生成节点嵌入，适用于大规模图数据。",
+       resources:["论文：Inductive Representation Learning on Large Graphs","教程：GraphSAGE原理与应用"], prerequisites: [1,2]},
+      
+      // 应用场景类
+      {id: 6, question:"GNN 在推荐系统中可用于？",options:["社交推荐","协同过滤","内容推荐","以上都可以"],answer:3, category:"应用场景", difficulty:2,
+       explanation:"图神经网络在推荐系统中有广泛应用，包括社交推荐、协同过滤和内容推荐等场景。",
+       resources:["案例：GNN在推荐系统中的应用","教程：构建图神经网络推荐系统"], prerequisites: [1,2]},
+      
+      // 高级主题类
+      {id: 7, question:"动态图神经网络主要用于处理什么类型的图？",options:["静态图","随时间变化的图","大规模图","异构图"],answer:1, category:"高级主题", difficulty:3,
+       explanation:"动态图神经网络专门设计用于处理随时间变化的图结构，如演化的社交网络或交易网络。",
+       resources:["论文：动态GNN综述","教程：动态图表示学习"], prerequisites: [4,5]},
+      
+      {id: 8, question:"异构图神经网络与传统GNN的主要区别是什么？",options:["处理多种类型节点和边","计算效率更高","只能处理小规模图","不需要特征提取"],answer:0, category:"高级主题", difficulty:3,
+       explanation:"异构图神经网络专门设计处理包含多种类型节点和边的异质信息图。",
+       resources:["论文：异质图神经网络","教程：HetGNN详解"], prerequisites: [4,5]},
+      
+      // 实践技巧类
+      {id: 9, question:"图神经网络训练中过度平滑问题是指什么？",options:["训练速度过快","所有节点表示变得相似","梯度爆炸","损失函数不收敛"],answer:1, category:"实践技巧", difficulty:3,
+       explanation:"过度平滑问题是指当GNN层数过深时，所有节点的表示会趋于相似，丢失区分度。",
+       resources:["教程：解决过度平滑问题","论文：GNN深度限制"], prerequisites: [4,5,6]},
+      
+      {id: 10, question:"以下哪种技术不能解决GNN的过度平滑问题？",options:["残差连接","跳跃连接","增加更多层数","图归一化"],answer:2, category:"实践技巧", difficulty:3,
+       explanation:"增加更多层数会加剧过度平滑问题，而不是解决它。",
+       resources:["教程：GNN最佳实践","论文：GNN架构优化"], prerequisites: [9]}
     ];
 
+    // 知识图谱结构
+    const knowledgeGraph = {
+      "基础概念": { prerequisites: [], color: "#3B82F6", description: "图神经网络的基本概念和术语" },
+      "模型架构": { prerequisites: ["基础概念"], color: "#10B981", description: "各种GNN模型的结构和原理" },
+      "应用场景": { prerequisites: ["基础概念"], color: "#F59E0B", description: "GNN在不同领域的应用案例" },
+      "高级主题": { prerequisites: ["模型架构", "应用场景"], color: "#8B5CF6", description: "GNN的前沿研究和高级主题" },
+      "实践技巧": { prerequisites: ["模型架构", "应用场景"], color: "#EC4899", description: "GNN训练和优化的实用技巧" }
+    };
 
-    // 常量：每轮抽取题量
-    const QUIZ_SIZE = 10;
+    // 用户学习状态
+    const userState = {
+      currentLevel: 0,
+      score: 0,
+      masteryLevel: 0, // 0-新手, 1-初级, 2-中级, 3-高级
+      masteredCategories: {},
+      weakCategories: {},
+      answeredQuestions: new Set(),
+      unlockedQuestions: new Set([1]), // 初始解锁第一题
+      adaptiveMode: true,
+      learningPath: [],
+      selectedAnswer: null,
+      currentQuestionIndex: 0,
+      answerHistory: {} // 记录每个题目的答案历史
+    };
 
-    // 状态
-    let selectedDifficulty = "easy";
-    let currentLevel = 0;                      // 当前题号（0-based）
-    let currentQuestions = [];                 // 本轮抽取的题目集（长度 <= QUIZ_SIZE）
-
-    // DOM
+    // DOM元素
     const questionText = document.getElementById("question-text");
     const quizForm = document.getElementById("quiz-form");
     const feedback = document.getElementById("feedback");
+    const feedbackTitle = document.getElementById("feedback-title");
+    const feedbackContent = document.getElementById("feedback-content");
     const progressFill = document.getElementById("progress-fill");
     const currentLevelSpan = document.getElementById("current-level");
     const totalLevelsSpan = document.getElementById("total-levels");
     const submitBtn = document.getElementById("submit-btn");
+    const nextLevelBtn = document.getElementById("next-level-btn");
+    const nextLevelContainer = document.getElementById("next-level-container");
+    const visualExplanation = document.getElementById("visual-explanation");
+    const explanationContent = document.getElementById("explanation-content");
+    const resourceRecommendation = document.getElementById("resource-recommendation");
+    const resourceList = document.getElementById("resource-list");
+    const linearModeBtn = document.getElementById("linear-mode-btn");
+    const adaptiveModeBtn = document.getElementById("adaptive-mode-btn");
+    const learningPathContainer = document.getElementById("learning-path-container");
+    const userLevelIndicator = document.getElementById("user-level-indicator");
+    const knowledgeProgress = document.getElementById("knowledge-progress");
+    const questionCategory = document.getElementById("question-category");
+    const questionDifficulty = document.getElementById("question-difficulty");
+    const completionCelebration = document.getElementById("completion-celebration");
+    const finalScore = document.getElementById("final-score");
     const restartBtn = document.getElementById("restart-btn");
+    const userLevelStars = document.getElementById("user-level-stars");
+    const userLevelText = document.getElementById("user-level-text");
+    const levelDescription = document.getElementById("level-description");
 
-    // 工具：按难度过滤题库
-    function getPoolByDifficulty(diff) {
-      return questionBank.filter(q => q.difficulty === diff);
-    }
+    // 初始化 - 总题数将在updateProgressDisplay中动态设置
+    // totalLevelsSpan.textContent = questions.length;
+    
+    // 模式选择事件
+    linearModeBtn.addEventListener("click", () => {
+      userState.adaptiveMode = false;
+      linearModeBtn.classList.add("bg-blue-700");
+      adaptiveModeBtn.classList.remove("bg-purple-700");
+      adaptiveModeBtn.classList.add("bg-purple-600");
+      learningPathContainer.classList.add("hidden");
+      userLevelIndicator.classList.add("hidden");
+      knowledgeProgress.classList.add("hidden");
+      resetProgress();
+      updateProgressDisplay();
+    });
+    
+    adaptiveModeBtn.addEventListener("click", () => {
+      userState.adaptiveMode = true;
+      adaptiveModeBtn.classList.add("bg-purple-700");
+      linearModeBtn.classList.remove("bg-blue-700");
+      linearModeBtn.classList.add("bg-blue-600");
+      learningPathContainer.classList.remove("hidden");
+      userLevelIndicator.classList.remove("hidden");
+      knowledgeProgress.classList.remove("hidden");
+      generateLearningPath();
+      updateUserLevelIndicator();
+      updateKnowledgeProgress();
+      resetProgress();
+      updateProgressDisplay();
+    });
 
-    // 工具：从数组随机抽取 n 个不重复元素（Fisher-Yates 洗牌）
-    function sampleArray(arr, n) {
-      const a = arr.slice(); // 浅拷贝
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
+    // 生成个性化学习路径
+    function generateLearningPath() {
+      // 1. 确定用户当前水平
+      const userLevel = calculateUserLevel();
+      userState.masteryLevel = userLevel;
+      
+      // 2. 确定需要加强的知识领域
+      const weakAreas = identifyWeakAreas();
+      
+      // 3. 获取可用的题目（已解锁且符合先决条件）
+      const availableQuestions = questions.filter(q => 
+        userState.unlockedQuestions.has(q.id) && 
+        q.prerequisites.every(preq => userState.answeredQuestions.has(preq))
+      );
+      
+      // 4. 构建学习路径
+      userState.learningPath = [];
+      
+      // 优先处理薄弱领域
+      weakAreas.forEach(area => {
+        const areaQuestions = availableQuestions.filter(q => 
+          q.category === area && !userState.answeredQuestions.has(q.id)
+        );
+        
+        if (areaQuestions.length > 0) {
+          // 选择适当难度的问题
+          const selectedQuestions = selectQuestionsForCategory(areaQuestions, userLevel);
+          selectedQuestions.forEach(q => {
+            userState.learningPath.push({
+              id: userState.learningPath.length,
+              questionId: q.id,
+              category: q.category,
+              difficulty: q.difficulty
+            });
+          });
+        }
+      });
+      
+      // 添加其他可用题目
+      const otherQuestions = availableQuestions.filter(q => 
+        !weakAreas.includes(q.category) && 
+        !userState.answeredQuestions.has(q.id)
+      );
+      
+      if (otherQuestions.length > 0) {
+        const selectedQuestions = selectQuestionsForCategory(otherQuestions, userLevel);
+        selectedQuestions.forEach(q => {
+          userState.learningPath.push({
+            id: userState.learningPath.length,
+            questionId: q.id,
+            category: q.category,
+            difficulty: q.difficulty
+          });
+        });
       }
-      return a.slice(0, Math.min(n, a.length));
-    }
-
-    // 初始化一轮（设置难度 -> 随机抽题 -> 渲染第一题）
-    function initRound(diff) {
-      selectedDifficulty = diff;
-      const pool = getPoolByDifficulty(diff);
-      currentQuestions = sampleArray(pool, QUIZ_SIZE);
-      currentLevel = 0;
-
-      // UI 初始化
-      totalLevelsSpan.textContent = currentQuestions.length || 0;
-      currentLevelSpan.textContent = currentQuestions.length ? 1 : 0;
-      submitBtn.classList.remove("hidden");
-      restartBtn.classList.add("hidden");
-      feedback.textContent = "";
-
-      if (currentQuestions.length === 0) {
-        // 该难度无题
-        questionText.textContent = "该难度暂无线题，请先添加题库或更换难度。";
-        quizForm.innerHTML = "";
-        updateProgress();
+      
+      // 如果路径为空，重新评估并生成
+      if (userState.learningPath.length === 0) {
+        reevaluateUnlockedQuestions();
+        generateLearningPath();
         return;
       }
-
-      loadQuestion(currentLevel);
-      updateProgress();
+      
+      // 更新UI
+      updateLearningPathUI();
+      updateUserLevelIndicator();
+      updateKnowledgeProgress();
     }
 
-    // 渲染题目
-    function loadQuestion(level) {
-      const q = currentQuestions[level];
-      questionText.textContent = `题目 ${level + 1}：${q.question}`;
-      quizForm.innerHTML = "";
+    // 计算用户当前水平
+    function calculateUserLevel() {
+      if (userState.answeredQuestions.size === 0) return 0;
+      
+      let correctCount = 0;
+      let totalDifficulty = 0;
+      
+      userState.answeredQuestions.forEach(questionId => {
+        const question = questions.find(q => q.id === questionId);
+        if (question && userState.selectedAnswer === question.answer) {
+          correctCount++;
+        }
+        if (question) {
+          totalDifficulty += question.difficulty;
+        }
+      });
+      
+      const accuracy = correctCount / userState.answeredQuestions.size;
+      const averageDifficulty = totalDifficulty / userState.answeredQuestions.size;
+      
+      if (accuracy > 0.8 && averageDifficulty > 2.5) return 3; // 高级
+      if (accuracy > 0.7 && averageDifficulty > 2) return 2;   // 中级
+      if (accuracy > 0.6) return 1;                            // 初级
+      return 0;                                                // 新手
+    }
 
-      q.options.forEach((opt, i) => {
-        const id = `opt-${level}-${i}`;
-        const label = document.createElement("label");
-        label.className = "flex items-center space-x-2 cursor-pointer";
-        label.setAttribute("for", id);
+    // 识别用户薄弱领域
+    function identifyWeakAreas() {
+      const weakAreas = [];
+      const categoryStats = {};
+      
+      // 初始化统计
+      Object.keys(knowledgeGraph).forEach(category => {
+        categoryStats[category] = { correct: 0, total: 0 };
+      });
+      
+      // 统计每个类别的答题情况
+      userState.answeredQuestions.forEach(questionId => {
+        const question = questions.find(q => q.id === questionId);
+        if (question) {
+          categoryStats[question.category].total++;
+          if (userState.selectedAnswer === question.answer) {
+            categoryStats[question.category].correct++;
+          }
+        }
+      });
+      
+      // 找出准确率低于阈值的类别
+      for (const [category, stats] of Object.entries(categoryStats)) {
+        if (stats.total > 2 && stats.correct / stats.total < 0.6) {
+          weakAreas.push(category);
+        }
+      }
+      
+      return weakAreas.length > 0 ? weakAreas : Object.keys(knowledgeGraph);
+    }
 
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "answer";
-        input.value = i;
-        input.id = id;
-        input.className = "text-blue-600";
+    // 为特定类别选择问题
+    function selectQuestionsForCategory(questions, userLevel) {
+      let targetDifficulty, count;
+      
+      switch(userLevel) {
+        case 0: // 新手
+          targetDifficulty = 1; count = 2; break;
+        case 1: // 初级
+          targetDifficulty = 1.5; count = 3; break;
+        case 2: // 中级
+          targetDifficulty = 2; count = 3; break;
+        case 3: // 高级
+          targetDifficulty = 2.5; count = 4; break;
+        default:
+          targetDifficulty = 1.5; count = 3;
+      }
+      
+      return questions
+        .sort((a, b) => Math.abs(a.difficulty - targetDifficulty) - Math.abs(b.difficulty - targetDifficulty))
+        .slice(0, Math.min(count, questions.length));
+    }
 
-        const span = document.createElement("span");
-        span.textContent = opt;
+    // 重新评估已解锁的题目
+    function reevaluateUnlockedQuestions() {
+      // 根据用户水平解锁新题目
+      const newUnlocked = [];
+      
+      questions.forEach(question => {
+        if (!userState.unlockedQuestions.has(question.id)) {
+          // 检查是否满足解锁条件
+          const canUnlock = question.prerequisites.every(preq => 
+            userState.answeredQuestions.has(preq)
+          ) && question.difficulty <= userState.masteryLevel + 1;
+          
+          if (canUnlock) {
+            newUnlocked.push(question.id);
+          }
+        }
+      });
+      
+      newUnlocked.forEach(id => userState.unlockedQuestions.add(id));
+      
+      if (newUnlocked.length > 0) {
+        // 显示解锁通知
+        showUnlockNotification(newUnlocked);
+      }
+    }
 
-        label.appendChild(input);
-        label.appendChild(span);
-        quizForm.appendChild(label);
+    // 显示解锁通知
+    function showUnlockNotification(unlockedIds) {
+      const unlockedQuestions = questions.filter(q => unlockedIds.includes(q.id));
+      const notification = document.createElement("div");
+      notification.className = "fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border-l-4 border-green-500 z-50";
+      notification.innerHTML = `
+        <h4 class="font-semibold mb-2">🎯 新关卡解锁！</h4>
+        <p class="text-sm mb-2">您已解锁 ${unlockedIds.length} 个新题目：</p>
+        <ul class="text-xs list-disc list-inside">
+          ${unlockedQuestions.map(q => `<li>${q.category} - ${q.question.substring(0, 30)}...</li>`).join('')}
+        </ul>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+
+    // 更新学习路径UI
+    function updateLearningPathUI() {
+      const pathContainer = document.querySelector(".learning-path");
+      if (!pathContainer) return;
+      
+      pathContainer.innerHTML = "";
+      
+      userState.learningPath.forEach((node, index) => {
+        const question = questions.find(q => q.id === node.questionId);
+        if (!question) return;
+        
+        const nodeEl = document.createElement("div");
+        nodeEl.className = "path-node";
+        nodeEl.innerHTML = index + 1;
+        nodeEl.setAttribute("data-id", question.id);
+        nodeEl.setAttribute("data-category", question.category);
+        
+        // 设置节点状态
+        if (index < userState.currentLevel) {
+          nodeEl.classList.add("completed");
+          const isCorrect = userState.answeredQuestions.has(question.id) && 
+            userState.selectedAnswer === question.answer;
+          nodeEl.classList.add(isCorrect ? "correct" : "incorrect");
+        } else if (index === userState.currentLevel) {
+          nodeEl.classList.add("current");
+        } else {
+          nodeEl.classList.add("locked");
+        }
+        
+        // 添加难度指示器
+        const difficultyIndicator = document.createElement("div");
+        difficultyIndicator.className = "difficulty-indicator";
+        difficultyIndicator.style.backgroundColor = 
+          question.difficulty === 1 ? '#10B981' : 
+          question.difficulty === 2 ? '#F59E0B' : '#EF4444';
+        nodeEl.appendChild(difficultyIndicator);
+        
+        pathContainer.appendChild(nodeEl);
+        
+        // 添加连接线
+        if (index < userState.learningPath.length - 1) {
+          const connector = document.createElement("div");
+          connector.className = "path-connector";
+          if (index < userState.currentLevel) {
+            connector.classList.add("active");
+          }
+          pathContainer.appendChild(connector);
+        }
       });
     }
 
-    // 更新进度条
-    function updateProgress() {
-      const total = currentQuestions.length || 1;
-      const width = ((currentLevel + 1) / total) * 100;
-      progressFill.style.width = currentQuestions.length ? `${width}%` : "0%";
+    // 更新用户水平指示器
+    function updateUserLevelIndicator() {
+      const levels = ["新手", "初级", "中级", "高级"];
+      const descriptions = [
+        "刚开始学习图神经网络，建议从基础概念开始",
+        "已掌握基础知识，可以尝试更复杂的模型架构",
+        "对GNN有较好理解，可以挑战高级主题和应用",
+        "GNN专家水平，可以深入研究前沿技术和实践技巧"
+      ];
+      
+      userLevelStars.innerHTML = "★".repeat(userState.masteryLevel + 1);
+      userLevelText.textContent = levels[userState.masteryLevel];
+      levelDescription.textContent = descriptions[userState.masteryLevel];
+    }
+
+    // 更新知识掌握进度
+    function updateKnowledgeProgress() {
+      const container = document.querySelector(".knowledge-map");
+      if (!container) return;
+      
+      container.innerHTML = "";
+      
+      Object.entries(knowledgeGraph).forEach(([category, info]) => {
+        const stats = calculateCategoryStats(category);
+        const masteryPercent = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
+        
+        const areaEl = document.createElement("div");
+        areaEl.className = "knowledge-area";
+        areaEl.innerHTML = `
+          <h4 class="font-semibold mb-2">${category}</h4>
+          <p class="text-xs text-gray-600 mb-2">${info.description}</p>
+          <div class="mastery-bar">
+            <div class="mastery-fill" style="width: ${masteryPercent}%; background: ${info.color};"></div>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span>掌握度: ${Math.round(masteryPercent)}%</span>
+            <span>${stats.correct}/${stats.total}</span>
+          </div>
+        `;
+        
+        container.appendChild(areaEl);
+      });
+    }
+
+    // 计算类别统计
+    function calculateCategoryStats(category) {
+      let correct = 0, total = 0;
+      
+      userState.answeredQuestions.forEach(questionId => {
+        const question = questions.find(q => q.id === questionId);
+        if (question && question.category === category) {
+          total++;
+          // 检查该题目的答案是否正确，需要从历史记录中获取
+          const questionIndex = questions.findIndex(q => q.id === questionId);
+          if (questionIndex !== -1) {
+            // 从用户的答题历史中获取该题的答案
+            const userAnswer = getUserAnswerForQuestion(questionId);
+            if (userAnswer !== null && userAnswer === question.answer) {
+              correct++;
+            }
+          }
+        }
+      });
+      
+      return { correct, total };
+    }
+    
+    // 获取用户对特定题目的答案
+    function getUserAnswerForQuestion(questionId) {
+      // 如果有答题历史记录，从中获取
+      if (userState.answerHistory && userState.answerHistory[questionId] !== undefined) {
+        return userState.answerHistory[questionId];
+      }
+      // 如果是当前题目，返回当前选择的答案
+      const currentQuestion = questions[userState.currentQuestionIndex];
+      if (currentQuestion && currentQuestion.id === questionId) {
+        return userState.selectedAnswer;
+      }
+      return null;
+    }
+
+    // 选择题目
+    function selectQuestion() {
+      if (!userState.adaptiveMode) {
+        return userState.currentLevel % questions.length;
+      }
+      
+      if (userState.learningPath.length > 0 && userState.currentLevel < userState.learningPath.length) {
+        const pathNode = userState.learningPath[userState.currentLevel];
+        return questions.findIndex(q => q.id === pathNode.questionId);
+      }
+      
+      return 0;
+    }
+
+    // 加载题目
+    function loadQuestion() {
+      userState.currentQuestionIndex = selectQuestion();
+      const q = questions[userState.currentQuestionIndex];
+      
+      if (!q) return;
+      
+      questionText.textContent = q.question;
+      questionCategory.textContent = q.category;
+      questionDifficulty.style.backgroundColor = 
+        q.difficulty === 1 ? '#10B981' : 
+        q.difficulty === 2 ? '#F59E0B' : '#EF4444';
+      
+      quizForm.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const label = document.createElement("label");
+        label.className = "flex items-center space-x-2 p-2 rounded hover:bg-gray-100 cursor-pointer";
+        label.innerHTML = `<input type="radio" name="answer" value="${i}" class="text-blue-600"> <span>${opt}</span>`;
+        quizForm.appendChild(label);
+      });
+      
+      // 重置UI状态
+      feedback.classList.add("hidden");
+      nextLevelContainer.classList.add("hidden");
+      visualExplanation.classList.add("hidden");
+      resourceRecommendation.classList.add("hidden");
+      userState.selectedAnswer = null;
     }
 
     // 提交答案
-    document.getElementById("submit-btn").addEventListener("click", () => {
-      if (!currentQuestions.length) return;
-
-      const selected = document.querySelector('input[name="answer"]:checked');
-      if (!selected) {
-        feedback.textContent = "请选择一个答案！";
-        feedback.className = "mt-4 text-center font-semibold text-red-600";
+    submitBtn.addEventListener("click", () => {
+      const selectedOption = document.querySelector("input[name='answer']:checked");
+      if (!selectedOption) {
+        alert("请选择一个答案！");
         return;
       }
-
-      const userAnswer = parseInt(selected.value, 10);
-      const correctAnswer = currentQuestions[currentLevel].answer;
-
-      if (userAnswer === correctAnswer) {
-        feedback.textContent = "✅ 正确！进入下一关～";
-        feedback.className = "mt-4 text-center font-semibold text-green-600";
-
-        setTimeout(() => {
-          currentLevel++;
-          const total = currentQuestions.length;
-          if (currentLevel < total) {
-            currentLevelSpan.textContent = currentLevel + 1;
-            loadQuestion(currentLevel);
-            updateProgress();
-            feedback.textContent = "";
-          } else {
-            // 通关
-            questionText.textContent = "🎉 恭喜你，成功通关！";
-            quizForm.innerHTML = "";
-            submitBtn.classList.add("hidden");
-            restartBtn.classList.remove("hidden");
-            feedback.textContent = "点“再来一组”可重新随机抽题。";
-            feedback.className = "mt-4 text-center font-semibold text-blue-600";
-            progressFill.style.width = "100%";
-            currentLevelSpan.textContent = total; // 保持一致显示
-          }
-        }, 600);
-      } else {
-        feedback.textContent = "❌ 错误，再试一次！";
-        feedback.className = "mt-4 text-center font-semibold text-red-600";
+      
+      const answer = parseInt(selectedOption.value);
+      userState.selectedAnswer = answer;
+      const currentQuestion = questions[userState.currentQuestionIndex];
+      const isCorrect = answer === currentQuestion.answer;
+      
+      // 记录答案历史
+      userState.answerHistory[currentQuestion.id] = answer;
+      
+      // 更新用户状态
+      userState.answeredQuestions.add(currentQuestion.id);
+      
+      if (isCorrect) {
+        userState.score += currentQuestion.difficulty * 10;
+        // 解锁相关题目
+        unlockRelatedQuestions(currentQuestion.id);
       }
+      
+      // 显示反馈
+      showFeedback(isCorrect, currentQuestion);
     });
 
-    // 再来一组（保持当前难度，重新随机 10 题）
+    // 解锁相关题目
+    function unlockRelatedQuestions(questionId) {
+      const relatedQuestions = questions.filter(q => 
+        q.prerequisites.includes(questionId) && 
+        !userState.unlockedQuestions.has(q.id)
+      );
+      
+      relatedQuestions.forEach(q => {
+        userState.unlockedQuestions.add(q.id);
+      });
+      
+      if (relatedQuestions.length > 0) {
+        showUnlockNotification(relatedQuestions.map(q => q.id));
+      }
+    }
+
+    // 显示反馈
+    function showFeedback(isCorrect, question) {
+      feedback.classList.remove("hidden");
+      
+      if (isCorrect) {
+        feedbackTitle.textContent = "✓ 回答正确！";
+        feedbackTitle.className = "font-semibold mb-2 text-green-600";
+      } else {
+        feedbackTitle.textContent = "✗ 回答错误";
+        feedbackTitle.className = "font-semibold mb-2 text-red-600";
+      }
+      
+      feedbackContent.innerHTML = isCorrect ? 
+        question.explanation : 
+        `<p>正确答案是：${question.options[question.answer]}</p><p class="mt-2">${question.explanation}</p>`;
+      
+      // 显示解释和资源
+      explanationContent.textContent = getVisualExplanation(question);
+      resourceList.innerHTML = "";
+      question.resources.forEach(resource => {
+        const li = document.createElement("li");
+        li.textContent = resource;
+        resourceList.appendChild(li);
+      });
+      
+      visualExplanation.classList.remove("hidden");
+      resourceRecommendation.classList.remove("hidden");
+      nextLevelContainer.classList.remove("hidden");
+    }
+
+    // 获取可视化解释
+    function getVisualExplanation(question) {
+      const explanations = {
+        "基础概念": "这是图神经网络的基础知识，建议牢固掌握。",
+        "模型架构": "理解模型架构有助于选择合适的方法解决问题。",
+        "应用场景": "了解应用场景可以帮助您在实际项目中更好地运用GNN。",
+        "高级主题": "这些是GNN的前沿研究方向，适合深入学习。",
+        "实践技巧": "实用技巧可以帮助您更有效地训练和优化模型。"
+      };
+      return explanations[question.category] || "这是一个重要的GNN知识点。";
+    }
+
+    // 下一关
+    nextLevelBtn.addEventListener("click", () => {
+      if (userState.adaptiveMode) {
+        userState.currentLevel++;
+        
+        // 检查是否需要生成新的学习路径
+        if (userState.currentLevel >= userState.learningPath.length) {
+          // 完成当前路径，生成新路径
+          generateLearningPath();
+          
+          // 检查是否所有题目都已完成
+          if (userState.answeredQuestions.size >= questions.length * 0.8) {
+            showCompletionCelebration();
+            return;
+          }
+          
+          // 如果新路径为空，说明没有更多可用题目
+          if (userState.learningPath.length === 0) {
+            showCompletionCelebration();
+            return;
+          }
+          
+          // 重置当前路径中的位置，但保持总体进度
+          userState.currentLevel = 0;
+        }
+        
+        // 更新进度条：基于总答题数而不是当前路径位置
+        const totalAnswered = userState.answeredQuestions.size;
+        const progressPercent = Math.min((totalAnswered / questions.length) * 100, 100);
+        
+        currentLevelSpan.textContent = totalAnswered + 1;
+        progressFill.style.width = progressPercent + "%";
+        
+        updateLearningPathUI();
+      } else {
+        userState.currentLevel++;
+        if (userState.currentLevel >= questions.length) {
+          userState.currentLevel = 0;
+        }
+        
+        currentLevelSpan.textContent = userState.currentLevel + 1;
+        progressFill.style.width = ((userState.currentLevel + 1) / questions.length * 100) + "%";
+      }
+      
+      // 更新UI - 在关卡切换时进行进度更新
+      updateProgressDisplay();
+      updateUserLevelIndicator();
+      updateKnowledgeProgress();
+      
+      loadQuestion();
+    });
+
+    // 显示通关庆祝
+    function showCompletionCelebration() {
+      finalScore.textContent = userState.score;
+      completionCelebration.classList.remove("hidden");
+    }
+
+    // 重新开始
     restartBtn.addEventListener("click", () => {
-      initRound(selectedDifficulty);
+      completionCelebration.classList.add("hidden");
+      resetProgress();
     });
 
-    // 难度切换
-    document.getElementById("easy-btn").addEventListener("click", () => initRound("easy"));
-    document.getElementById("medium-btn").addEventListener("click", () => initRound("medium"));
-    document.getElementById("hard-btn").addEventListener("click", () => initRound("hard"));
+    // 重置进度
+    function resetProgress() {
+      userState.currentLevel = 0;
+      userState.score = 0;
+      userState.masteryLevel = 0;
+      userState.masteredCategories = {};
+      userState.weakCategories = {};
+      userState.answeredQuestions.clear();
+      userState.unlockedQuestions.clear();
+      userState.unlockedQuestions.add(1);
+      userState.learningPath = [];
+      userState.selectedAnswer = null;
+      userState.answerHistory = {}; // 清空答案历史
+      
+      // 更新进度显示
+      updateProgressDisplay();
+      
+      if (userState.adaptiveMode) {
+        generateLearningPath();
+        updateUserLevelIndicator();
+        updateKnowledgeProgress();
+      }
+      
+      loadQuestion();
+    }
+    
+    // 更新进度显示
+    function updateProgressDisplay() {
+      if (userState.adaptiveMode) {
+        const totalAnswered = userState.answeredQuestions.size;
+        // 动态计算预期总题数：基于当前学习路径长度和已答题数
+        const expectedTotal = Math.max(
+          userState.learningPath.length + totalAnswered,
+          Math.min(8, questions.length), // 最少8题
+          totalAnswered + 1 // 至少比当前答题数多1
+        );
+        
+        const progressPercent = Math.min((totalAnswered / expectedTotal) * 100, 100);
+        currentLevelSpan.textContent = totalAnswered + 1;
+        totalLevelsSpan.textContent = expectedTotal;
+        progressFill.style.width = Math.max(progressPercent, 1) + "%";
+      } else {
+        // 线性模式使用固定的题库总数
+        currentLevelSpan.textContent = userState.currentLevel + 1;
+        totalLevelsSpan.textContent = questions.length;
+        progressFill.style.width = Math.max(((userState.currentLevel + 1) / questions.length * 100), 1) + "%";
+      }
+    }
 
-    // 首次初始化（默认基础难度）
-    initRound("easy");
+    // 初始加载
+    updateUserLevelIndicator();
+    updateKnowledgeProgress();
+    updateProgressDisplay();
+    loadQuestion();
   </script>
 </body>
 </html>

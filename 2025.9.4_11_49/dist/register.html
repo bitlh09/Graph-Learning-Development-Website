@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 图学习算法实践与教程</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="w-8 h-8 text-white mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-white text-xl font-bold">GraphLearn</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="index.html" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">
+                        返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 注册表单 -->
+    <main class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    创建新账户
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    或者 
+                    <button onclick="toggleLogin()" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        登录现有账户
+                    </button>
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" onsubmit="handleRegister(event)">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="register-username" class="sr-only">用户名</label>
+                        <input id="register-username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="用户名">
+                    </div>
+                    <div>
+                        <label for="register-email" class="sr-only">邮箱地址</label>
+                        <input id="register-email" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="邮箱地址">
+                    </div>
+                    <div>
+                        <label for="register-password" class="sr-only">密码</label>
+                        <input id="register-password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="密码">
+                    </div>
+                    <div>
+                        <label for="register-confirm-password" class="sr-only">确认密码</label>
+                        <input id="register-confirm-password" name="confirm-password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="确认密码">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="agree-terms" name="agree-terms" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" required>
+                        <label for="agree-terms" class="ml-2 block text-sm text-gray-900">
+                            我同意 <a href="#" class="text-indigo-600 hover:text-indigo-500">使用条款</a> 和 <a href="#" class="text-indigo-600 hover:text-indigo-500">隐私政策</a>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        注册账户
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 引入本地JavaScript文件 -->
+    <script src="js/auth.js"></script>
+    
+    <script>
+    function handleRegister(event) {
+        event.preventDefault();
+        
+        var username = document.getElementById('register-username').value.trim();
+        var email = document.getElementById('register-email').value.trim();
+        var password = document.getElementById('register-password').value;
+        var confirmPassword = document.getElementById('register-confirm-password').value;
+        var agreeTerms = document.getElementById('agree-terms').checked;
+        
+        // 表单验证
+        if (!username) {
+            alert('请输入用户名');
+            return;
+        }
+        if (!email) {
+            alert('请输入邮箱地址');
+            return;
+        }
+        if (!password) {
+            alert('请输入密码');
+            return;
+        }
+        if (password !== confirmPassword) {
+            alert('两次输入的密码不一致');
+            return;
+        }
+        if (!agreeTerms) {
+            alert('请同意使用条款和隐私政策');
+            return;
+        }
+        
+        // 密码强度检查
+        if (password.length < 6) {
+            alert('密码长度至少6位');
+            return;
+        }
+        
+        // 注册逻辑
+        var store = JSON.parse(localStorage.getItem('gl_users') || '{}');
+        if (store[username]) {
+            alert('该用户名已存在');
+            return;
+        }
+        
+        // 保存用户信息
+        store[username] = password;
+        localStorage.setItem('gl_users', JSON.stringify(store));
+        
+        // 同时保存用户详细信息（可扩展）
+        var userDetails = JSON.parse(localStorage.getItem('gl_user_details') || '{}');
+        userDetails[username] = {
+            email: email,
+            registerTime: new Date().toISOString()
+        };
+        localStorage.setItem('gl_user_details', JSON.stringify(userDetails));
+        
+        alert('注册成功！');
+        
+        // 注册成功后跳转到主页
+        window.location.href = 'index.html';
+    }
+    </script>
+</body>
+</html>

@@ -265,6 +265,12 @@
                 existingForm.remove();
             }
             
+            // 隐藏发帖按钮
+            const postButton = container.querySelector('button[onclick*="showPostForm"]');
+            if (postButton) {
+                postButton.style.display = 'none';
+            }
+            
             container.insertAdjacentHTML('afterbegin', createPostForm(section));
         }
     };
@@ -274,6 +280,15 @@
         const form = document.getElementById(`post-form-${section}`);
         if (form) {
             form.remove();
+        }
+        
+        // 重新显示发帖按钮
+        const container = document.getElementById(section);
+        if (container) {
+            const postButton = container.querySelector('button[onclick*="showPostForm"]');
+            if (postButton) {
+                postButton.style.display = '';
+            }
         }
     };
 
@@ -303,6 +318,15 @@
         savePost(post);
         hidePostForm(section);
         renderSectionPosts(section);
+        
+        // 确保发帖按钮重新显示
+        const container = document.getElementById(section);
+        if (container) {
+            const postButton = container.querySelector('button[onclick*="showPostForm"]');
+            if (postButton) {
+                postButton.style.display = '';
+            }
+        }
         
         alert('发布成功！');
     };
