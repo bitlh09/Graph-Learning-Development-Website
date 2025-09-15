@@ -1,27 +1,141 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成员一 - 个人介绍</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人介绍</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #ffffff, #e6f7ff);
+      min-height: 100vh;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: -1;
+    }
+
+    .avatar-hover:hover {
+      box-shadow: 0 0 15px rgba(100, 181, 246, 0.7), 0 0 30px rgba(66, 133, 244, 0.4);
+      transform: scale(1.2);
+    }
+
+    .card-hover:hover {
+      box-shadow: 0 0 25px rgba(100, 181, 246, 0.6), 0 0 50px rgba(66, 133, 244, 0.4);
+      transform: translateY(-5px);
+    }
+
+    .email-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #64b5f6;
+      color: #fff;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      box-shadow: 0 5px 15px rgba(100, 181, 246, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      text-decoration: none;
+    }
+    .email-bubble:hover {
+      background: #2196f3;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.5);
+    }
+    
+    .back-to-team {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #64b5f6;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      box-shadow: 0 5px 15px rgba(100, 181, 246, 0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      font-weight: 500;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-to-team:hover {
+      background: #2196f3;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.5);
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
-    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <header class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">成员一</h1>
-            <a href="team.html" class="text-blue-600 hover:underline text-sm">返回小组页</a>
-        </header>
-        <section class="bg-white rounded-lg shadow p-6">
-            <img src="photo/5bfe1012cf90410f8532df138d2daa25.png" alt="个人照片" class="w-full rounded mb-4">
-            <h2 class="text-xl font-semibold text-gray-900 mb-3">个人简介</h2>
-            <p class="text-gray-700 leading-7">
-                金文渊，男，广东深圳人。现就读于北京理工大学计算机学院计算机科学与技术专业，大二。兴趣方向为全栈开发与人工智能。
-                在该网页开发中承担项目经理，CIO的职务。
-                我们希望这个网页能够使得各位对图学习能有更深刻的理解，共同学习计算机领域的知识。
-                我的github账号名称：wYuan517
-            </p>
-        </section>
-    </main>
+<body class="antialiased">
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-10">
+
+    <!-- 头像和姓名 -->
+    <section class="flex flex-col items-center mb-10">
+      <div class="flex justify-center">
+        <img src="./photo/5bfe1012cf90410f8532df138d2daa25.png" alt="个人照片" class="w-40 h-40 rounded-full object-cover avatar-hover transition duration-300 border-4 border-white shadow-lg">
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mt-6">金文渊</h1>
+      <p class="mt-2 text-gray-600 text-center">计算机科学与技术专业 · 专注于人工智能与数据科学</p>
+      <a href="mailto:3142287119@qq.com" class="email-bubble mt-4">3142287119@qq.comm</a>
+    </section>
+
+    <!-- 上部：个人简介 -->
+    <section class="bg-white/90 backdrop-blur-md rounded-2xl shadow p-6 md:p-8 mb-8 card-hover transition duration-300">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-4">个人简介</h2>
+      <p class="text-gray-700 leading-7">
+        我是金文渊，现为北京理工大学计算机学院计算机科学与技术专业本科生。
+        我热衷于探索新技术，解决实际问题，并致力于将理论知识应用于实践项目中。
+        我熟悉 C 语言、数据结构、网页开发等，也在一些比赛和科研创新（统计建模）团队协作和项目实践中锻炼了沟通与组织协调能力。
+      </p>
+      <p class="text-gray-700 leading-7 mt-3">
+        在学习和研究过程中，我积累了丰富的编程经验和项目实践经验，熟悉多种开发框架和工具。我相信技术的价值在于改善人们的生活，希望通过自己的努力在这个领域做出有意义的贡献。
+      </p>
+    </section>
+
+    <!-- 下部：左右两列 -->
+    <section class="grid lg:grid-cols-2 gap-6">
+      <!-- 左：研究兴趣 -->
+      <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow p-6 md:p-8 card-hover transition duration-300">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4" align="center">研究兴趣</h3>
+        <div class="grid grid-cols-1 gap-3 text-sm">
+          <span class="px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-blue-400 transition cursor-pointer">机器学习与深度学习</span>
+          <span class="px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-blue-400 transition cursor-pointer">自然语言处理</span>
+          <span class="px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-blue-400 transition cursor-pointer">计算机视觉</span>
+          <span class="px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:border-blue-400 transition cursor-pointer">数据挖掘与分析</span>
+        </div>
+      </div>
+
+      <!-- 右：擅长技术 -->
+      <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow p-6 md:p-8 card-hover transition duration-300">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4" align="center">擅长技术</h3>
+        <div class="flex flex-wrap gap-3 text-sm">
+          <span class="px-4 py-2 rounded-full bg-blue-50 text-blue-800 border border-blue-100">Python</span>
+          <span class="px-4 py-2 rounded-full bg-blue-50 text-blue-800 border border-blue-100">PyTorch</span>
+          <span class="px-4 py-2 rounded-full bg-blue-50 text-blue-800 border border-blue-100">TensorFlow</span>
+          <span class="px-4 py-2 rounded-full bg-blue-50 text-blue-800 border border-blue-100">SQL</span>
+          <span class="px-4 py-2 rounded-full bg-blue-50 text-blue-800 border border-blue-100">Java</span>
+          <span class="px-4 py-2 rounded-full bg-blue-50 text-blue-800 border border-blue-100">JavaScript</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 返回小组页链接 -->
+    <a href="index.html" class="back-to-team">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      返回小组页
+    </a>
+
+  </main>
 </body>
 </html>
